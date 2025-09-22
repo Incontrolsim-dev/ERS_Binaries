@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#define ERS_N_FUNCTIONS 486
+#define ERS_N_FUNCTIONS 494
 
 // Temporary typedef until we found a good place for shared information.
 typedef uint64_t EntityID; typedef uint64_t SimulationTime;
@@ -174,6 +174,12 @@ typedef void* (*ERS_Simulator_FindDependencyByNameSignature)(void* instance, con
 typedef void* (*ERS_Simulator_FindOutgoingDependencyByIdSignature)(void* instance, int32_t id);
 typedef void* (*ERS_Simulator_FindOutgoingDependencyByNameSignature)(void* instance, const char* nameTag, int nameSize);
 typedef SimulationTime (*ERS_Simulator_GetCurrentTimeSignature)(const void* simulatorInstance);
+typedef uint32_t (*ERS_BasicRenderComponent_TypeIdSignature)();
+typedef void* (*ERS_BasicRenderComponent_CreateCallbackSignature)();
+typedef void (*ERS_BasicRenderComponent_GetColorSignature)(void* instance, float* r, float* g, float* b, float* a);
+typedef void (*ERS_BasicRenderComponent_SetColorSignature)(void* instance, float r, float g, float b, float a);
+typedef void (*ERS_BasicRenderComponent_SetInstancedModelSignature)(void* instance, void* instancedModel);
+typedef void* (*ERS_BasicRenderComponent_GetInstancedModelSignature)(void* instance);
 typedef uint32_t (*ERS_BoxComponent_TypeIdSignature)();
 typedef void* (*ERS_BoxComponent_CreateCallbackSignature)();
 typedef float* (*ERS_BoxComponent_Min_XSignature)(void* instance);
@@ -192,8 +198,8 @@ typedef void (*ERS_ChannelComponent_RegisterTypeSignature)(void* submodelInstanc
 typedef int (*ERS_ChannelComponent_GetTypeSignature)(void* instance);
 typedef EntityID (*ERS_ChannelComponent_GetConnectedToSignature)(void* instance);
 typedef bool (*ERS_ChannelComponent_IsOpenSignature)(void* instance);
-typedef float (*ERS_ChannelComponent_GetLongitudonalPositionSignature)(void* instance);
-typedef void (*ERS_ChannelComponent_SetLongitudonalPositionSignature)(void* instance, float position);
+typedef float (*ERS_ChannelComponent_GetlongitudinalPositionSignature)(void* instance);
+typedef void (*ERS_ChannelComponent_SetlongitudinalPositionSignature)(void* instance, float position);
 typedef void (*ERS_Channel_SendSignature)(EntityID channelFrom, EntityID child);
 typedef void (*ERS_Channel_OpenSignature)(EntityID channel);
 typedef bool (*ERS_Channel_IsReadySignature)(EntityID channel);
@@ -356,9 +362,11 @@ typedef void (*ERS_SyncEvent_SetSyncEventNameSignature)(void* syncEvent, const c
 typedef uint32_t (*ERS_SyncEvent_GetSyncEventUIDSignature)(void* syncEvent);
 typedef uint16_t (*ERS_SyncEvent_GetOrRegisterDataContextSignature)(void* syncEvent, uint64_t identifier, uint32_t blockSize);
 typedef void* (*ERS_SyncEvent_GetDataSignature)(void* syncEvent, uint16_t dataContextIdx);
-typedef void (*ERS_BasicRenderSystem_RenderSignature)(void* subModelInstance, void* renderContextInstance);
+typedef void (*ERS_BasicRenderSystem_Render2DSignature)(void* subModelInstance, void* renderContextInstance);
+typedef void (*ERS_BasicRenderSystem_Render3DSignature)(void* subModelInstance, void* renderContextInstance);
 typedef void (*ERS_CollisionSystem_UpdateBoundingBoxesSignature)(void* subModelInstance);
-typedef void (*ERS_InterpreterRenderSystem_RenderSignature)();
+typedef void (*ERS_InterpreterRenderSystem_Render2DSignature)();
+typedef void (*ERS_InterpreterRenderSystem_BuildMesh3DSignature)(void* meshPtr);
 typedef void (*ERS_PathAnimationSystem_UpdateSignature)(SimulationTime currentTime);
 typedef void (*ERS_PathAnimationSystem_AnimateSignature)(EntityID toAnimate, SimulationTime startTime, SimulationTime endTime, float fromValue, float toValue, EntityID entityContainingPath, int pathIndex);
 typedef void (*ERS_TransformSystem_UpdateGlobalsSignature)(void* subModelInstance);
@@ -663,6 +671,12 @@ union ErsAPIFunctionPointers {
         ERS_Simulator_FindOutgoingDependencyByIdSignature ERS_Simulator_FindOutgoingDependencyById;
         ERS_Simulator_FindOutgoingDependencyByNameSignature ERS_Simulator_FindOutgoingDependencyByName;
         ERS_Simulator_GetCurrentTimeSignature ERS_Simulator_GetCurrentTime;
+        ERS_BasicRenderComponent_TypeIdSignature ERS_BasicRenderComponent_TypeId;
+        ERS_BasicRenderComponent_CreateCallbackSignature ERS_BasicRenderComponent_CreateCallback;
+        ERS_BasicRenderComponent_GetColorSignature ERS_BasicRenderComponent_GetColor;
+        ERS_BasicRenderComponent_SetColorSignature ERS_BasicRenderComponent_SetColor;
+        ERS_BasicRenderComponent_SetInstancedModelSignature ERS_BasicRenderComponent_SetInstancedModel;
+        ERS_BasicRenderComponent_GetInstancedModelSignature ERS_BasicRenderComponent_GetInstancedModel;
         ERS_BoxComponent_TypeIdSignature ERS_BoxComponent_TypeId;
         ERS_BoxComponent_CreateCallbackSignature ERS_BoxComponent_CreateCallback;
         ERS_BoxComponent_Min_XSignature ERS_BoxComponent_Min_X;
@@ -681,8 +695,8 @@ union ErsAPIFunctionPointers {
         ERS_ChannelComponent_GetTypeSignature ERS_ChannelComponent_GetType;
         ERS_ChannelComponent_GetConnectedToSignature ERS_ChannelComponent_GetConnectedTo;
         ERS_ChannelComponent_IsOpenSignature ERS_ChannelComponent_IsOpen;
-        ERS_ChannelComponent_GetLongitudonalPositionSignature ERS_ChannelComponent_GetLongitudonalPosition;
-        ERS_ChannelComponent_SetLongitudonalPositionSignature ERS_ChannelComponent_SetLongitudonalPosition;
+        ERS_ChannelComponent_GetlongitudinalPositionSignature ERS_ChannelComponent_GetlongitudinalPosition;
+        ERS_ChannelComponent_SetlongitudinalPositionSignature ERS_ChannelComponent_SetlongitudinalPosition;
         ERS_Channel_SendSignature ERS_Channel_Send;
         ERS_Channel_OpenSignature ERS_Channel_Open;
         ERS_Channel_IsReadySignature ERS_Channel_IsReady;
@@ -845,9 +859,11 @@ union ErsAPIFunctionPointers {
         ERS_SyncEvent_GetSyncEventUIDSignature ERS_SyncEvent_GetSyncEventUID;
         ERS_SyncEvent_GetOrRegisterDataContextSignature ERS_SyncEvent_GetOrRegisterDataContext;
         ERS_SyncEvent_GetDataSignature ERS_SyncEvent_GetData;
-        ERS_BasicRenderSystem_RenderSignature ERS_BasicRenderSystem_Render;
+        ERS_BasicRenderSystem_Render2DSignature ERS_BasicRenderSystem_Render2D;
+        ERS_BasicRenderSystem_Render3DSignature ERS_BasicRenderSystem_Render3D;
         ERS_CollisionSystem_UpdateBoundingBoxesSignature ERS_CollisionSystem_UpdateBoundingBoxes;
-        ERS_InterpreterRenderSystem_RenderSignature ERS_InterpreterRenderSystem_Render;
+        ERS_InterpreterRenderSystem_Render2DSignature ERS_InterpreterRenderSystem_Render2D;
+        ERS_InterpreterRenderSystem_BuildMesh3DSignature ERS_InterpreterRenderSystem_BuildMesh3D;
         ERS_PathAnimationSystem_UpdateSignature ERS_PathAnimationSystem_Update;
         ERS_PathAnimationSystem_AnimateSignature ERS_PathAnimationSystem_Animate;
         ERS_TransformSystem_UpdateGlobalsSignature ERS_TransformSystem_UpdateGlobals;
@@ -1157,6 +1173,12 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_Simulator_FindOutgoingDependencyById",
     "ERS_Simulator_FindOutgoingDependencyByName",
     "ERS_Simulator_GetCurrentTime",
+    "ERS_BasicRenderComponent_TypeId",
+    "ERS_BasicRenderComponent_CreateCallback",
+    "ERS_BasicRenderComponent_GetColor",
+    "ERS_BasicRenderComponent_SetColor",
+    "ERS_BasicRenderComponent_SetInstancedModel",
+    "ERS_BasicRenderComponent_GetInstancedModel",
     "ERS_BoxComponent_TypeId",
     "ERS_BoxComponent_CreateCallback",
     "ERS_BoxComponent_Min_X",
@@ -1175,8 +1197,8 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_ChannelComponent_GetType",
     "ERS_ChannelComponent_GetConnectedTo",
     "ERS_ChannelComponent_IsOpen",
-    "ERS_ChannelComponent_GetLongitudonalPosition",
-    "ERS_ChannelComponent_SetLongitudonalPosition",
+    "ERS_ChannelComponent_GetlongitudinalPosition",
+    "ERS_ChannelComponent_SetlongitudinalPosition",
     "ERS_Channel_Send",
     "ERS_Channel_Open",
     "ERS_Channel_IsReady",
@@ -1339,9 +1361,11 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_SyncEvent_GetSyncEventUID",
     "ERS_SyncEvent_GetOrRegisterDataContext",
     "ERS_SyncEvent_GetData",
-    "ERS_BasicRenderSystem_Render",
+    "ERS_BasicRenderSystem_Render2D",
+    "ERS_BasicRenderSystem_Render3D",
     "ERS_CollisionSystem_UpdateBoundingBoxes",
-    "ERS_InterpreterRenderSystem_Render",
+    "ERS_InterpreterRenderSystem_Render2D",
+    "ERS_InterpreterRenderSystem_BuildMesh3D",
     "ERS_PathAnimationSystem_Update",
     "ERS_PathAnimationSystem_Animate",
     "ERS_TransformSystem_UpdateGlobals",

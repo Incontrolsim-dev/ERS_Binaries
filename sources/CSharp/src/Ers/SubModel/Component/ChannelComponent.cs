@@ -15,11 +15,11 @@ namespace Ers
 
         public bool IsOpen() { return ErsEngine.ERS_ChannelComponent_IsOpen(CorePointer()); }
 
-        public float GetLongitudonalPosition() { return ErsEngine.ERS_ChannelComponent_GetLongitudonalPosition(CorePointer()); }
+        public float GetlongitudinalPosition() { return ErsEngine.ERS_ChannelComponent_GetlongitudinalPosition(CorePointer()); }
 
-        public void SetLongitudonalPosition(float position)
+        public void SetlongitudinalPosition(float position)
         {
-            ErsEngine.ERS_ChannelComponent_SetLongitudonalPosition(CorePointer(), position);
+            ErsEngine.ERS_ChannelComponent_SetlongitudinalPosition(CorePointer(), position);
         }
 
         internal IntPtr CorePointer()

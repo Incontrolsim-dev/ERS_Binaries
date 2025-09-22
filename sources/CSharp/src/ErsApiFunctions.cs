@@ -512,6 +512,24 @@ namespace Ers.Engine
         public static extern SimulationTime ERS_Simulator_GetCurrentTime(IntPtr simulatorInstance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_BasicRenderComponent_TypeId();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_BasicRenderComponent_CreateCallback();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_BasicRenderComponent_GetColor(IntPtr instance, IntPtr r, IntPtr g, IntPtr b, IntPtr a);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_BasicRenderComponent_SetColor(IntPtr instance, float r, float g, float b, float a);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_BasicRenderComponent_SetInstancedModel(IntPtr instance, IntPtr instancedModel);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_BasicRenderComponent_GetInstancedModel(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_BoxComponent_TypeId();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -569,10 +587,10 @@ namespace Ers.Engine
         public static extern bool ERS_ChannelComponent_IsOpen(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern float ERS_ChannelComponent_GetLongitudonalPosition(IntPtr instance);
+        public static extern float ERS_ChannelComponent_GetlongitudinalPosition(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_ChannelComponent_SetLongitudonalPosition(IntPtr instance, float position);
+        public static extern void ERS_ChannelComponent_SetlongitudinalPosition(IntPtr instance, float position);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Channel_Send(Entity channelFrom, Entity child);
@@ -1070,13 +1088,19 @@ namespace Ers.Engine
         public static extern IntPtr ERS_SyncEvent_GetData(IntPtr syncEvent, UInt16 dataContextIdx);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_BasicRenderSystem_Render(IntPtr subModelInstance, IntPtr renderContextInstance);
+        public static extern void ERS_BasicRenderSystem_Render2D(IntPtr subModelInstance, IntPtr renderContextInstance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_BasicRenderSystem_Render3D(IntPtr subModelInstance, IntPtr renderContextInstance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_CollisionSystem_UpdateBoundingBoxes(IntPtr subModelInstance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InterpreterRenderSystem_Render();
+        public static extern void ERS_InterpreterRenderSystem_Render2D();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_InterpreterRenderSystem_BuildMesh3D(IntPtr meshPtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_PathAnimationSystem_Update(SimulationTime currentTime);
