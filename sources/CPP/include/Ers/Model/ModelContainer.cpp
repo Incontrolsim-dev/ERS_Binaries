@@ -170,6 +170,12 @@ namespace Ers
     {
         return ersAPIFunctionPointers.ERS_ModelContainer_SetSeed(coreModelContainerInstance, newSeed);
     }
+
+    void ModelContainer::GenerateRandomSeed()
+    {
+        return ersAPIFunctionPointers.ERS_ModelContainer_GenerateRandomSeed(coreModelContainerInstance);
+    }
+
     /// @brief Creates a model container
     ModelContainer ModelContainer::CreateModelContainer()
     {

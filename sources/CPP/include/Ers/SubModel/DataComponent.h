@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Ers/SubModel/TypeInfo.h"
 
 namespace Ers
 {
@@ -10,10 +10,11 @@ namespace Ers
       public:
         static constexpr bool IsCore() { return false; }
 
-        // This is intentionally empty for now
+        /// @brief Overridable function to define the type information of the component.
+        /// @return
+        static TypeInfo* GetTypeInfo() { return nullptr; };
 
       protected:
         DataComponent() = default; // Force Users to inherit from component
     };
-
 } // namespace Ers

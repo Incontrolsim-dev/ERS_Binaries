@@ -115,6 +115,15 @@ namespace Ers::Visualization
             float armLength       = 0.1f,
             float targetPixelSize = 64.0f);
 
+        /// @brief Draw 2D text. Text is drawn from the top-left of the first character.
+        /// @param text The text to draw.
+        /// @param x
+        /// @param y
+        /// @param scale
+        /// @param colorR
+        /// @param colorG
+        /// @param colorB
+        /// @param colorA
         void DrawText2D(const std::string& text, float x, float y, float scale, float colorR, float colorG, float colorB, float colorA);
 
         void DrawTexture2D(

@@ -31,6 +31,10 @@ namespace Ers
         private static readonly UnmanagedCallback _callbackDelegate       = ScheduleLocalEvent_EventCallbackFunction;
         private static readonly UnmanagedCallback _cancelCallbackDelegate = ScheduleLocalEvent_CancelEventCallbackFunction;
 
+        // Get function pointer for delegate (Debug Mode)
+        private static readonly IntPtr _eventCallbackPtr           = Marshal.GetFunctionPointerForDelegate(_callbackDelegate);
+        private static readonly IntPtr _eventDestructorCallbackPtr = Marshal.GetFunctionPointerForDelegate(_cancelCallbackDelegate);
+
         [MethodImpl(MethodImplOptions.NoOptimization)]
         static void ScheduleLocalEvent_EventCallbackFunction(nint handlePtr)
         {
@@ -47,20 +51,16 @@ namespace Ers
             handle.Free();
         }
 
-        public static UInt32 ScheduleLocalEvent(int priority, SimulationTime delayTime, LocalEventCallback eventCallback)
+        public static ErsLocalEvent ScheduleLocalEvent(int priority, SimulationTime delayTime, LocalEventCallback eventCallback)
         {
             GCHandle handle  = GCHandle.Alloc(eventCallback, GCHandleType.Normal);
             IntPtr handlePtr = GCHandle.ToIntPtr(handle);
 
-            // Get function pointer for delegate (Debug Mode)
-            IntPtr callbackPtr           = Marshal.GetFunctionPointerForDelegate(_callbackDelegate);
-            IntPtr destructorCallbackPtr = Marshal.GetFunctionPointerForDelegate(_cancelCallbackDelegate);
-
             unsafe
             {
                 return ErsEngine.ERS_EventScheduler_ScheduleLocalEvent(
-                    priority, delayTime, handlePtr, (delegate * unmanaged[Cdecl]<nint, void>)callbackPtr,
-                    (delegate * unmanaged[Cdecl]<nint, void>)destructorCallbackPtr);
+                    priority, delayTime, handlePtr, (delegate * unmanaged[Cdecl]<nint, void>)_eventCallbackPtr,
+                    (delegate * unmanaged[Cdecl]<nint, void>)_eventDestructorCallbackPtr);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Ers
         /// Cancel a Local or Sync event in the current SubModel.
         /// </summary>
         /// <param name="eventKey">The ID of the event.</param>
-        public static void CancelEvent(UInt32 eventKey) { ErsEngine.ERS_EventScheduler_CancelEvent(eventKey); }
+        public static void CancelEvent(ErsLocalEvent eventKey) { ErsEngine.ERS_EventScheduler_CancelEvent(eventKey); }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
@@ -241,7 +241,7 @@ namespace Ers
         /// </summary>
         /// <param name="key">The ID of the event.</param>
         /// <param name="updatedDelayTime">The additional delay time for the event.</param>
-        public static void DelayEvent(int key, SimulationTime updatedDelayTime)
+        public static void DelayEvent(ErsLocalEvent key, SimulationTime updatedDelayTime)
         {
             ErsEngine.ERS_EventScheduler_DelayEvent(key, updatedDelayTime);
         }

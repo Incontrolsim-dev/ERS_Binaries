@@ -14,11 +14,14 @@ namespace Ers.Visualization
         /// A model of which multiple instances are drawn in one draw call.
         /// </summary>
         public InstancedModel() { Data = ErsEngine.ERS_InstancedModel_Create(); }
+
         public InstancedModel(Mesh mesh)
         {
             Data = ErsEngine.ERS_InstancedModel_Create();
             ErsEngine.ERS_InstancedModel_SetMesh(Data, mesh.Data);
         }
+
+        internal InstancedModel(IntPtr corePtr) { Data = corePtr; }
 
         public void SetMesh(Mesh mesh) { ErsEngine.ERS_InstancedModel_SetMesh(Data, mesh.Data); }
 

@@ -318,7 +318,7 @@ namespace Ers.Visualization
         /// Draw 2D text using a built-in font.
         /// </summary>
         /// <param name="text">The text to draw.</param>
-        /// <param name="pos">The position to draw the text from (bottom-left of first character).</param>
+        /// <param name="pos">The position to draw the text from (top-left of first character).</param>
         /// <param name="scale">The scale of the font.</param>
         /// <param name="color">The color o
         public void DrawText2D(string text, Vector2 pos, float scale, Vector4 color = default)
@@ -412,6 +412,26 @@ namespace Ers.Visualization
             ErsEngine.ERS_RenderContext_DrawTexture2D(
                 coreInstance, texture.Data, position.X, position.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.X,
                 color.Y, color.Z, color.W);
+        }
+
+        /// <summary>
+        /// Calculate the size of a piece of text.
+        /// </summary>
+        /// <param name="text">The text to calculate the size of.</param>
+        /// <param name="scale">The scale of the text.</param>
+        /// <returns>The width and height of the text.</returns>
+        public Vector2 CalculateTextSize(string text, float scale)
+        {
+            unsafe
+            {
+                float width = 0, height = 0;
+
+                fixed(byte* textByte = text.ToUtf8NullTerminated())
+                {
+                    ErsEngine.ERS_RenderContext_CalculateTextSize(coreInstance, textByte, scale, (IntPtr)(&width), (IntPtr)(&height));
+                }
+                return new Vector2(width, height);
+            }
         }
 
         /// <summary>

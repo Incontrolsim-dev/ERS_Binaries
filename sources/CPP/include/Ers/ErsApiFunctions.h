@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#define ERS_N_FUNCTIONS 494
+#define ERS_N_FUNCTIONS 529
 
 // Temporary typedef until we found a good place for shared information.
 typedef uint64_t EntityID; typedef uint64_t SimulationTime;
@@ -16,6 +16,7 @@ typedef uint64_t EntityID; typedef uint64_t SimulationTime;
 typedef void* (*ERS_Debugger_CreateSignature)(void* modelContainerPtr);
 typedef void (*ERS_Debugger_DestroySignature)(void* ptr);
 typedef bool (*ERS_Debugger_WantsRestartSignature)(void* ptr);
+typedef bool (*ERS_Debugger_ShowBackgroundGridSignature)(void* ptr);
 typedef void (*ERS_Debugger_SetModelContainerSignature)(void* ptr, void* modelContainerPtr);
 typedef void* (*ERS_Debugger_GetRenderContextSignature)(void* ptr);
 typedef bool (*ERS_Debugger_Is3DModeSignature)(void* ptr);
@@ -56,10 +57,40 @@ typedef void (*ERS_Logger_AddCallbackSignature)(void(*logCallback)(int level, co
 typedef char* (*ERS_Settings_GetSettingSignature)(const char* section, const char* message, const char* defaultValue);
 typedef void (*ERS_Settings_SetSettingSignature)(const char* section, const char* message, const char* value);
 typedef bool (*ERS_VirtualFileSystem_MountDirectorySignature)(const char* path, const char* directoryName);
+typedef bool (*ERS_Serializer_IsWritingSignature)(void* serializerHandle);
+typedef void (*ERS_Serializer_SerializeUInt64Signature)(void* serializerHandle, const char* key, uint64_t* value);
+typedef void (*ERS_Serializer_SerializeInt64Signature)(void* serializerHandle, const char* key, int64_t* value);
+typedef void (*ERS_Serializer_SerializeUInt32Signature)(void* serializerHandle, const char* key, uint32_t* value);
+typedef void (*ERS_Serializer_SerializeInt32Signature)(void* serializerHandle, const char* key, int32_t* value);
+typedef void (*ERS_Serializer_SerializeDoubleSignature)(void* serializerHandle, const char* key, double* value);
+typedef void (*ERS_Serializer_SerializeBoolSignature)(void* serializerHandle, const char* key, bool* value);
+typedef void (*ERS_Serializer_SerializeFloatSignature)(void* serializerHandle, const char* key, float* value);
+typedef void (*ERS_Serializer_SerializeStringSignature)(void* serializerHandle, const char* key, char** value, int* length);
+typedef void (*ERS_Serializer_PushObjectSignature)(void* serializerHandle, const char* key);
+typedef void (*ERS_Serializer_PopObjectSignature)(void* serializerHandle);
+typedef void (*ERS_Serializer_SetObjectSignature)(void* serializerHandle, int index);
+typedef void (*ERS_Serializer_PushArraySignature)(void* serializerHandle, const char* key, int* size);
+typedef void (*ERS_Serializer_PopArraySignature)(void* serializerHandle);
+typedef int (*ERS_Serializer_GetArraySizeSignature)(void* serializerHandle);
+typedef void (*ERS_Serializer_SaveToFolderSignature)(void* modelContainerInstance, const char* folderPath);
+typedef void* (*ERS_Serializer_LoadFromFolderSignature)(const char* folderPath);
+typedef void (*ERS_Serializer_SaveToArchiveSignature)(void* modelContainerInstance, const char* archivePath, int compressionLevel);
+typedef void* (*ERS_Serializer_LoadFromArchiveSignature)(const char* archivePath, bool useCache);
+typedef void (*ERS_Serializer_ClearArchiveCacheSignature)(const char* archivePath);
+typedef void (*ERS_Serializer_SerializeValueUInt64Signature)(void* serializerHandle, size_t index, uint64_t* value);
+typedef void (*ERS_Serializer_SerializeValueInt64Signature)(void* serializerHandle, size_t index, int64_t* value);
+typedef void (*ERS_Serializer_SerializeValueUInt32Signature)(void* serializerHandle, size_t index, uint32_t* value);
+typedef void (*ERS_Serializer_SerializeValueInt32Signature)(void* serializerHandle, size_t index, int32_t* value);
+typedef void (*ERS_Serializer_SerializeValueDoubleSignature)(void* serializerHandle, size_t index, double* value);
+typedef void (*ERS_Serializer_SerializeValueBoolSignature)(void* serializerHandle, size_t index, bool* value);
+typedef void (*ERS_Serializer_SerializeValueFloatSignature)(void* serializerHandle, size_t index, float* value);
+typedef void (*ERS_Serializer_SerializeValueStringSignature)(void* serializerHandle, size_t index, char** value, int* length);
+typedef void (*ERS_Serializer_PushArrayElementSignature)(void* serializerHandle, size_t index, int* size);
+typedef void (*ERS_Serializer_PushObjectElementSignature)(void* serializerHandle, size_t index);
 typedef void (*ERS_SubModel_CreateInterpreterSignature)(void* subModelHandle);
 typedef void (*ERS_SubModel_RunSimpleStringSignature)(void* subModelHandle, const char* code);
-typedef void (*ERS_SubModel_LoadModuleFromFileSignature)(void* subModelHandle, const char* filePath);
-typedef void (*ERS_SubModel_LoadPackageSignature)(void* subModelHandle, const char* packageFolderPath);
+typedef void (*ERS_SubModel_LoadPythonModuleFromFileSignature)(void* subModelHandle, const char* filePath);
+typedef void (*ERS_SubModel_LoadPythonPackageSignature)(void* subModelHandle, const char* packageFolderPath);
 typedef void (*ERS_SubModel_AddInterpreterScriptComponentTypeSignature)(void* subModelHandle);
 typedef void* (*ERS_SubModel_AddInterpreterScriptComponentSignature)(void* subModelHandle, EntityID entity);
 typedef void* (*ERS_SubModel_GetInterpreterScriptComponentSignature)(void* subModelHandle, EntityID entity);
@@ -121,7 +152,6 @@ typedef void (*ERS_ThreadLocal_EnterSubModelSignature)(void* submodel);
 typedef void (*ERS_ThreadLocal_ExitSubModelSignature)();
 typedef void* (*ERS_ThreadLocal_GetCurrentSyncEventSignature)();
 typedef bool (*ERS_ThreadLocal_IsInsideSyncEventSignature)();
-typedef bool (*ERS_ThreadLocal_IsSyncEventInSenderSideSignature)();
 typedef int32_t (*ERS_ThreadLocal_GetSyncEventTargetSignature)();
 typedef int32_t (*ERS_ThreadLocal_GetSyncEventSenderSignature)();
 typedef void* (*ERS_ModelContainer_CreateModelContainerSignature)();
@@ -139,8 +169,9 @@ typedef double (*ERS_ModelContainer_SimulationSpeedOverRealtimeSignature)(void* 
 typedef void (*ERS_ModelContainer_SetModelPrecisionSignature)(void* modelContainerInstance, uint64_t newPrecision);
 typedef uint64_t (*ERS_ModelContainer_GetModelPrecisionSignature)(void* modelContainerInstance);
 typedef bool (*ERS_ModelContainer_IsStartedSignature)(const void* modelContainerInstance);
-typedef void (*ERS_ModelContainer_SetSeedSignature)(const void* modelContainerInstance, size_t seed);
-typedef size_t (*ERS_ModelContainer_SeedSignature)(const void* modelContainerInstance);
+typedef void (*ERS_ModelContainer_SetSeedSignature)(void* modelContainerInstance, size_t seed);
+typedef void (*ERS_ModelContainer_GenerateRandomSeedSignature)(void* modelContainerInstance);
+typedef size_t (*ERS_ModelContainer_SeedSignature)(void* modelContainerInstance);
 typedef void* (*ERS_ModelContainer_FindSimulatorByIdSignature)(void* modelContainerInstance, const int32_t id);
 typedef void* (*ERS_ModelContainer_FindSimulatorByTagSignature)(void* modelContainerInstance, const char* tag);
 typedef void (*ERS_ModelContainer_AddSimulatorDependencySignature)(void* modelContainerInstance, void* fromSharedPtr, void* toSimulatorSharedPtr);
@@ -206,7 +237,7 @@ typedef bool (*ERS_Channel_IsReadySignature)(EntityID channel);
 typedef void (*ERS_Channel_ConnectSignature)(EntityID channelA, EntityID channelB);
 typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterScriptBehaviorSignature)(const char* name, void*(*CreateInstance)(void* handle), void* handle, void(*OnCreation)(void* scriptBehaviorInstance), void(*OnAwake)(void* scriptBehaviorInstance), void(*OnStart)(void* scriptBehaviorInstance), void(*OnUpdate)(void* scriptBehaviorInstance), void(*OnLateUpdate)(void* scriptBehaviorInstance), void(*OnDestroy)(void* scriptBehaviorInstance), void(*OnEntering)(void* scriptBehaviorInstance, EntityID child), void(*OnEntered)(void* scriptBehaviorInstance, EntityID child), void(*OnExiting)(void* scriptBehaviorInstance, EntityID child), void(*OnExited)(void* scriptBehaviorInstance, EntityID child), void(*Serialization)(void* scriptBehaviorInstance, void* serializer), void(*OnSubModelMove)(void* scriptBehaviorInstance, EntityID newConnectedEntity));
 typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterResourceComponentSignature)(uint32_t componentIDValue, void(*OnOutputChannelReady)(void* handle, EntityID channel), void(*OnInputChannelReady)(void* handle, EntityID channel), void(*OnReceive)(void* handle, EntityID channel, EntityID child));
-typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterComponentSignature)(const char* name, size_t sz);
+typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterComponentSignature)(const char* name, size_t sz, void* typeInfoPtr, void* customSerialize);
 typedef bool (*ERS_GlobalComponentRegistry_IsRegisteredSignature)(uint32_t componentID);
 typedef uint32_t (*ERS_NameComponent_TypeIdSignature)();
 typedef void* (*ERS_NameComponent_CreateCallbackSignature)();
@@ -287,15 +318,15 @@ typedef EntityID (*ERS_Entity_GetLastChildSignature)(EntityID currentEntity);
 typedef EntityID (*ERS_Entity_GetPreviousSiblingSignature)(EntityID currentEntity);
 typedef EntityID (*ERS_Entity_GetNextSiblingSignature)(EntityID currentEntity);
 typedef bool (*ERS_Entity_IsValidSignature)(EntityID currentEntity);
-typedef uint32_t (*ERS_EventScheduler_ScheduleLocalEventSignature)(int priority, uint64_t delay, void* dataPtr, void(*callback)(void* data), void(*destructor)(void* data));
-typedef void (*ERS_EventScheduler_CancelEventSignature)(uint32_t eventKey);
+typedef uint64_t (*ERS_EventScheduler_ScheduleLocalEventSignature)(int priority, uint64_t delay, void* dataPtr, void(*callback)(void* data), void(*destructor)(void* data));
+typedef void (*ERS_EventScheduler_CancelEventSignature)(uint64_t eventKey);
 typedef void (*ERS_EventScheduler_SetPromiseSignature)(uint64_t promise, int32_t outgoingDependencyID);
 typedef void* (*ERS_EventScheduler_LastScheduledSyncEventSignature)();
 typedef uint64_t (*ERS_EventScheduler_GetPromiseSignature)(int32_t outgoingDependencyID);
 typedef void* (*ERS_EventScheduler_ScheduleSyncEventSignature)(uint64_t delay, int32_t targetSimulatorId, uint64_t eventTypeIdentifier, void(*onSenderSideCallback)(), void(*onTargetSideCallback)());
 typedef void* (*ERS_EventScheduler_SyncEvent_GetDataSignature)(uint16_t dataContextIdx, void* syncEvent);
 typedef uint32_t (*ERS_EventScheduler_ExchangeSyncEventForEventIDSignature)(void* syncEvent);
-typedef void (*ERS_EventScheduler_DelayEventSignature)(int32_t key, uint64_t delayAmount);
+typedef void (*ERS_EventScheduler_DelayEventSignature)(uint64_t key, uint64_t delayAmount);
 typedef EntityID (*ERS_SubModel_Move_Entity_ToSignature)(void* targetSubModel, void* sourceSubModel, EntityID sourceEntity);
 typedef EntityID (*ERS_SubModel_Entity_Create_Name_ParentSignature)(void* submodel, const char* entityName, EntityID parent);
 typedef EntityID (*ERS_SubModel_Entity_CreateSignature)(void* subModelPtr);
@@ -333,6 +364,9 @@ typedef bool (*ERS_SubModelRandomProperties_IsRepetitiveSignature)(void* submode
 typedef bool (*ERS_SubModelRandomProperties_IsAntitheticalSignature)(void* submodel);
 typedef const size_t (*ERS_SubModelRandomProperties_GetOriginalSeedSignature)(const void* submodel);
 typedef void* (*ERS_SubModelRandomProperties_GetRandomNumberGeneratorSignature)(void* submodel);
+typedef void* (*ERS_TypeInfo_RegisterStructSignature)(const char* name);
+typedef void (*ERS_TypeInfo_AddFieldSignature)(void* componentTypeInfoPtr, const char* name, uint32_t fieldType, size_t offset);
+typedef const char* (*ERS_TypeInfo_GetNameSignature)(void* componentTypeInfoPtr);
 typedef void* (*ERS_Submodel_View_CreateSignature)(void* subModelHandle, uint32_t* includedTypeIdArray_, uint32_t includedTypeArraySize, uint32_t* excludedTypeIdArray_, uint32_t excludedTypeArraySize);
 typedef bool (*ERS_Submodel_View_NextSignature)(void* viewHandle);
 typedef void* (*ERS_Submodel_View_GetComponentSignature)(void* viewHandle, size_t typeIndex);
@@ -498,6 +532,7 @@ typedef void (*ERS_RenderContext_DrawInstancedModel3DSignature)(void* renderCont
 typedef void (*ERS_RenderContext_DrawArc2DSignature)(void* renderContextHandle, float x, float y, float radius, float width, float beginAngle, float endAngle, int segments, float colorR, float colorG, float colorB, float colorA);
 typedef void (*ERS_RenderContext_DrawModel3DSignature)(void* instanceHandle, void* modelHandle);
 typedef void (*ERS_RenderContext_DrawMeshSignature)(void* instance, void* meshHandle);
+typedef void (*ERS_RenderContext_CalculateTextSizeSignature)(void* instance, const char* text, float scale, float* width, float* height);
 typedef bool (*ERS_RenderContext_IsOpenGLInitializedSignature)();
 typedef bool (*ERS_RenderContext_InitializeOpenGLSignature)(void* windowHandle, void* displayHandle);
 typedef void* (*ERS_Texture_CreateSignature)();
@@ -513,6 +548,7 @@ union ErsAPIFunctionPointers {
         ERS_Debugger_CreateSignature ERS_Debugger_Create;
         ERS_Debugger_DestroySignature ERS_Debugger_Destroy;
         ERS_Debugger_WantsRestartSignature ERS_Debugger_WantsRestart;
+        ERS_Debugger_ShowBackgroundGridSignature ERS_Debugger_ShowBackgroundGrid;
         ERS_Debugger_SetModelContainerSignature ERS_Debugger_SetModelContainer;
         ERS_Debugger_GetRenderContextSignature ERS_Debugger_GetRenderContext;
         ERS_Debugger_Is3DModeSignature ERS_Debugger_Is3DMode;
@@ -553,10 +589,40 @@ union ErsAPIFunctionPointers {
         ERS_Settings_GetSettingSignature ERS_Settings_GetSetting;
         ERS_Settings_SetSettingSignature ERS_Settings_SetSetting;
         ERS_VirtualFileSystem_MountDirectorySignature ERS_VirtualFileSystem_MountDirectory;
+        ERS_Serializer_IsWritingSignature ERS_Serializer_IsWriting;
+        ERS_Serializer_SerializeUInt64Signature ERS_Serializer_SerializeUInt64;
+        ERS_Serializer_SerializeInt64Signature ERS_Serializer_SerializeInt64;
+        ERS_Serializer_SerializeUInt32Signature ERS_Serializer_SerializeUInt32;
+        ERS_Serializer_SerializeInt32Signature ERS_Serializer_SerializeInt32;
+        ERS_Serializer_SerializeDoubleSignature ERS_Serializer_SerializeDouble;
+        ERS_Serializer_SerializeBoolSignature ERS_Serializer_SerializeBool;
+        ERS_Serializer_SerializeFloatSignature ERS_Serializer_SerializeFloat;
+        ERS_Serializer_SerializeStringSignature ERS_Serializer_SerializeString;
+        ERS_Serializer_PushObjectSignature ERS_Serializer_PushObject;
+        ERS_Serializer_PopObjectSignature ERS_Serializer_PopObject;
+        ERS_Serializer_SetObjectSignature ERS_Serializer_SetObject;
+        ERS_Serializer_PushArraySignature ERS_Serializer_PushArray;
+        ERS_Serializer_PopArraySignature ERS_Serializer_PopArray;
+        ERS_Serializer_GetArraySizeSignature ERS_Serializer_GetArraySize;
+        ERS_Serializer_SaveToFolderSignature ERS_Serializer_SaveToFolder;
+        ERS_Serializer_LoadFromFolderSignature ERS_Serializer_LoadFromFolder;
+        ERS_Serializer_SaveToArchiveSignature ERS_Serializer_SaveToArchive;
+        ERS_Serializer_LoadFromArchiveSignature ERS_Serializer_LoadFromArchive;
+        ERS_Serializer_ClearArchiveCacheSignature ERS_Serializer_ClearArchiveCache;
+        ERS_Serializer_SerializeValueUInt64Signature ERS_Serializer_SerializeValueUInt64;
+        ERS_Serializer_SerializeValueInt64Signature ERS_Serializer_SerializeValueInt64;
+        ERS_Serializer_SerializeValueUInt32Signature ERS_Serializer_SerializeValueUInt32;
+        ERS_Serializer_SerializeValueInt32Signature ERS_Serializer_SerializeValueInt32;
+        ERS_Serializer_SerializeValueDoubleSignature ERS_Serializer_SerializeValueDouble;
+        ERS_Serializer_SerializeValueBoolSignature ERS_Serializer_SerializeValueBool;
+        ERS_Serializer_SerializeValueFloatSignature ERS_Serializer_SerializeValueFloat;
+        ERS_Serializer_SerializeValueStringSignature ERS_Serializer_SerializeValueString;
+        ERS_Serializer_PushArrayElementSignature ERS_Serializer_PushArrayElement;
+        ERS_Serializer_PushObjectElementSignature ERS_Serializer_PushObjectElement;
         ERS_SubModel_CreateInterpreterSignature ERS_SubModel_CreateInterpreter;
         ERS_SubModel_RunSimpleStringSignature ERS_SubModel_RunSimpleString;
-        ERS_SubModel_LoadModuleFromFileSignature ERS_SubModel_LoadModuleFromFile;
-        ERS_SubModel_LoadPackageSignature ERS_SubModel_LoadPackage;
+        ERS_SubModel_LoadPythonModuleFromFileSignature ERS_SubModel_LoadPythonModuleFromFile;
+        ERS_SubModel_LoadPythonPackageSignature ERS_SubModel_LoadPythonPackage;
         ERS_SubModel_AddInterpreterScriptComponentTypeSignature ERS_SubModel_AddInterpreterScriptComponentType;
         ERS_SubModel_AddInterpreterScriptComponentSignature ERS_SubModel_AddInterpreterScriptComponent;
         ERS_SubModel_GetInterpreterScriptComponentSignature ERS_SubModel_GetInterpreterScriptComponent;
@@ -618,7 +684,6 @@ union ErsAPIFunctionPointers {
         ERS_ThreadLocal_ExitSubModelSignature ERS_ThreadLocal_ExitSubModel;
         ERS_ThreadLocal_GetCurrentSyncEventSignature ERS_ThreadLocal_GetCurrentSyncEvent;
         ERS_ThreadLocal_IsInsideSyncEventSignature ERS_ThreadLocal_IsInsideSyncEvent;
-        ERS_ThreadLocal_IsSyncEventInSenderSideSignature ERS_ThreadLocal_IsSyncEventInSenderSide;
         ERS_ThreadLocal_GetSyncEventTargetSignature ERS_ThreadLocal_GetSyncEventTarget;
         ERS_ThreadLocal_GetSyncEventSenderSignature ERS_ThreadLocal_GetSyncEventSender;
         ERS_ModelContainer_CreateModelContainerSignature ERS_ModelContainer_CreateModelContainer;
@@ -637,6 +702,7 @@ union ErsAPIFunctionPointers {
         ERS_ModelContainer_GetModelPrecisionSignature ERS_ModelContainer_GetModelPrecision;
         ERS_ModelContainer_IsStartedSignature ERS_ModelContainer_IsStarted;
         ERS_ModelContainer_SetSeedSignature ERS_ModelContainer_SetSeed;
+        ERS_ModelContainer_GenerateRandomSeedSignature ERS_ModelContainer_GenerateRandomSeed;
         ERS_ModelContainer_SeedSignature ERS_ModelContainer_Seed;
         ERS_ModelContainer_FindSimulatorByIdSignature ERS_ModelContainer_FindSimulatorById;
         ERS_ModelContainer_FindSimulatorByTagSignature ERS_ModelContainer_FindSimulatorByTag;
@@ -830,6 +896,9 @@ union ErsAPIFunctionPointers {
         ERS_SubModelRandomProperties_IsAntitheticalSignature ERS_SubModelRandomProperties_IsAntithetical;
         ERS_SubModelRandomProperties_GetOriginalSeedSignature ERS_SubModelRandomProperties_GetOriginalSeed;
         ERS_SubModelRandomProperties_GetRandomNumberGeneratorSignature ERS_SubModelRandomProperties_GetRandomNumberGenerator;
+        ERS_TypeInfo_RegisterStructSignature ERS_TypeInfo_RegisterStruct;
+        ERS_TypeInfo_AddFieldSignature ERS_TypeInfo_AddField;
+        ERS_TypeInfo_GetNameSignature ERS_TypeInfo_GetName;
         ERS_Submodel_View_CreateSignature ERS_Submodel_View_Create;
         ERS_Submodel_View_NextSignature ERS_Submodel_View_Next;
         ERS_Submodel_View_GetComponentSignature ERS_Submodel_View_GetComponent;
@@ -995,6 +1064,7 @@ union ErsAPIFunctionPointers {
         ERS_RenderContext_DrawArc2DSignature ERS_RenderContext_DrawArc2D;
         ERS_RenderContext_DrawModel3DSignature ERS_RenderContext_DrawModel3D;
         ERS_RenderContext_DrawMeshSignature ERS_RenderContext_DrawMesh;
+        ERS_RenderContext_CalculateTextSizeSignature ERS_RenderContext_CalculateTextSize;
         ERS_RenderContext_IsOpenGLInitializedSignature ERS_RenderContext_IsOpenGLInitialized;
         ERS_RenderContext_InitializeOpenGLSignature ERS_RenderContext_InitializeOpenGL;
         ERS_Texture_CreateSignature ERS_Texture_Create;
@@ -1015,6 +1085,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_Debugger_Create",
     "ERS_Debugger_Destroy",
     "ERS_Debugger_WantsRestart",
+    "ERS_Debugger_ShowBackgroundGrid",
     "ERS_Debugger_SetModelContainer",
     "ERS_Debugger_GetRenderContext",
     "ERS_Debugger_Is3DMode",
@@ -1055,10 +1126,40 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_Settings_GetSetting",
     "ERS_Settings_SetSetting",
     "ERS_VirtualFileSystem_MountDirectory",
+    "ERS_Serializer_IsWriting",
+    "ERS_Serializer_SerializeUInt64",
+    "ERS_Serializer_SerializeInt64",
+    "ERS_Serializer_SerializeUInt32",
+    "ERS_Serializer_SerializeInt32",
+    "ERS_Serializer_SerializeDouble",
+    "ERS_Serializer_SerializeBool",
+    "ERS_Serializer_SerializeFloat",
+    "ERS_Serializer_SerializeString",
+    "ERS_Serializer_PushObject",
+    "ERS_Serializer_PopObject",
+    "ERS_Serializer_SetObject",
+    "ERS_Serializer_PushArray",
+    "ERS_Serializer_PopArray",
+    "ERS_Serializer_GetArraySize",
+    "ERS_Serializer_SaveToFolder",
+    "ERS_Serializer_LoadFromFolder",
+    "ERS_Serializer_SaveToArchive",
+    "ERS_Serializer_LoadFromArchive",
+    "ERS_Serializer_ClearArchiveCache",
+    "ERS_Serializer_SerializeValueUInt64",
+    "ERS_Serializer_SerializeValueInt64",
+    "ERS_Serializer_SerializeValueUInt32",
+    "ERS_Serializer_SerializeValueInt32",
+    "ERS_Serializer_SerializeValueDouble",
+    "ERS_Serializer_SerializeValueBool",
+    "ERS_Serializer_SerializeValueFloat",
+    "ERS_Serializer_SerializeValueString",
+    "ERS_Serializer_PushArrayElement",
+    "ERS_Serializer_PushObjectElement",
     "ERS_SubModel_CreateInterpreter",
     "ERS_SubModel_RunSimpleString",
-    "ERS_SubModel_LoadModuleFromFile",
-    "ERS_SubModel_LoadPackage",
+    "ERS_SubModel_LoadPythonModuleFromFile",
+    "ERS_SubModel_LoadPythonPackage",
     "ERS_SubModel_AddInterpreterScriptComponentType",
     "ERS_SubModel_AddInterpreterScriptComponent",
     "ERS_SubModel_GetInterpreterScriptComponent",
@@ -1120,7 +1221,6 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_ThreadLocal_ExitSubModel",
     "ERS_ThreadLocal_GetCurrentSyncEvent",
     "ERS_ThreadLocal_IsInsideSyncEvent",
-    "ERS_ThreadLocal_IsSyncEventInSenderSide",
     "ERS_ThreadLocal_GetSyncEventTarget",
     "ERS_ThreadLocal_GetSyncEventSender",
     "ERS_ModelContainer_CreateModelContainer",
@@ -1139,6 +1239,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_ModelContainer_GetModelPrecision",
     "ERS_ModelContainer_IsStarted",
     "ERS_ModelContainer_SetSeed",
+    "ERS_ModelContainer_GenerateRandomSeed",
     "ERS_ModelContainer_Seed",
     "ERS_ModelContainer_FindSimulatorById",
     "ERS_ModelContainer_FindSimulatorByTag",
@@ -1332,6 +1433,9 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_SubModelRandomProperties_IsAntithetical",
     "ERS_SubModelRandomProperties_GetOriginalSeed",
     "ERS_SubModelRandomProperties_GetRandomNumberGenerator",
+    "ERS_TypeInfo_RegisterStruct",
+    "ERS_TypeInfo_AddField",
+    "ERS_TypeInfo_GetName",
     "ERS_Submodel_View_Create",
     "ERS_Submodel_View_Next",
     "ERS_Submodel_View_GetComponent",
@@ -1497,6 +1601,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_RenderContext_DrawArc2D",
     "ERS_RenderContext_DrawModel3D",
     "ERS_RenderContext_DrawMesh",
+    "ERS_RenderContext_CalculateTextSize",
     "ERS_RenderContext_IsOpenGLInitialized",
     "ERS_RenderContext_InitializeOpenGL",
     "ERS_Texture_Create",

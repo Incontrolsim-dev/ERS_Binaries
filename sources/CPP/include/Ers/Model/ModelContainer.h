@@ -63,6 +63,7 @@ namespace Ers
 
         size_t GetSeed() const;
         void SetSeed(size_t newSeed);
+        void GenerateRandomSeed();
 
         /// @brief set an arbitrary value as the model precision, this precision will be used in ERS for monitoring & displayed graphics
         void SetPrecision(SimulationTime precision);

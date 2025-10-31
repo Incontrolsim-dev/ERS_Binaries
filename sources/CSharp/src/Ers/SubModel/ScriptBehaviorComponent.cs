@@ -72,7 +72,7 @@ namespace Ers
         /// Likewise you can read entries in the saved string to fill a newly created scriptbehavior during the load operation
         /// </summary>
         /// <param name="node"></param>
-        public virtual void Serialization(Serialization node) {}
+        public virtual void Serialization(Serializer node) {}
 
         /// <summary>
         /// Called when an entity is moved between submodels.

@@ -59,6 +59,12 @@ namespace Ers
         public bool Is3DMode() { return ErsEngine.ERS_Debugger_Is3DMode(coreInstance); }
 
         /// <summary>
+        /// Whether the background grid of the 2D/3D view should be shown.
+        /// </summary>
+        /// <returns></returns>
+        public bool ShowBackgroundGrid() => ErsEngine.ERS_Debugger_ShowBackgroundGrid(coreInstance);
+
+        /// <summary>
         /// Updates the debugger state and UI. Must be called regularly in a loop for the debugger to function.
         /// This handles input processing, UI updates, and visualization updates.
         /// </summary>

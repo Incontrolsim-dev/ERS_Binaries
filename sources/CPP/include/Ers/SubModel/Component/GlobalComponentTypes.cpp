@@ -65,7 +65,7 @@ namespace Ers
     void CoreScriptBehaviorSerialization(void* scriptBehaviorInstance, void* serializationNode)
     {
         auto* script = static_cast<ScriptBehaviorComponent*>(scriptBehaviorInstance);
-        script->Serialization(Ers::SerializationNode(serializationNode));
+        script->Serialization(Ers::Serializer(serializationNode));
     }
 
     void CoreScriptBehaviorOnSubModelMove(void* scriptBehaviorInstance, EntityID newEntityId)

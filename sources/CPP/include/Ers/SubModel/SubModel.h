@@ -4,19 +4,17 @@
 #include <string_view>
 #include <tuple>
 
-#include "Ers/Utility/Util.h"
-
-#include "CoreComponent.h"
-#include "Event/SubModelSignals.h"
-#include "ScriptBehaviorComponent.h"
-
-#include "Ers/Utility/HelperFunctions.h"
-
-#include "Entity.h"
-#include "SubModelRandomProperties.h"
-#include "View.h"
-
+#include "Ers/SubModel/CoreComponent.h"
+#include "Ers/SubModel/DataComponent.h"
+#include "Ers/SubModel/Entity.h"
+#include "Ers/SubModel/Event/SubModelSignals.h"
 #include "Ers/SubModel/GlobalSubmodelContext.h"
+#include "Ers/SubModel/ScriptBehaviorComponent.h"
+#include "Ers/SubModel/SubModelRandomProperties.h"
+#include "Ers/SubModel/TypeInfo.h"
+#include "Ers/SubModel/View.h"
+#include "Ers/Utility/HelperFunctions.h"
+#include "Ers/Utility/Util.h"
 
 namespace Ers
 {
@@ -96,7 +94,7 @@ namespace Ers
 
         void CreateInterpreter();
         void RunSimpleString(const std::string& code);
-        void LoadModuleFromFile(const std::string& filePath);
+        void LoadPythonModuleFromFile(const std::string& filePath);
 
         /// @brief Remove a component of type T from the entity
         /// @tparam T Data component or Core component
@@ -177,7 +175,12 @@ namespace Ers
     {
         if (!IsComponentTypeGloballyRegistered<T>())
         {
-            RegisterGlobalComponentType<T>();
+            TypeInfo* typeInfo = nullptr;
+            if constexpr (std::is_base_of<DataComponent, T>::value)
+            {
+                typeInfo = T::GetTypeInfo();
+            }
+            RegisterGlobalComponentType<T>(typeInfo);
         }
 
         uint32_t componentType = GetComponentTypeID<T>();
@@ -252,8 +255,19 @@ namespace Ers
 
     template <typename T> T& SubModel::GetSubModelContext()
     {
+        // Ensure it is registered globally
+        RegisterSubModelContextTypeIndex<T>();
+
+        // Try to get existing context
         void* ptr = ersAPIFunctionPointers.ERS_SubModel_GetContext(Data(), GetSubModelContextTypeIndex<T>());
-        T* value  = static_cast<T*>(ptr);
+
+        // If it doesn't exist (ptr is nullptr), create it
+        if (ptr == nullptr)
+        {
+            return AddSubModelContext<T>();
+        }
+
+        T* value = static_cast<T*>(ptr);
         return *value;
     }
 } // namespace Ers

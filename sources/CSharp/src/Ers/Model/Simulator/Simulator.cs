@@ -194,5 +194,15 @@ namespace Ers
         /// <param name="instance [in]">Pointer to the given instance of the Simulator in the core.</param>
         /// <param name="newTimeStep [in]">New timestep.</param>
         void SetTimeStep(SimulationTime newTimeStep) { ErsEngine.ERS_Simulator_SetTimeStep(Data, newTimeStep); }
+
+        /// <summary>
+        /// Get the random seed of this Simulator.
+        /// </summary>
+        /// <returns>The seed value of this simulator's SubModel.</returns>
+        public nuint GetSeed()
+        {
+            IntPtr subModel = ErsEngine.ERS_Simulator_GetSubModel(Data);
+            return ErsEngine.ERS_SubModelRandomProperties_GetOriginalSeed(subModel);
+        }
     }
 }

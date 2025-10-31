@@ -113,9 +113,9 @@ namespace Ers
         ersAPIFunctionPointers.ERS_SubModel_RunSimpleString(Data(), code.c_str());
     }
 
-    void SubModel::LoadModuleFromFile(const std::string& filePath)
+    void SubModel::LoadPythonModuleFromFile(const std::string& filePath)
     {
-        ersAPIFunctionPointers.ERS_SubModel_LoadModuleFromFile(Data(), filePath.c_str());
+        ersAPIFunctionPointers.ERS_SubModel_LoadPythonModuleFromFile(Data(), filePath.c_str());
     }
 
     void SubModel::ResetRandomGenerator()

@@ -11,7 +11,7 @@
 
 namespace Ers
 {
-    using LocalEventKey = uint32_t;
+    using LocalEventKey = uint64_t;
 
     // Concept to ensure required static methods exist
     template <typename T>
@@ -62,9 +62,9 @@ namespace Ers
 
         // Note inside core only for testing
         template <typename T>
-        static uint32_t ScheduleSyncEvent(SimulationTime delay, int32_t targetSimulatorId, void (*onEventCallback)(), T& data);
+        static LocalEventKey ScheduleSyncEvent(SimulationTime delay, int32_t targetSimulatorId, void (*onEventCallback)(), T& data);
 
-        static void DelayEvent(int32_t key, SimulationTime updatedDelayTime);
+        static void DelayEvent(LocalEventKey key, SimulationTime updatedDelayTime);
 
         /// @brief Get the unique identifier from the last scheduled sync event
         /// @return
@@ -97,7 +97,7 @@ namespace Ers
         SyncEventConcept<T> || SyncEventCombinedConcept<T>,                                                    \
         "T must satisfy at least one of SyncEventConcept or SyncEventCombinedConcept");                        \
                                                                                                                \
-    if constexpr (std::is_base_of_v<ISyncEvent<T>, T> && !SyncEventConcept<T> && !SyncEventCombinedConcept<T>) \
+    if constexpr (std::is_base_of_v<ISyncEvent<T>, T> && !SyncEventConcept<T>)                                 \
     {                                                                                                          \
         static_assert(SyncEventConcept<T>, R"(Derived class must implement the following static methods:
 
@@ -115,21 +115,6 @@ void OnTargetSide() {
     return data;
 }
 )");                                                                                                           \
-    }                                                                                                          \
-                                                                                                               \
-    if constexpr (std::is_base_of_v<ISyncEventCombined<T>, T> && !SyncEventCombinedConcept<T>)                 \
-    {                                                                                                          \
-        static_assert(SyncEventCombinedConcept<T>, R"(Derived class must implement the following static methods:
-
-static const char* GetName() {
-    return "YourEventName";
-}
-
-static Data& OnSyncEvent() {
-    Data& data = Ers::SyncEvent::GetData<Data>();
-    return data;
-}
-)");                                                                                                           \
     }
 
     template <typename T> inline T& EventScheduler::ScheduleSyncEvent(SimulationTime delay, int32_t targetSimulatorId)
@@ -141,7 +126,8 @@ static Data& OnSyncEvent() {
         return data;
     }
     template <typename T>
-    inline uint32_t EventScheduler::ScheduleSyncEvent(SimulationTime delay, int32_t targetSimulatorId, void (*onEventCallback)(), T& data)
+    inline LocalEventKey
+    EventScheduler::ScheduleSyncEvent(SimulationTime delay, int32_t targetSimulatorId, void (*onEventCallback)(), T& data)
     {
         ENFORCE_SYNC_EVENT_CONCEPTS;
         auto* syncEvent = ScheduleSyncEvent(

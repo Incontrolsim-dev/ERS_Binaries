@@ -41,19 +41,9 @@ void Ers::EventScheduler::CancelEvent(Ers::LocalEventKey eventKey)
     ersAPIFunctionPointers.ERS_EventScheduler_CancelEvent(eventKey);
 }
 
-void Ers::EventScheduler::DelayEvent(int32_t key, SimulationTime updatedDelayTime)
+void Ers::EventScheduler::DelayEvent(LocalEventKey key, SimulationTime updatedDelayTime)
 {
     ersAPIFunctionPointers.ERS_EventScheduler_DelayEvent(key, updatedDelayTime);
-}
-
-void Ers::EventScheduler::ExecuteSyncEvent()
-{
-    auto functionArray =
-        (void**)ersAPIFunctionPointers.ERS_SyncEvent_GetSyncEventMetaData(ersAPIFunctionPointers.ERS_ThreadLocal_GetCurrentSyncEvent());
-
-    // Byte = 0 -> Sender side, 1 -> targetside
-    std::uint8_t target = !ersAPIFunctionPointers.ERS_ThreadLocal_IsSyncEventInSenderSide();
-    reinterpret_cast<void (*)()>(functionArray[target])();
 }
 
 void* Ers::EventScheduler::ScheduleSyncEvent(

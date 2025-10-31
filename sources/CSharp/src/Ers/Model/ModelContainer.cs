@@ -225,6 +225,11 @@ namespace Ers
         /// <param name="newSeed">The new seed.</param>
         public void SetSeed(nuint newSeed) => ErsEngine.ERS_ModelContainer_SetSeed(coreModelContainerInstance, newSeed);
 
+        /// <summary>
+        /// Generate a random seed for this ModelContainer.
+        /// </summary>
+        public void GenerateRandomSeed() => ErsEngine.ERS_ModelContainer_GenerateRandomSeed(coreModelContainerInstance);
+
         /// @brief set an arbitary value as the model precision, this precision will be used in ERS for monitoring & displayed graphics
         public void SetPrecision(SimulationTime precision)
         {

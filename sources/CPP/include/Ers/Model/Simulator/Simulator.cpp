@@ -123,6 +123,12 @@ namespace Ers
         return ersAPIFunctionPointers.ERS_Simulator_SetTimeStep(coreSimulatorInstance, newTimeStep);
     }
 
+    size_t Simulator::GetSeed() const
+    {
+        void* subModel = ersAPIFunctionPointers.ERS_Simulator_GetSubModel(coreSimulatorInstance);
+        return ersAPIFunctionPointers.ERS_SubModelRandomProperties_GetOriginalSeed(subModel);
+    }
+
     Simulator Simulator::FindOutgoingDependency(const std::string_view& name)
     {
         void* foundDependencyPtr =

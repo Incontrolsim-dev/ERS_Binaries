@@ -35,22 +35,6 @@ namespace Ers
     }
 
     /// <summary>
-    /// Interface if the user wants to combine the target and sender side function into 1
-    /// </summary>
-    public interface ISyncEventCombined<T> : ISyncEvent<T>
-        where T : unmanaged, ISyncEvent<T>, ISyncEventCombined<T> {
-
-        void ISyncEvent<T>.OnSenderSide() { OnSyncEvent(); }
-
-        void ISyncEvent<T>.OnTargetSide() { OnSyncEvent(); }
-
-        /// <summary>
-        /// This handles both the sender side and target side, depending on current phase of sync event exeuction
-        /// </summary>
-        abstract void OnSyncEvent();
-    }
-
-    /// <summary>
     /// Utility functions when inside of a sync event
     /// </summary>
     public static class SyncEvent
@@ -90,12 +74,6 @@ namespace Ers
         /// </summary>
         /// <returns></returns>
         public static bool IsInsideSyncEvent() { return ErsEngine.ERS_ThreadLocal_IsInsideSyncEvent(); }
-
-        /// <summary>
-        /// If inside a sync event, check if it is the sender side
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsInsideSenderSide() { return ErsEngine.ERS_ThreadLocal_IsSyncEventInSenderSide(); }
 
         /// <summary>
         /// If inside a sync event, get the target simulator id of the sync event

@@ -5,7 +5,18 @@
 #include "TransformComponent.h"
 
 #include "Ers/Api.h"
+#include "Ers/IO/Serializer.h"
+#include "Ers/SubModel/DataComponent.h"
 #include "Ers/SubModel/ScriptBehaviorComponent.h"
+#include "Ers/SubModel/TypeInfo.h"
+
+#include <type_traits>
+
+// Forward declaration for Serializer
+namespace Ers
+{
+    class Serializer;
+}
 
 namespace Ers
 {
@@ -73,7 +84,15 @@ namespace Ers
         // clang-format on
     }
 
-    template <typename T> static void RegisterGlobalComponentType()
+    // Custom serialization callback for DataComponents with Serialization methods
+    template <typename T> static void DataComponentSerializationCallback(void* componentHandle, void* serializerHandle)
+    {
+        T* component          = static_cast<T*>(componentHandle);
+        Serializer serializer = Serializer(serializerHandle);
+        component->Serialization(serializer);
+    }
+
+    template <typename T> static void RegisterGlobalComponentType(TypeInfo* typeInfo)
     {
         assert(!IsComponentTypeGloballyRegistered<T>());
 
@@ -83,10 +102,22 @@ namespace Ers
             return;
         }
 
-        const char* name = typeid(T).name();
+        const char* name = typeInfo ? typeInfo->GetName() : typeid(T).name();
         size_t size      = sizeof(T);
 
-        ComponentID id                        = ersAPIFunctionPointers.ERS_GlobalComponentRegistry_RegisterComponent(name, size);
+        // Determine if this DataComponent has a custom Serialization method
+        // Custom serialization takes precedence over TypeInfo when present
+        void* customSerialize = nullptr;
+        if constexpr (std::is_base_of<DataComponent, T>::value && Serializer::HasCustomSerialization<T>)
+        {
+            // Cast function pointer to void* for API compatibility
+            customSerialize = reinterpret_cast<void*>(DataComponentSerializationCallback<T>);
+        }
+
+        // When custom serialization is present, pass nullptr for typeInfo to ensure it takes precedence
+        TypeInfo* finalTypeInfo = customSerialize ? nullptr : typeInfo;
+
+        ComponentID id = ersAPIFunctionPointers.ERS_GlobalComponentRegistry_RegisterComponent(name, size, finalTypeInfo, customSerialize);
         TypeToComponentID<T>::ComponentTypeID = id;
     }
 

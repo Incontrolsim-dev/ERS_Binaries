@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Ers.Interpreter;
 using Ers.Visualization;
+using System.Reflection;
 
 namespace Ers
 {
@@ -66,13 +67,25 @@ namespace Ers
 
         /// <summary>
         /// Get a data attached to the submodel.
+        /// If the context doesn't exist yet, it will be created automatically.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public readonly T GetSubModelContext<T>()
             where T : class, new()
         {
+            // Ensure it is registered globally
+            RegisteredSubModelContext.RegisterSubModelContextTypeIndex<T>();
+
+            // Try to get existing context
             nint ptr = ErsEngine.ERS_SubModel_GetContext(Data, RegisteredSubModelContext.GetSubModelContextTypeIndex<T>());
+
+            // If it doesn't exist (ptr is 0), create it
+            if (ptr == IntPtr.Zero)
+            {
+                return AddSubModelContext<T>();
+            }
+
             return (T)GCHandle.FromIntPtr(ptr).Target!;
         }
 
@@ -381,26 +394,26 @@ namespace Ers
             }
         }
 
-        public void LoadModuleFromFile(string filePath)
+        public void LoadPythonModuleFromFile(string filePath)
         {
             var path = filePath.ToUtf8NullTerminated();
             unsafe
             {
                 fixed(byte* filePathByte = path)
                 {
-                    ErsEngine.ERS_SubModel_LoadModuleFromFile(Data, filePathByte);
+                    ErsEngine.ERS_SubModel_LoadPythonModuleFromFile(Data, filePathByte);
                 }
             }
         }
 
-        public void LoadPackage(string packageFolderPath)
+        public void LoadPythonPackage(string packageFolderPath)
         {
             var path = packageFolderPath.ToUtf8NullTerminated();
             unsafe
             {
                 fixed(byte* filePathByte = path)
                 {
-                    ErsEngine.ERS_SubModel_LoadPackage(Data, filePathByte);
+                    ErsEngine.ERS_SubModel_LoadPythonPackage(Data, filePathByte);
                 }
             }
         }

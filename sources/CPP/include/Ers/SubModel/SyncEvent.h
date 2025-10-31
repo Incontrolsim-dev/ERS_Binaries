@@ -36,27 +36,6 @@ namespace Ers
         using Data = Derived;
     };
 
-    // Optional extension: ensures OnSenderSide/OnTargetSide redirect to a shared OnSyncEvent
-    template <typename Derived> struct ISyncEventCombined : ISyncEvent<Derived>
-    {
-        // This class must implement the following:
-
-        /*
-        static const char* GetName() {
-            return "YourEventName";
-        }
-
-        void OnSyncEvent() {
-            Data& data = Ers::SyncEvent::GetData<Data>();
-            return data;
-        }
-        */
-
-        void OnSenderSide() { Derived::OnSyncEvent(); }
-
-        void OnTargetSide() { Derived::OnSyncEvent(); }
-    };
-
     class SyncEvent
     {
 
@@ -83,10 +62,6 @@ namespace Ers
         /// @brief Check if the current simulator is in a sync event
         /// @return
         static bool IsInsideSyncEvent() { return ersAPIFunctionPointers.ERS_ThreadLocal_IsInsideSyncEvent(); }
-
-        /// @brief Check if the current simulator is currently executing the senderside of a sync event
-        /// @return
-        static bool IsSyncEventInSenderSide() { return ersAPIFunctionPointers.ERS_ThreadLocal_IsSyncEventInSenderSide(); }
 
         /// @brief Get the target's simulator id of the current sync event
         /// @return

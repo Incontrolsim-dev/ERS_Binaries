@@ -60,6 +60,10 @@ namespace Ers
         /// <param name="newTimeStep [in]">New timestep.</param>
         void SetTimeStep(SimulationTime newTimeStep);
 
+        /// @brief Get the random seed of this Simulator
+        /// @return The seed value of this simulator's SubModel
+        size_t GetSeed() const;
+
         void* Data();
         const void* const Data() const;
 

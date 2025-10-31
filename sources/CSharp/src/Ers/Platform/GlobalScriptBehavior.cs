@@ -101,7 +101,7 @@ namespace Ers
         {
             var handle         = GCHandle.FromIntPtr(scriptInstancePtr);
             var scriptBehavior = (ScriptBehaviorComponent)handle.Target!;
-            scriptBehavior.Serialization(new Serialization(nodeHandle));
+            scriptBehavior.Serialization(new Serializer(nodeHandle));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
