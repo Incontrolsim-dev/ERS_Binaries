@@ -14,6 +14,7 @@ namespace Ers::Visualization
     {
       public:
         RenderContext(int screenWidth, int screenHeight);
+        RenderContext(void* corePtr);
         ~RenderContext();
 
         void ClearScreen();
@@ -115,6 +116,15 @@ namespace Ers::Visualization
             float armLength       = 0.1f,
             float targetPixelSize = 64.0f);
 
+        /// @brief Draw an infinite 3D grid. The grid fades between different grid sizes based on the camera zoom.
+        /// @param colorR The red color channel of the grid.
+        /// @param colorG The green color channel of the grid.
+        /// @param colorB The blue color channel of the grid.
+        /// @param lineThickness The thickness of the grid lines.
+        /// @param targetPixelSize The target pixel size of the grid cells.
+        void DrawInfiniteGrid3D(
+            float colorR = 0.0f, float colorG = 0.0f, float colorB = 0.0f, float lineThickness = 1.0f, float targetPixelSize = 64.0f);
+
         /// @brief Draw 2D text. Text is drawn from the top-left of the first character.
         /// @param text The text to draw.
         /// @param x
@@ -197,7 +207,7 @@ namespace Ers::Visualization
         void Begin2D();
         void End2D();
 
-        void* GetData() { return coreHandle; };
+        void* Data() { return coreHandle; };
 
       private:
         void* coreHandle = nullptr;

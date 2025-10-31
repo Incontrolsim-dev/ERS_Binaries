@@ -15,7 +15,7 @@ namespace Ers::Visualization
 
     void Window::DrawRenderContext(RenderContext& renderContext)
     {
-        ersAPIFunctionPointers.ERS_Window_DrawRenderContext(data, renderContext.GetData());
+        ersAPIFunctionPointers.ERS_Window_DrawRenderContext(data, renderContext.Data());
     }
 
     Window::~Window()

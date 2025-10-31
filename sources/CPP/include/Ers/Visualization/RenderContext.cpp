@@ -10,6 +10,11 @@ namespace Ers::Visualization
         coreHandle = ersAPIFunctionPointers.ERS_RenderContext_Create(screenWidth, screenHeight);
     }
 
+    RenderContext::RenderContext(void* corePtr) :
+        coreHandle(corePtr)
+    {
+    }
+
     void RenderContext::Begin3D()
     {
         ersAPIFunctionPointers.ERS_RenderContext_Begin3D(coreHandle);
@@ -93,6 +98,11 @@ namespace Ers::Visualization
     {
         ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid2D(
             coreHandle, colorR, colorG, colorB, lineThickness, armLength, targetPixelSize);
+    }
+
+    void RenderContext::DrawInfiniteGrid3D(float colorR, float colorG, float colorB, float lineThickness, float targetPixelSize)
+    {
+        ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid3D(coreHandle, colorR, colorG, colorB, lineThickness, targetPixelSize);
     }
 
     void RenderContext::DrawTexture2D(

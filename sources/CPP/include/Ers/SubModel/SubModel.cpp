@@ -118,6 +118,21 @@ namespace Ers
         ersAPIFunctionPointers.ERS_SubModel_LoadPythonModuleFromFile(Data(), filePath.c_str());
     }
 
+    void SubModel::BeginInterpreterRenderContext(Ers::Visualization::RenderContext& renderContext)
+    {
+        ersAPIFunctionPointers.ERS_SubModel_BeginInterpreterRenderContext(Data(), renderContext.Data());
+    }
+
+    void SubModel::EndInterpreterRenderContext()
+    {
+        ersAPIFunctionPointers.ERS_SubModel_EndInterpreterRenderContext(Data());
+    }
+
+    Ers::Visualization::RenderContext SubModel::GetInterpreterRenderContext()
+    {
+        return Ers::Visualization::RenderContext(ersAPIFunctionPointers.ERS_SubModel_GetInterpreterRenderContext(Data()));
+    }
+
     void SubModel::ResetRandomGenerator()
     {
         GetRandomProperties().GetRandomNumberGenerator().Reset();

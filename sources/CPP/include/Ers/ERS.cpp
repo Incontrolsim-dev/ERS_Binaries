@@ -1,32 +1,22 @@
 #include "ERS.h"
 #include "Ers/Api.h"
 
-void Ers::Platform::Initialize()
-{
-    ersAPIFunctionPointers.ERS_Initialize();
-}
-
-void Ers::Platform::Uninitialize()
-{
-    ersAPIFunctionPointers.ERS_Uninitialize();
-}
-
-uint32_t Ers::Platform::MajorVersion()
+uint32_t Ers::MajorVersion()
 {
     return ersAPIFunctionPointers.ERS_GetMajorVersion();
 }
 
-uint32_t Ers::Platform::MinorVersion()
+uint32_t Ers::MinorVersion()
 {
     return ersAPIFunctionPointers.ERS_GetMinorVersion();
 }
 
-uint32_t Ers::Platform::PatchVersion()
+uint32_t Ers::PatchVersion()
 {
     return ersAPIFunctionPointers.ERS_GetPatchVersion();
 }
 
-bool Ers::Platform::IsDebugBuild()
+bool Ers::IsDebugBuild()
 {
     return ersAPIFunctionPointers.ERS_IsDebugBuild();
 }

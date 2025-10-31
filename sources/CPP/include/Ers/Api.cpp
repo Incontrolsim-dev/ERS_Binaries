@@ -99,6 +99,7 @@ namespace Ers
         return result;
     }
 
+    /// @brief Uninitialize ERS.
     void Uninitialize()
     {
         ersAPIFunctionPointers.ERS_Uninitialize();

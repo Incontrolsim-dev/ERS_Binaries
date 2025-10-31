@@ -7,7 +7,7 @@
 namespace Ers
 {
 
-    /// @brief This Entity class provides an interface to use components that are attached to it aswell as interface with higher level
+    /// @brief This Entity class provides an interface to use components that are attached to it as well as interface with higher level
     /// abstractions provided by the core, such as a hierarchy
     class Entity
     {

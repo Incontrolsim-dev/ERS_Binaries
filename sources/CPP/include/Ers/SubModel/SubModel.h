@@ -15,6 +15,7 @@
 #include "Ers/SubModel/View.h"
 #include "Ers/Utility/HelperFunctions.h"
 #include "Ers/Utility/Util.h"
+#include "Ers/Visualization/RenderContext.h"
 
 namespace Ers
 {
@@ -95,6 +96,15 @@ namespace Ers
         void CreateInterpreter();
         void RunSimpleString(const std::string& code);
         void LoadPythonModuleFromFile(const std::string& filePath);
+
+        /// @brief Assign a RenderContext to the interpreter attached to this submodel.
+        /// @param renderContext
+        void BeginInterpreterRenderContext(Ers::Visualization::RenderContext& renderContext);
+        /// @brief Unassign a RenderContext from the interpreter attached to this submodel.
+        void EndInterpreterRenderContext();
+        /// @brief Get the RenderContext currently assigned to the interpreter attached to this submodel.
+        /// @return
+        Ers::Visualization::RenderContext GetInterpreterRenderContext();
 
         /// @brief Remove a component of type T from the entity
         /// @tparam T Data component or Core component

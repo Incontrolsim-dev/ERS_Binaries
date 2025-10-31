@@ -450,14 +450,25 @@ namespace Ers
 
         public void PrintGCStats() { ErsEngine.ERS_SubModel_PrintInterpreterGCStats(Data); }
 
-        public void BeginRenderContext(RenderContext context)
+        /// <summary>
+        /// Assign a <see cref="RenderContext"/> to the interpreter attached to this submodel.
+        /// </summary>
+        /// <param name="context">The render context to assign.</param>
+        public void BeginInterpreterRenderContext(RenderContext context)
         {
             ErsEngine.ERS_SubModel_BeginInterpreterRenderContext(Data, context.GetCoreInstance());
         }
 
-        public void EndRenderContext() { ErsEngine.ERS_SubModel_EndInterpreterRenderContext(Data); }
+        /// <summary>
+        /// Unassign the <see cref="RenderContext"/> from the interpreter attached to this submodel.
+        /// </summary>
+        public void EndInterpreterRenderContext() => ErsEngine.ERS_SubModel_EndInterpreterRenderContext(Data);
 
-        public RenderContext GetRenderContext() => new RenderContext(ErsEngine.ERS_SubModel_GetInterpreterRenderContext(Data));
+        /// <summary>
+        /// Get the <see cref="RenderContext"/> currently assigned to the interpreter attached to this submodel.
+        /// </summary>
+        /// <returns></returns>
+        public RenderContext GetInterpreterRenderContext() => new RenderContext(ErsEngine.ERS_SubModel_GetInterpreterRenderContext(Data));
 
         /// <summary>
         /// Get a view to efficiently iterate over all entities that have a certain component.
