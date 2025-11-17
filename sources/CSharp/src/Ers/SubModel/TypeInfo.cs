@@ -11,7 +11,8 @@ namespace Ers
     /// </summary>
     /// <param name="name">The name to give to the component.</param>
     [AttributeUsage(AttributeTargets.Struct, Inherited = false)]
-    public sealed class TypeInfoAttribute(string name) : Attribute
+    public sealed class TypeInfoAttribute
+    (string name) : Attribute
     {
         /// <summary>
         /// The name of the component.
@@ -33,6 +34,10 @@ namespace Ers
         /// The type ID of the field, see <see cref="FieldType"/>.
         /// </summary>
         public readonly UInt32? Type;
+        /// <summary>
+        /// Whether the field is read-only.
+        /// </summary>
+        public readonly bool ReadOnly;
 
         /// <summary>
         /// Mark a field to have available field information.
@@ -41,8 +46,9 @@ namespace Ers
         /// </summary>
         public FieldInfoAttribute()
         {
-            Name = null;
-            Type = null;
+            Name     = null;
+            Type     = null;
+            ReadOnly = false;
         }
 
         /// <summary>
@@ -51,30 +57,36 @@ namespace Ers
         /// <para>NOTE: Entities will be seen as UInt64 unless explicitly defining them as Entity.</para>
         /// </summary>
         /// <param name="name">The name of the field.</param>
-        public FieldInfoAttribute(string? name)
+        /// <param name="readOnly">Whether the field is read-only.</param>
+        public FieldInfoAttribute(string? name, bool readOnly = false)
         {
-            Name = name;
-            Type = null;
+            Name     = name;
+            Type     = null;
+            ReadOnly = readOnly;
         }
 
         /// <summary>
         /// Mark a field to have available field information.
         /// </summary>
         /// <param name="type">The type ID of the field, see <see cref="FieldType"/></param>
-        public FieldInfoAttribute(FieldType type)
+        /// <param name="readOnly">Whether the field is read-only.</param>
+        public FieldInfoAttribute(FieldType type, bool readOnly = true)
         {
-            Name = null;
+            Name     = null;
             Type = (UInt32?)type;
+            ReadOnly = readOnly;
         }
 
         /// <summary>
         /// Mark a field to have available field information.
         /// </summary>
         /// <param name="type">The type ID of the field, see <see cref="FieldType"/></param>
-        public FieldInfoAttribute(UInt32 type)
+        /// <param name="readOnly">Whether the field is read-only.</param>
+        public FieldInfoAttribute(UInt32 type, bool readOnly = true)
         {
-            Name = null;
-            Type = type;
+            Name     = null;
+            Type     = type;
+            ReadOnly = readOnly;
         }
 
         /// <summary>
@@ -82,10 +94,12 @@ namespace Ers
         /// </summary>
         /// <param name="name">The name of the field.</param>
         /// <param name="type">The type ID of the field, see <see cref="FieldType"/></param>
-        public FieldInfoAttribute(string name, FieldType type)
+        /// <param name="readOnly">Whether the field is read-only.</param>
+        public FieldInfoAttribute(string name, FieldType type, bool readOnly = true)
         {
-            Name = name;
+            Name     = name;
             Type = (UInt32?)type;
+            ReadOnly = readOnly;
         }
 
         /// <summary>
@@ -93,10 +107,12 @@ namespace Ers
         /// </summary>
         /// <param name="name">The name of the field.</param>
         /// <param name="type">The type ID of the field, see <see cref="FieldType"/></param>
-        public FieldInfoAttribute(string name, UInt32 type)
+        /// <param name="readOnly">Whether the field is read-only.</param>
+        public FieldInfoAttribute(string name, UInt32 type, bool readOnly = false)
         {
-            Name = name;
-            Type = type;
+            Name     = name;
+            Type     = type;
+            ReadOnly = readOnly;
         }
     }
 
@@ -206,7 +222,7 @@ namespace Ers
                     UInt32 typeInt = GetFieldType(field, fieldInfo.Type);
                     fixed(byte* nameByte = name.ToUtf8NullTerminated())
                     {
-                        ErsEngine.ERS_TypeInfo_AddField(typeInfoPtr, nameByte, typeInt, offset);
+                        ErsEngine.ERS_TypeInfo_AddField(typeInfoPtr, nameByte, typeInt, offset, fieldInfo.ReadOnly);
                     }
                 }
             }

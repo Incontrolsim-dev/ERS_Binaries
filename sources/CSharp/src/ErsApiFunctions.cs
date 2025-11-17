@@ -1097,7 +1097,7 @@ namespace Ers.Engine
         public static extern unsafe IntPtr ERS_TypeInfo_RegisterStruct(/* ASCII String */ byte* name);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_TypeInfo_AddField(IntPtr componentTypeInfoPtr, /* ASCII String */ byte* name, UInt32 fieldType, nuint offset);
+        public static extern unsafe void ERS_TypeInfo_AddField(IntPtr componentTypeInfoPtr, /* ASCII String */ byte* name, UInt32 fieldType, nuint offset, [MarshalAs(UnmanagedType.I1)] bool readOnly);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_TypeInfo_GetName(IntPtr componentTypeInfoPtr);

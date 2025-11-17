@@ -365,7 +365,7 @@ typedef bool (*ERS_SubModelRandomProperties_IsAntitheticalSignature)(void* submo
 typedef const size_t (*ERS_SubModelRandomProperties_GetOriginalSeedSignature)(const void* submodel);
 typedef void* (*ERS_SubModelRandomProperties_GetRandomNumberGeneratorSignature)(void* submodel);
 typedef void* (*ERS_TypeInfo_RegisterStructSignature)(const char* name);
-typedef void (*ERS_TypeInfo_AddFieldSignature)(void* componentTypeInfoPtr, const char* name, uint32_t fieldType, size_t offset);
+typedef void (*ERS_TypeInfo_AddFieldSignature)(void* componentTypeInfoPtr, const char* name, uint32_t fieldType, size_t offset, bool readOnly);
 typedef const char* (*ERS_TypeInfo_GetNameSignature)(void* componentTypeInfoPtr);
 typedef void* (*ERS_Submodel_View_CreateSignature)(void* subModelHandle, uint32_t* includedTypeIdArray_, uint32_t includedTypeArraySize, uint32_t* excludedTypeIdArray_, uint32_t excludedTypeArraySize);
 typedef bool (*ERS_Submodel_View_NextSignature)(void* viewHandle);

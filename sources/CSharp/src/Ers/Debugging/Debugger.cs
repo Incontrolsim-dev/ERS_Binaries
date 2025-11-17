@@ -12,7 +12,9 @@ namespace Ers
         /// <summary>
         /// Native pointer to the core debugger instance
         /// </summary>
-        private IntPtr coreInstance;
+        private readonly IntPtr coreInstance;
+
+        private static Ers.Platform platform;
 
         /// <summary>
         /// Constructs a new Debugger instance attached to the given model container.
@@ -72,10 +74,18 @@ namespace Ers
         public void Update() { ErsEngine.ERS_Debugger_Update(coreInstance); }
 
         /// <summary>
+        /// Open the debugger window.
+        ///
+        /// <para>This should be called before loading textures and 3D models.</para>
+        /// </summary>
+        public static void Open() { platform = new Ers.Platform(); }
+
+        /// <summary>
         /// Open the debugger to inspect, debug, and run the model.
         ///
         /// <para>This function should be used instead of <see cref="ModelManager.Update"/> or <see
         /// cref="ModelContainer.Update(ulong)"/>.</para>
+        /// <para>When loading textures or 3D models, use <see cref="Debugger.Open"/> before loading the textures or models.</para>
         /// </summary>
         /// <param name="modelContainer">The model container to debug.</param>
         /// <param name="render2D">Optional 2D render function. Uses basic render system when no custom function is given.</param>
@@ -83,7 +93,9 @@ namespace Ers
         public static void Run(
             ModelContainer modelContainer, Action<RenderContext>? render2D = null, Action<RenderContext>? render3D = null)
         {
-            Ers.Platform platform = new Ers.Platform();
+            if (platform == null)
+                platform = new Ers.Platform();
+
             Ers.Debugger debugger = new Ers.Debugger(modelContainer);
 
             Simulator simulator = modelContainer.GetSimulatorByIndex(0);

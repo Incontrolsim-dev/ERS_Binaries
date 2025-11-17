@@ -221,9 +221,4 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_RenderContext_DrawTextBillboard(
             coreHandle, text.c_str(), centerX, centerY, centerZ, scale, colorR, colorG, colorB, colorA);
     }
-
-    RenderContext::~RenderContext()
-    {
-        ersAPIFunctionPointers.ERS_RenderContext_Dispose(coreHandle);
-    }
 } // namespace Ers::Visualization

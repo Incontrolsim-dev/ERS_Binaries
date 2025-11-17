@@ -55,12 +55,14 @@ namespace Ers
         /// @param name The name of the field.
         /// @param type The type ID of the field (see FieldType).
         /// @param offset The memory offset of the field (use `offsetof(ComponentType, Field)`).
-        void AddField(const char* name, FieldType type, size_t offset);
+        /// @param readOnly Whether the field is read-only.
+        void AddField(const char* name, FieldType type, size_t offset, bool readOnly = false);
         /// @brief Add field information to the component's type information.
         /// @param name The name of the field.
         /// @param type The type ID of the field (see FieldType).
         /// @param offset The memory offset of the field (use `offsetof(ComponentType, Field)`).
-        void AddField(const char* name, uint32_t type, size_t offset);
+        /// @param readOnly Whether the field is read-only.
+        void AddField(const char* name, uint32_t type, size_t offset, bool readOnly = false);
 
         /// @brief The name of the component.
         const char* GetName();

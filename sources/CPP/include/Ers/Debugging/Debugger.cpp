@@ -1,7 +1,6 @@
 #include "Debugger.h"
 
 #include "Ers/Api.h"
-#include "Ers/Debugging/Platform.h"
 #include "Ers/Model/Simulator/Simulator.h"
 #include "Ers/SubModel/SubModel.h"
 #include "Ers/Systems/BasicRenderSystem.h"
@@ -10,6 +9,8 @@
 
 namespace Ers
 {
+    Platform* Debugger::platform = nullptr;
+
     Debugger::Debugger(Ers::ModelContainer& modelContainer)
     {
         coreInstance = ersAPIFunctionPointers.ERS_Debugger_Create(modelContainer.Data());
@@ -40,19 +41,26 @@ namespace Ers
         ersAPIFunctionPointers.ERS_Debugger_Update(coreInstance);
     }
 
+    void Debugger::Open()
+    {
+        platform = new Platform();
+    }
+
     void Debugger::Run(
         ModelContainer& modelContainer,
         const std::function<void(Ers::Visualization::RenderContext&)>& render2D,
         const std::function<void(Ers::Visualization::RenderContext&)>& render3D)
     {
-        Platform platform;
+        if (platform == nullptr)
+            platform = new Platform();
+
         Debugger debugger(modelContainer);
 
         Simulator simulator = modelContainer.GetSimulatorByIndex(0);
 
-        while (!platform.WantsClose())
+        while (!platform->WantsClose())
         {
-            platform.BeginFrame();
+            platform->BeginFrame();
 
             simulator.EnterSubModel();
             PathAnimationSystem::Update(simulator.CurrentTime());
@@ -99,7 +107,8 @@ namespace Ers
                 simulator.ExitSubModel();
             }
 
-            platform.EndFrame();
+            debugger.Update();
+            platform->EndFrame();
         }
     }
 } // namespace Ers

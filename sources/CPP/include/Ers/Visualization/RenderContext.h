@@ -15,7 +15,6 @@ namespace Ers::Visualization
       public:
         RenderContext(int screenWidth, int screenHeight);
         RenderContext(void* corePtr);
-        ~RenderContext();
 
         void ClearScreen();
 

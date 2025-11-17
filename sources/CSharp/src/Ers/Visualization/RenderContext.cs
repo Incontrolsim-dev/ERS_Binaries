@@ -36,15 +36,6 @@ namespace Ers.Visualization
             GC.SuppressFinalize(this);
         }
 
-        private void DisposeInner()
-        {
-            if (coreInstance != IntPtr.Zero)
-            {
-                ErsEngine.ERS_RenderContext_Dispose(coreInstance);
-                coreInstance = IntPtr.Zero;
-            }
-        }
-
         /// <summary>
         /// Clear the currently queued draw calls (those that have net yet been drawn by calling <see cref="NextFrame"/>).
         /// </summary>
