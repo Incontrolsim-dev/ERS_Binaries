@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Camera2D::Camera2D(void* coreInstance) :
         coreInstance(coreInstance)
@@ -38,4 +38,4 @@ namespace Ers::Visualization
     {
         return coreInstance;
     }
-} // namespace Ers::Visualization
+} // namespace Ers

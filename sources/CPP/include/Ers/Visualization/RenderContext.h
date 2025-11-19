@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Ers/Math/HMM/VectorMath.h"
 #include "Ers/Visualization/Camera2D.h"
 #include "Ers/Visualization/Camera3D.h"
+#include "Ers/Visualization/Color.h"
 #include "Ers/Visualization/Model3D.h"
 #include "Ers/Visualization/Texture.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
 
     // Forward declarations
@@ -23,176 +25,108 @@ namespace Ers::Visualization
         void DrawInstancedModel3D(Mesh& mesh, InstancedModel& instancedModel);
 
         /// @brief Draw a 2D line.
-        /// @param v0X The start X-position.
-        /// @param v0Y The start Y-position.
-        /// @param v1X The end X-position.
-        /// @param v1Y The end Y-position.
+        /// @param start The start position.
+        /// @param end The end position.
         /// @param thickness The thickness of the line.
-        /// @param colorR The red channel for the color.
-        /// @param colorG The green channel for the color.
-        /// @param colorB The blue channel for the color.
-        /// @param colorA The alpha channel for the color.
-        void DrawLine2D(
-            float startX, float startY, float endX, float endY, float thickness, float colorR, float colorG, float colorB, float colorA);
+        /// @param color The color of the line.
+        void DrawLine2D(Vector2 start, Vector2 end, float thickness, Color color);
 
         /// @brief Draw a 2D triangle based on three corner vertices.
-        /// @param v0X The first vertex's X-position.
-        /// @param v0Y The first vertex's Y-position.
-        /// @param v1X The second vertex's X-position.
-        /// @param v1Y The second vertex's Y-position.
-        /// @param v2X The third vertex's X-position.
-        /// @param v2Y The third vertex's Y-position.
-        /// @param colorR The red color channel of the color.
-        /// @param colorG The green color channel of the color.
-        /// @param colorB The blue color channel of the color.
-        /// @param colorA The alpha color channel of the color.
-        void DrawTriangle2D(
-            float v0X, float v0Y, float v1X, float v1Y, float v2X, float v2Y, float colorR, float colorG, float colorB, float colorA);
+        /// @param v0 The first vertex position.
+        /// @param v1 The second vertex position.
+        /// @param v2 The third vertex position.
+        /// @param color The color of the triangle.
+        void DrawTriangle2D(Vector2 v0, Vector2 v1, Vector2 v2, Color color);
 
         /// @brief Draw a 2D triangle.
         /// The triangle is drawn as it would be inside a bounding box where the bottom-left and bottom-right vertices match the box's
         /// and the top vertex is in the middle of the top edge of the box.
-        /// @param centerX The center X-position of the bounding box.
-        /// @param centerY The center Y-position of the bounding box.
-        /// @param sizeX The width of the bounding box.
-        /// @param sizeY The height of the bounding box.
+        /// @param center The center position of the bounding box.
+        /// @param size The size of the bounding box.
         /// @param angle The counterclockwise rotation of the triangle.
-        /// @param colorR The red color channel of the color.
-        /// @param colorG The green color channel of the color.
-        /// @param colorB The blue color channel of the color.
-        /// @param colorA The alpha color channel of the color.
-        void DrawTriangle2D(
-            float centerX, float centerY, float width, float height, float angle, float colorR, float colorG, float colorB, float colorA);
+        /// @param color The color of the triangle.
+        void DrawTriangle2D(Vector2 center, Vector2 size, float angle, Color color);
 
         /// @brief Draw a 2D rectangle.
-        /// @param centerX The center X-position of the rectangle.
-        /// @param centerY The center Y-position of the rectangle.
-        /// @param sizeX The width of the rectangle.
-        /// @param sizeY The height of the rectangle.
+        /// @param center The center position of the rectangle.
+        /// @param size The size of the rectangle.
         /// @param angle The counterclockwise rotation in turns.
-        /// @param colorR The red channel of the color.
-        /// @param colorG The green channel of the color.
-        /// @param colorB The blue channel of the color.
-        /// @param colorA The alpha channel of the color.
-        void DrawRect2D(
-            float centerX,
-            float centerY,
-            float sizeX,
-            float sizeY,
-            float angle    = 0.0f,
-            float colorR   = 1.0f,
-            float colorG   = 1.0f,
-            float colorB   = 1.0f,
-            float colorA   = 1.0f,
-            int64_t zIndex = 0);
+        /// @param color The color of the rectangle.
+        /// @param zIndex The z-index for layering.
+        void DrawRect2D(Vector2 center, Vector2 size, float angle, Color color = Color::FromFloats(1.0f, 1.0f, 1.0f), int64_t zIndex = 0);
 
-        void DrawQuad2D(
-            float x0,
-            float y0,
-            float x1,
-            float y1,
-            float x2,
-            float y2,
-            float x3,
-            float y3,
-            float colorR,
-            float colorG,
-            float colorB,
-            float colorA);
+        /// @brief Draw a 2D quadrilateral.
+        /// @param v0 The first vertex position.
+        /// @param v1 The second vertex position.
+        /// @param v2 The third vertex position.
+        /// @param v3 The fourth vertex position.
+        /// @param color The color of the quad.
+        void DrawQuad2D(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, Color color);
 
         /// @brief Draw an infinite 2D grid. The grid fades between different grid sizes based on the camera zoom.
-        /// @param colorR The red color channel of the grid.
-        /// @param colorG The green color channel of the grid.
-        /// @param colorB The blue color channel of the grid.
+        /// @param color The color of the grid (RGB only, alpha ignored).
         /// @param lineThickness The thickness of the grid lines.
         /// @param armLength The length of the grid arms. A value of 0.5 creates a full grid.
         /// @param targetPixelSize The target pixel size of the grid cells.
         void DrawInfiniteGrid2D(
-            float colorR          = 0.0f,
-            float colorG          = 0.0f,
-            float colorB          = 0.0f,
+            Color color           = Color::FromFloats(0.0f, 0.0f, 0.0f),
             float lineThickness   = 1.0f,
             float armLength       = 0.1f,
             float targetPixelSize = 64.0f);
 
         /// @brief Draw an infinite 3D grid. The grid fades between different grid sizes based on the camera zoom.
-        /// @param colorR The red color channel of the grid.
-        /// @param colorG The green color channel of the grid.
-        /// @param colorB The blue color channel of the grid.
+        /// @param color The color of the grid (RGB only, alpha ignored).
         /// @param lineThickness The thickness of the grid lines.
         /// @param targetPixelSize The target pixel size of the grid cells.
-        void DrawInfiniteGrid3D(
-            float colorR = 0.0f, float colorG = 0.0f, float colorB = 0.0f, float lineThickness = 1.0f, float targetPixelSize = 64.0f);
+        void
+        DrawInfiniteGrid3D(Color color = Color::FromFloats(0.0f, 0.0f, 0.0f), float lineThickness = 1.0f, float targetPixelSize = 64.0f);
 
         /// @brief Draw 2D text. Text is drawn from the top-left of the first character.
         /// @param text The text to draw.
-        /// @param x
-        /// @param y
-        /// @param scale
-        /// @param colorR
-        /// @param colorG
-        /// @param colorB
-        /// @param colorA
-        void DrawText2D(const std::string& text, float x, float y, float scale, float colorR, float colorG, float colorB, float colorA);
+        /// @param position The position to draw the text.
+        /// @param scale The scale of the text.
+        /// @param color The color of the text.
+        void DrawText2D(const std::string& text, Vector2 position, float scale, Color color);
 
+        /// @brief Draw a 2D texture.
+        /// @param texture The texture to draw.
+        /// @param position The center position of the texture.
+        /// @param size The size of the texture.
+        /// @param angle The rotation angle in turns (1 turn = 360 degrees).
+        /// @param color The color tint.
+        /// @param uvMin The minimum UV coordinates.
+        /// @param uvMax The maximum UV coordinates.
         void DrawTexture2D(
             Texture& texture,
-            float x,
-            float y,
-            float width,
-            float height,
+            Vector2 position,
+            Vector2 size,
             float angle,
-            float r,
-            float g,
-            float b,
-            float a,
-            float uvMinX = 0,
-            float uvMinY = 0,
-            float uvMaxX = 1,
-            float uvMaxY = 1);
+            Color color,
+            Vector2 uvMin = Vec2(0, 0),
+            Vector2 uvMax = Vec2(1, 1));
 
-        void DrawCube3D(
-            float x,
-            float y,
-            float z,
-            float xRotation,
-            float yRotation,
-            float zRotation,
-            float xScale,
-            float yScale,
-            float zScale,
-            float colorR,
-            float colorG,
-            float colorB,
-            float colorA);
+        /// @brief Draw a 3D cube.
+        /// @param position The position of the cube.
+        /// @param rotation The rotation of the cube.
+        /// @param scale The scale of the cube.
+        /// @param color The color of the cube.
+        void DrawCube3D(Vector3 position, Vector3 rotation, Vector3 scale, Color color);
 
-        void DrawText3D(
-            const std::string& text,
-            float centerX,
-            float centerY,
-            float centerZ,
-            float normalX,
-            float normalY,
-            float normalZ,
-            float worldUpX,
-            float worldUpY,
-            float worldUpZ,
-            float scale,
-            float colorR,
-            float colorG,
-            float colorB,
-            float colorA);
+        /// @brief Draw 3D text.
+        /// @param text The text to draw.
+        /// @param center The center position of the text.
+        /// @param normal The normal direction of the text.
+        /// @param worldUp The world up direction.
+        /// @param scale The scale of the text.
+        /// @param color The color of the text.
+        void DrawText3D(const std::string& text, Vector3 center, Vector3 normal, Vector3 worldUp, float scale, Color color);
 
-        void DrawTextBillboard(
-            const std::string& text,
-            float centerX,
-            float centerY,
-            float centerZ,
-            float scale,
-            float colorR,
-            float colorG,
-            float colorB,
-            float colorA);
+        /// @brief Draw billboard text that always faces the camera.
+        /// @param text The text to draw.
+        /// @param center The center position of the text.
+        /// @param scale The scale of the text.
+        /// @param color The color of the text.
+        void DrawTextBillboard(const std::string& text, Vector3 center, float scale, Color color);
 
         void SetViewport(int width, int height);
         void Present();
@@ -211,4 +145,4 @@ namespace Ers::Visualization
       private:
         void* coreHandle = nullptr;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

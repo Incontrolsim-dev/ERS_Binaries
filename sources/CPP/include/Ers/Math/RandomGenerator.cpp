@@ -4,7 +4,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Math
+namespace Ers
 {
     /// @brief Reset the seed of the random number generator.
     void RandomGenerator::Reset()
@@ -26,9 +26,9 @@ namespace Ers::Math
         return ersAPIFunctionPointers.ERS_Random_Generator_Sample(Data());
     }
 
-    Ers::Math::RandomGeneratorType RandomGenerator::GetRandomGeneratorType()
+    Ers::RandomGeneratorType RandomGenerator::GetRandomGeneratorType()
     {
-        return static_cast<Ers::Math::RandomGeneratorType>(ersAPIFunctionPointers.ERS_Random_Generator_GetType(Data()));
+        return static_cast<Ers::RandomGeneratorType>(ersAPIFunctionPointers.ERS_Random_Generator_GetType(Data()));
     }
     void* RandomGenerator::Data()
     {
@@ -38,4 +38,4 @@ namespace Ers::Math
     {
         return this;
     }
-} // namespace Ers::Math
+} // namespace Ers

@@ -21,9 +21,9 @@ namespace Ers
         ersAPIFunctionPointers.ERS_Debugger_Destroy(coreInstance);
     }
 
-    Ers::Visualization::RenderContext Debugger::GetRenderContext()
+    Ers::RenderContext Debugger::GetRenderContext()
     {
-        return Ers::Visualization::RenderContext(ersAPIFunctionPointers.ERS_Debugger_GetRenderContext(coreInstance));
+        return Ers::RenderContext(ersAPIFunctionPointers.ERS_Debugger_GetRenderContext(coreInstance));
     }
 
     bool Debugger::Is3DMode() const
@@ -48,8 +48,8 @@ namespace Ers
 
     void Debugger::Run(
         ModelContainer& modelContainer,
-        const std::function<void(Ers::Visualization::RenderContext&)>& render2D,
-        const std::function<void(Ers::Visualization::RenderContext&)>& render3D)
+        const std::function<void(Ers::RenderContext&)>& render2D,
+        const std::function<void(Ers::RenderContext&)>& render3D)
     {
         if (platform == nullptr)
             platform = new Platform();
@@ -58,6 +58,7 @@ namespace Ers
 
         Simulator simulator = modelContainer.GetSimulatorByIndex(0);
 
+        Color gridColor = Ers::Color::FromFloats(0.8f, 0.8f, 0.8f);
         while (!platform->WantsClose())
         {
             platform->BeginFrame();
@@ -67,7 +68,7 @@ namespace Ers
             TransformSystem::UpdateGlobals(GetSubModel());
             simulator.ExitSubModel();
 
-            Ers::Visualization::RenderContext renderContext = debugger.GetRenderContext();
+            Ers::RenderContext renderContext = debugger.GetRenderContext();
             if (debugger.Is3DMode())
             {
                 // 3D rendering
@@ -77,7 +78,7 @@ namespace Ers
 
                 if (debugger.ShowBackgroundGrid())
                 {
-                    renderContext.DrawInfiniteGrid3D(0.8f, 0.8f, 0.8f);
+                    renderContext.DrawInfiniteGrid3D(gridColor);
                 }
                 if (render3D != nullptr)
                     render3D(renderContext);
@@ -96,7 +97,7 @@ namespace Ers
 
                 if (debugger.ShowBackgroundGrid())
                 {
-                    renderContext.DrawInfiniteGrid2D(0.8f, 0.8f, 0.8f);
+                    renderContext.DrawInfiniteGrid2D(gridColor);
                 }
                 if (render2D != nullptr)
                     render2D(renderContext);

@@ -3,14 +3,14 @@
 
 namespace Ers
 {
-    uint32_t TransformComponent::TypeId()
+    uint32_t TransformComponent::CoreTypeId()
     {
         return ersAPIFunctionPointers.ERS_TransformComponent_TypeId();
     }
 
-    void* TransformComponent::CreateCallback()
+    uint32_t TransformComponent::TypeId()
     {
-        return ersAPIFunctionPointers.ERS_TransformComponent_CreateCallback();
+        return ersAPIFunctionPointers.ERS_TransformComponent_TypeId();
     }
 
     void TransformComponent::RegisterType(void* submodelInstance)
@@ -18,112 +18,67 @@ namespace Ers
         ersAPIFunctionPointers.ERS_TransformComponent_RegisterType(submodelInstance);
     }
 
-    // Position Getters and Setters
-    float TransformComponent::PositionX() const
+    Vector3 TransformComponent::GetPosition() const
     {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Position_X(const_cast<TransformComponent*>(this));
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_Position_X(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Position_Y(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Position_Z(const_cast<TransformComponent*>(this)));
     }
 
-    void TransformComponent::PositionX(float x)
+    void TransformComponent::SetPosition(Vector3 pos)
     {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetPosition_X(this, x);
+        ersAPIFunctionPointers.ERS_TransformComponent_SetPosition(this, pos.X, pos.Y, pos.Z);
     }
 
-    float TransformComponent::PositionY() const
+    Vector3 TransformComponent::GetGlobalPosition() const
     {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Position_Y(const_cast<TransformComponent*>(this));
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_X(this),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_Y(this),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_Z(this));
     }
 
-    void TransformComponent::PositionY(float y)
+    Vector3 TransformComponent::GetRotation() const
     {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetPosition_Y(this, y);
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_Rotation_X(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Rotation_Y(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Rotation_Z(const_cast<TransformComponent*>(this)));
     }
 
-    float TransformComponent::PositionZ() const
+    void TransformComponent::SetRotation(Vector3 rotation)
     {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Position_Z(const_cast<TransformComponent*>(this));
+        ersAPIFunctionPointers.ERS_TransformComponent_SetRotationEuler(this, rotation.X, rotation.Y, rotation.Z);
     }
 
-    void TransformComponent::PositionZ(float z)
+    Vector3 TransformComponent::GetGlobalRotation() const
     {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetPosition_Z(this, z);
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_X(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_Y(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_Z(const_cast<TransformComponent*>(this)));
     }
 
-    void TransformComponent::Position(float x, float y, float z)
+    Vector3 TransformComponent::GetScale() const
     {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetPosition(this, x, y, z);
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_Scale_X(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Scale_Y(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_Scale_Z(const_cast<TransformComponent*>(this)));
     }
 
-    // Scale Getters and Setters
-    float TransformComponent::ScaleX() const
+    void TransformComponent::SetScale(Vector3 scale)
     {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Scale_X(const_cast<TransformComponent*>(this));
+        ersAPIFunctionPointers.ERS_TransformComponent_SetScale(this, scale.X, scale.Y, scale.Z);
     }
 
-    void TransformComponent::ScaleX(float x)
+    Vector3 TransformComponent::GetGlobalScale() const
     {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetScale_X(this, x);
-    }
-
-    float TransformComponent::ScaleY() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Scale_Y(const_cast<TransformComponent*>(this));
-    }
-
-    void TransformComponent::ScaleY(float y)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetScale_Y(this, y);
-    }
-
-    float TransformComponent::ScaleZ() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Scale_Z(const_cast<TransformComponent*>(this));
-    }
-
-    void TransformComponent::ScaleZ(float z)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetScale_Z(this, z);
-    }
-
-    void TransformComponent::Scale(float scale)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetScale(this, scale, scale, scale);
-    }
-
-    void TransformComponent::Scale(float x, float y, float z)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetScale(this, x, y, z);
-    }
-
-    // Rotation (Euler Angles) Getters and Setters
-    float TransformComponent::RotationX() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Rotation_X(const_cast<TransformComponent*>(this));
-    }
-
-    void TransformComponent::RotationX(float x)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetRotation_X(this, x);
-    }
-
-    float TransformComponent::RotationY() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Rotation_Y(const_cast<TransformComponent*>(this));
-    }
-
-    void TransformComponent::RotationY(float y)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetRotation_Y(this, y);
-    }
-
-    float TransformComponent::RotationZ() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_Rotation_Z(const_cast<TransformComponent*>(this));
-    }
-
-    void TransformComponent::RotationZ(float z)
-    {
-        ersAPIFunctionPointers.ERS_TransformComponent_SetRotation_Z(this, z);
+        return Vec3(
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_X(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_Y(const_cast<TransformComponent*>(this)),
+            ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_Z(const_cast<TransformComponent*>(this)));
     }
 
     void TransformComponent::RotateX(float radians)
@@ -141,7 +96,7 @@ namespace Ers
         ersAPIFunctionPointers.ERS_TransformComponent_Rotate_Z(this, radians);
     }
 
-    void TransformComponent::RotationEuler(float x, float y, float z)
+    void TransformComponent::SetRotationEuler(float x, float y, float z)
     {
         ersAPIFunctionPointers.ERS_TransformComponent_SetRotationEuler(this, x, y, z);
     }
@@ -150,53 +105,5 @@ namespace Ers
     void TransformComponent::SetQuaternion(float x, float y, float z, float w)
     {
         ersAPIFunctionPointers.ERS_TransformComponent_SetQuaternion(this, x, y, z, w);
-    }
-
-    // Global Position Getters
-    float TransformComponent::GlobalPositionX() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_X(this);
-    }
-
-    float TransformComponent::GlobalPositionY() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_Y(this);
-    }
-
-    float TransformComponent::GlobalPositionZ() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalPosition_Z(this);
-    }
-
-    // Global Scale Getters
-    float TransformComponent::GlobalScaleX() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_X(this);
-    }
-
-    float TransformComponent::GlobalScaleY() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_Y(this);
-    }
-
-    float TransformComponent::GlobalScaleZ() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalScale_Z(this);
-    }
-
-    // Global Rotation Getters
-    float TransformComponent::GlobalRotationX() const 
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_X(this);
-    }
-
-    float TransformComponent::GlobalRotationY() const 
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_Y(this);
-    }
-
-    float TransformComponent::GlobalRotationZ() const
-    {
-        return ersAPIFunctionPointers.ERS_TransformComponent_GlobalRotation_Z(this);
     }
 } // namespace Ers

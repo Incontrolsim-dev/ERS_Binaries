@@ -1,6 +1,5 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Ers.Engine;
-using Ers.Visualization;
 
 namespace Ers
 {
@@ -100,6 +99,7 @@ namespace Ers
 
             Simulator simulator = modelContainer.GetSimulatorByIndex(0);
 
+            Ers.Color gridColor = Ers.Color.FromFloats(0.8f, 0.8f, 0.8f);
             while (!platform.WantsClose())
             {
                 platform.BeginFrame();
@@ -119,7 +119,6 @@ namespace Ers
 
                     if (debugger.ShowBackgroundGrid())
                     {
-                        Vector3 gridColor = new Vector3(0.8f, 0.8f, 0.8f);
                         renderContext.DrawInfiniteGrid3D(gridColor);
                     }
                     if (render3D != null)
@@ -139,7 +138,6 @@ namespace Ers
 
                     if (debugger.ShowBackgroundGrid())
                     {
-                        Vector3 gridColor = new Vector3(0.8f, 0.8f, 0.8f);
                         renderContext.DrawInfiniteGrid2D(gridColor, 1.0f, 0.1f, 64.0f);
                     }
                     if (render2D != null)

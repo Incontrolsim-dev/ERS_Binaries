@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ers::Visualization
+namespace Ers
 {
     class InputAction
     {
@@ -33,4 +33,4 @@ namespace Ers::Visualization
 
         static void UpdateMousePos(int x, int y);
     };
-} // namespace Ers::Visualization
+} // namespace Ers

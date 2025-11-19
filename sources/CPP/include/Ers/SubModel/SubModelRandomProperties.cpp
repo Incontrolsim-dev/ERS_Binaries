@@ -4,7 +4,7 @@
 
 namespace Ers
 {
-    void SubModelRandomProperties::SetRandomGenerator(Ers::Math::RandomGeneratorType randomNumberGeneratorType)
+    void SubModelRandomProperties::SetRandomGenerator(Ers::RandomGeneratorType randomNumberGeneratorType)
     {
         ersAPIFunctionPointers.ERS_SubModelRandomProperties_SetRandomGenerator_Type(Data(), static_cast<int>(randomNumberGeneratorType));
     }
@@ -39,10 +39,10 @@ namespace Ers
         return ersAPIFunctionPointers.ERS_SubModelRandomProperties_GetOriginalSeed(Data());
     }
 
-    [[nodiscard]] Ers::Math::RandomGenerator& SubModelRandomProperties::GetRandomNumberGenerator()
+    [[nodiscard]] Ers::RandomGenerator& SubModelRandomProperties::GetRandomNumberGenerator()
     {
         void* coreRandomGeneratorInstance = ersAPIFunctionPointers.ERS_SubModelRandomProperties_GetRandomNumberGenerator(Data());
-        return *static_cast<Ers::Math::RandomGenerator*>(coreRandomGeneratorInstance);
+        return *static_cast<Ers::RandomGenerator*>(coreRandomGeneratorInstance);
     }
     void* SubModelRandomProperties::Data()
     {

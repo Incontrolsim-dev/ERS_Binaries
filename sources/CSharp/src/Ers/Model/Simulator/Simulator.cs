@@ -71,6 +71,16 @@ namespace Ers
             ErsEngine.ERS_ThreadLocal_ExitSubModel();
         }
 
+        /// <summary>
+        /// Get the library collection for this simulator.
+        /// </summary>
+        /// <returns>The library collection</returns>
+        public LibraryCollection GetLibraryCollection()
+        {
+            IntPtr ptr = ErsEngine.ERS_Simulator_GetLibraryCollection(Data);
+            return new LibraryCollection(ptr);
+        }
+
         private readonly string GetName()
         {
             IntPtr ptr     = ErsEngine.ERS_Simulator_GetName(Data);

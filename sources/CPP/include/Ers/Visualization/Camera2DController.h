@@ -2,7 +2,7 @@
 
 #include "Ers/Visualization/Camera2D.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     /**
      * @brief Movement controller for 2D cameras using dragging and zooming.
@@ -68,4 +68,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

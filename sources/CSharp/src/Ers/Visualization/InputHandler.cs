@@ -1,7 +1,7 @@
 ﻿using Ers.Engine;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Ers.Visualization
+namespace Ers
 {
     public class InputAction
     {

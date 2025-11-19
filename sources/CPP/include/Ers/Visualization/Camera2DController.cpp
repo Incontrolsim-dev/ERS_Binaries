@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Camera2DController::Camera2DController(Camera2D& camera)
     {
@@ -43,4 +43,4 @@ namespace Ers::Visualization
     {
         ersAPIFunctionPointers.ERS_Camera2DController_Zoom(coreInstance, base, power);
     }
-} // namespace Ers::Visualization
+} // namespace Ers

@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Camera3DController::Camera3DController(Camera3D camera)
     {
@@ -38,4 +38,4 @@ namespace Ers::Visualization
     {
         return *ersAPIFunctionPointers.ERS_Camera3DController_HeadBobbingIntensity(coreInstance);
     }
-} // namespace Ers::Visualization
+} // namespace Ers

@@ -66,6 +66,11 @@ namespace Ers
         return ersAPIFunctionPointers.ERS_SubModel_FindEntity(Data(), entityName.data());
     }
 
+    Entity SubModel::FindEntity(const std::string_view& entityName, Entity parentEntity)
+    {
+        return ersAPIFunctionPointers.ERS_SubModel_FindEntity_Parent(Data(), entityName.data(), parentEntity);
+    }
+
     SubModel& GetSubModel()
     {
         return *static_cast<SubModel*>(ersAPIFunctionPointers.ERS_ThreadLocal_GetSubModel());
@@ -118,7 +123,37 @@ namespace Ers
         ersAPIFunctionPointers.ERS_SubModel_LoadPythonModuleFromFile(Data(), filePath.c_str());
     }
 
-    void SubModel::BeginInterpreterRenderContext(Ers::Visualization::RenderContext& renderContext)
+    void SubModel::LoadPythonPackage(const std::string& packageFolderPath)
+    {
+        ersAPIFunctionPointers.ERS_SubModel_LoadPythonPackage(Data(), packageFolderPath.c_str());
+    }
+
+    void SubModel::AddInterpreterScriptComponentType()
+    {
+        ersAPIFunctionPointers.ERS_SubModel_AddInterpreterScriptComponentType(Data());
+    }
+
+    void* SubModel::AddInterpreterScriptComponent(Entity entity)
+    {
+        return ersAPIFunctionPointers.ERS_SubModel_AddInterpreterScriptComponent(Data(), entity);
+    }
+
+    void* SubModel::GetInterpreterScriptComponent(Entity entity)
+    {
+        return ersAPIFunctionPointers.ERS_SubModel_GetInterpreterScriptComponent(Data(), entity);
+    }
+
+    bool SubModel::HasInterpreterScriptComponent(Entity entity)
+    {
+        return ersAPIFunctionPointers.ERS_SubModel_HasInterpreterScriptComponent(Data(), entity);
+    }
+
+    void SubModel::PrintGCStats()
+    {
+        ersAPIFunctionPointers.ERS_SubModel_PrintInterpreterGCStats(Data());
+    }
+
+    void SubModel::BeginInterpreterRenderContext(Ers::RenderContext& renderContext)
     {
         ersAPIFunctionPointers.ERS_SubModel_BeginInterpreterRenderContext(Data(), renderContext.Data());
     }
@@ -128,9 +163,9 @@ namespace Ers
         ersAPIFunctionPointers.ERS_SubModel_EndInterpreterRenderContext(Data());
     }
 
-    Ers::Visualization::RenderContext SubModel::GetInterpreterRenderContext()
+    Ers::RenderContext SubModel::GetInterpreterRenderContext()
     {
-        return Ers::Visualization::RenderContext(ersAPIFunctionPointers.ERS_SubModel_GetInterpreterRenderContext(Data()));
+        return Ers::RenderContext(ersAPIFunctionPointers.ERS_SubModel_GetInterpreterRenderContext(Data()));
     }
 
     void SubModel::ResetRandomGenerator()

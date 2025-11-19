@@ -1,6 +1,6 @@
 ﻿using Ers.Engine;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// A texture on the GPU.

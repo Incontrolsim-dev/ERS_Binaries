@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// A 3D model consisting of one or more meshes, materials and transforms.

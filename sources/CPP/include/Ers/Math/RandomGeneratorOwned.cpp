@@ -4,7 +4,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Math
+namespace Ers
 {
     /// @brief Creates a random number generator with the given pointer to the RandomGenerator in the core.
     /// @param coreInstance The pointer to the instance of an existing RandomGenerator in the core.
@@ -69,9 +69,8 @@ namespace Ers::Math
         return ersAPIFunctionPointers.ERS_Random_Generator_Sample(coreRandomGeneratorInstance);
     }
 
-    Ers::Math::RandomGeneratorType RandomGeneratorOwned::GetRandomGeneratorType()
+    Ers::RandomGeneratorType RandomGeneratorOwned::GetRandomGeneratorType()
     {
-        return static_cast<Ers::Math::RandomGeneratorType>(
-            ersAPIFunctionPointers.ERS_Random_Generator_GetType(coreRandomGeneratorInstance));
+        return static_cast<Ers::RandomGeneratorType>(ersAPIFunctionPointers.ERS_Random_Generator_GetType(coreRandomGeneratorInstance));
     }
-} // namespace Ers::Math
+} // namespace Ers

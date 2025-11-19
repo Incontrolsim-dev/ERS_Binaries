@@ -69,6 +69,14 @@ namespace Ers
         void SetPrecision(SimulationTime precision);
         SimulationTime GetPrecision() const;
 
+        /// @brief Get the simulation speed over real-time.
+        /// @note This function calculates speedup independently when called - it is not automatically
+        ///       updated by Update(). For meaningful results, call this after multiple Update() iterations
+        ///       in blocking mode. In non-blocking mode with simple models, the speedup may be 0.0 if the
+        ///       simulation completes too quickly.
+        /// @return The speedup factor (simulation time / real time)
+        double GetSpeedUp() const;
+
         bool Valid() const;
 
         static ModelContainer CreateModelContainer();

@@ -8,8 +8,7 @@ using Ers.Engine;
 
 namespace Ers.Interpreter
 {
-    public ref struct InterpreterArgs
-    (nint data)
+    public ref struct InterpreterArgs(nint data)
     {
         private readonly nint Data = data;
 
@@ -25,40 +24,22 @@ namespace Ers.Interpreter
             return Marshal.PtrToStringAnsi(stringData);
         }
 
-        public double GetDoubleArgument(int index)
-        {
-            return ErsEngine.ERS_InterpreterArgs_GetDoubleArgument(Data, index);
-        }
-        public Entity GetEntityArgument(int index)
-        {
-            return ErsEngine.ERS_InterpreterArgs_GetEntityArgument(Data, index);
-        }
+        public double GetDoubleArgument(int index) { return ErsEngine.ERS_InterpreterArgs_GetDoubleArgument(Data, index); }
+        public Entity GetEntityArgument(int index) { return ErsEngine.ERS_InterpreterArgs_GetEntityArgument(Data, index); }
 
-        public UInt64 GetUInt64Argument(int index)
-        {
-            return ErsEngine.ERS_InterpreterArgs_GetUInt64Argument(Data, index);
-        }
+        public Int64 GetInt64Argument(int index) { return ErsEngine.ERS_InterpreterArgs_GetInt64Argument(Data, index); }
 
-        public bool GetBoolArgument(int index)
-        {
-            return ErsEngine.ERS_InterpreterArgs_GetBoolArgument(Data, index);
-        }
+        public bool GetBoolArgument(int index) { return ErsEngine.ERS_InterpreterArgs_GetBoolArgument(Data, index); }
 
         // Method to get the number of arguments
-        public int GetArgCount()
-        {
-            return (int)ErsEngine.ERS_InterpreterArgs_GetArgCount(Data);
-        }
+        public int GetArgCount() { return (int)ErsEngine.ERS_InterpreterArgs_GetArgCount(Data); }
 
         public void SetArgument(int index, InterpreterVariable variable)
         {
             ErsEngine.ERS_InterpreterArgs_SetArgument(Data, index, variable.Data);
         }
 
-        public void Destruct()
-        {
-            ErsEngine.ERS_InterpreterArgs_Destruct(Data);
-        }
+        public void Destruct() { ErsEngine.ERS_InterpreterArgs_Destruct(Data); }
 
         public bool HasAttribute(InterpreterVariable obj, string functionName)
         {
@@ -84,9 +65,6 @@ namespace Ers.Interpreter
             }
         }
 
-        public static InterpreterArgs Create(int count)
-        {
-            return new InterpreterArgs(ErsEngine.ERS_InterpreterArgs_Create(count));
-        }
+        public static InterpreterArgs Create(int count) { return new InterpreterArgs(ErsEngine.ERS_InterpreterArgs_Create(count)); }
     }
 }

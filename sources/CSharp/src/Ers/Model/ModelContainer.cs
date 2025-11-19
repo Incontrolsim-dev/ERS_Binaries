@@ -237,6 +237,16 @@ namespace Ers
         }
         public SimulationTime GetPrecision() { return ErsEngine.ERS_ModelContainer_GetModelPrecision(coreModelContainerInstance); }
 
+        /// <summary>
+        /// Get the simulation speed over real-time.
+        /// </summary>
+        /// <remarks>
+        /// This function calculates speedup independently when called - it is not automatically
+        /// updated by Update(). For meaningful results, call this after multiple Update() iterations
+        /// in blocking mode. In non-blocking mode with simple models, the speedup may be 0.0 if the
+        /// simulation completes too quickly.
+        /// </remarks>
+        /// <returns>The speedup factor (simulation time / real time)</returns>
         public double GetSpeedUp() { return ErsEngine.ERS_ModelContainer_SimulationSpeedOverRealtime(coreModelContainerInstance); }
     }
 }

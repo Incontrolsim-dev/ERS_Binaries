@@ -2,7 +2,7 @@
 
 #include "Ers/Visualization/Camera3D.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     /// @brief Movement controller for 3D cameras.
     class Camera3DController
@@ -31,4 +31,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

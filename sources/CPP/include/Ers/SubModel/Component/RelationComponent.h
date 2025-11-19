@@ -2,6 +2,8 @@
 #include "Ers/SubModel/CoreComponent.h"
 #include "Ers/Utility/Util.h"
 
+#include <cstdint>
+
 namespace Ers
 {
     class RelationComponent : public CoreComponent
@@ -13,6 +15,10 @@ namespace Ers
         RelationComponent& operator=(const RelationComponent&) = delete;
         RelationComponent& operator=(RelationComponent&&)      = delete;
         ~RelationComponent()                                   = delete;
+
+        /// @brief Get the core type ID for this component
+        /// @return The component type ID from ers-core
+        static uint32_t CoreTypeId();
 
         /// @brief get parent entity
         /// @return

@@ -1,6 +1,6 @@
 #include "Font.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Font::Font(void* coreInstance) :
         coreInstance(coreInstance)
@@ -16,4 +16,4 @@ namespace Ers::Visualization
     {
         return coreInstance;
     }
-} // namespace Ers::Visualization
+} // namespace Ers

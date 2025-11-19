@@ -171,7 +171,8 @@ namespace Ers
 
             for (size_t i = 0; i < size; i++)
             {
-                IsWriting() ? vec[i] : vec.emplace_back();
+                if (!IsWriting())
+                    vec.emplace_back();
                 Serialize(i, vec[i]);
             }
 

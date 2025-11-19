@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Ers::Visualization
+namespace Ers
 {
     class Texture
     {
@@ -23,4 +23,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

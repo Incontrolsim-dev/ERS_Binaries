@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NameComponent.h"
+#include "PathComponent.h"
 #include "RelationComponent.h"
 #include "TransformComponent.h"
 
@@ -28,11 +29,7 @@ namespace Ers
         inline static uint32_t ComponentTypeID = InvalidComponentID;
     };
 
-    template <typename T> ComponentID GetComponentTypeID()
-    {
-        return TypeToComponentID<T>::ComponentTypeID;
-    }
-
+    // Declare type checking functions first (before they're used)
     template <typename T> constexpr bool IsScriptBehavior()
     {
         return std::is_base_of<ScriptBehaviorComponent, T>::value;
@@ -43,12 +40,33 @@ namespace Ers
         return std::is_base_of<CoreComponent, T>::value;
     }
 
-    template <typename T> bool IsComponentTypeGloballyRegistered()
+    template <typename T> ComponentID GetComponentTypeID()
     {
-        return TypeToComponentID<T>::ComponentTypeID != InvalidComponentID;
+        // For core components, directly call their CoreTypeId() method
+        if constexpr (IsCoreComponent<T>())
+        {
+            return T::CoreTypeId();
+        }
+        else
+        {
+            // For DataComponents and ScriptBehaviors, use the registered type ID
+            return TypeToComponentID<T>::ComponentTypeID;
+        }
     }
 
-    void SetupCoreComponentIDS();
+    template <typename T> bool IsComponentTypeGloballyRegistered()
+    {
+        // Core components are always "registered" since they get their IDs from ers-core
+        if constexpr (IsCoreComponent<T>())
+        {
+            return true;
+        }
+        else
+        {
+            return TypeToComponentID<T>::ComponentTypeID != InvalidComponentID;
+        }
+    }
+
     void CoreScriptBehaviorOnCreation(void* scriptBehaviorInstance);
     void CoreScriptBehaviorOnAwake(void* scriptBehaviorInstance);
     void CoreScriptBehaviorOnStart(void* scriptBehaviorInstance);

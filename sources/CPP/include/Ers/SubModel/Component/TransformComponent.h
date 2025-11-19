@@ -1,10 +1,14 @@
 #pragma once
 
+#include <cstdint>
+
+#include "Ers/Math/HMM/VectorMath.h"
 #include "Ers/SubModel/CoreComponent.h"
 #include "Ers/Utility/Util.h"
 
 namespace Ers
 {
+    /// @brief Component defining the position, rotation, and scale of an entity.
     class TransformComponent : public CoreComponent
     {
       public:
@@ -15,101 +19,63 @@ namespace Ers
         TransformComponent& operator=(TransformComponent&&)      = delete;
         ~TransformComponent()                                    = default;
 
+        /// @brief Get the core type ID for this component
+        /// @return The component type ID from ers-core
+        static uint32_t CoreTypeId();
+
         uint32_t TypeId();
-        void* CreateCallback();
         void RegisterType(void* submodelInstance);
 
-        /// @brief Retrieve Position X value
-        [[nodiscard]] float PositionX() const;
+        /// @brief Get the local position.
+        /// @return
+        [[nodiscard]] Vector3 GetPosition() const;
+        /// @brief Set the local position.
+        /// @param pos
+        void SetPosition(Vector3 pos);
+        /// @brief Get the global position.
+        /// @return
+        [[nodiscard]] Vector3 GetGlobalPosition() const;
 
-        /// @brief Set Position X value
-        void PositionX(float x);
+        /// @brief Get the local rotation as Euler angles.
+        /// @return
+        [[nodiscard]] Vector3 GetRotation() const;
+        /// @brief Set the local rotation as Euler angles.
+        /// @param rotation
+        void SetRotation(Vector3 rotation);
+        /// @brief Get the global rotation as Euler angles.
+        /// @return
+        [[nodiscard]] Vector3 GetGlobalRotation() const;
 
-        /// @brief Retrieve Position Y value
-        [[nodiscard]] float PositionY() const;
+        /// @brief Get the local scale.
+        /// @return
+        [[nodiscard]] Vector3 GetScale() const;
+        /// @brief Set the local scale.
+        /// @param scale
+        void SetScale(Vector3 scale);
+        /// @brief Get the global scale.
+        /// @return
+        [[nodiscard]] Vector3 GetGlobalScale() const;
 
-        /// @brief Set Position Y value
-        void PositionY(float y);
-
-        /// @brief Retrieve Position Z value
-        [[nodiscard]] float PositionZ() const;
-
-        /// @brief Set Position Z value
-        void PositionZ(float z);
-
-        /// @brief Retrieve Rotation X value
-        [[nodiscard]] float RotationX() const;
-
-        /// @brief Set Rotation X value
-        void RotationX(float x);
-
-        /// @brief Retrieve Rotation Y value
-        [[nodiscard]] float RotationY() const;
-
-        /// @brief Set Rotation Y value
-        void RotationY(float y);
-
-        /// @brief Retrieve Rotation Z value
-        [[nodiscard]] float RotationZ() const;
-
-        /// @brief Set Rotation Z value
-        void RotationZ(float z);
-
+        /// @brief Rotate counterclockwise around the X-axis by a given angle.
+        /// @param radians The angle in turns (1 turn = 360 degrees).
         void RotateX(float radians);
+        /// @brief Rotate counterclockwise around the Y-axis by a given angle.
+        /// @param radians The angle in turns (1 turn = 360 degrees).
         void RotateY(float radians);
+        /// @brief Rotate counterclockwise around the Z-axis by a given angle.
+        /// @param radians The angle in turns (1 turn = 360 degrees).
         void RotateZ(float radians);
 
-        /// @brief Retrieve Scale X value
-        [[nodiscard]] float ScaleX() const;
-
-        /// @brief Set Scale X value
-        void ScaleX(float x);
-
-        /// @brief Retrieve Scale Y value
-        [[nodiscard]] float ScaleY() const;
-
-        /// @brief Set Scale Y value
-        void ScaleY(float y);
-
-        /// @brief Retrieve Scale Z value
-        [[nodiscard]] float ScaleZ() const;
-
-        /// @brief Set Scale Z value
-        void ScaleZ(float z);
-
-        /// @brief Set the scale in all axes to the same value.
-        void Scale(float scale);
-
-        void Position(float x, float y, float z);
-        void Scale(float x, float y, float z);
-        void RotationEuler(float x, float y, float z);
+        /// @brief Set the local rotation in Euler angles.
+        /// @param x The angle around the X-axis in turns (1 turn = 360 degrees).
+        /// @param y The angle around the Y-axis in turns (1 turn = 360 degrees).
+        /// @param z The angle around the Z-axis in turns (1 turn = 360 degrees).
+        void SetRotationEuler(float x, float y, float z);
+        /// @brief Set the rotation by a given quaternion.
+        /// @param x The X-component of the quaternion.
+        /// @param y The Y-component of the quaternion.
+        /// @param z The Z-component of the quaternion.
+        /// @param w The W-component of the quaternion.
         void SetQuaternion(float x, float y, float z, float w);
-
-        /// @brief Get the global X-position.
-        [[nodiscard]] float GlobalPositionX() const;
-
-        /// @brief Get the global Y-position.
-        [[nodiscard]] float GlobalPositionY() const;
-
-        /// @brief Get the global Z-position.
-        [[nodiscard]] float GlobalPositionZ() const;
-
-        /// @brief Get the global X-scale.
-        [[nodiscard]] float GlobalScaleX() const;
-
-        /// @brief Get the global Y-scale.
-        [[nodiscard]] float GlobalScaleY() const;
-
-        /// @brief Get the global Z-scale.
-        [[nodiscard]] float GlobalScaleZ() const;
-
-        /// @brief Get the global rotation around X-axis.
-        [[nodiscard]] float GlobalRotationX() const;
-
-        /// @brief Get the global rotation around Y-axis.
-        [[nodiscard]] float GlobalRotationY() const;
-
-        /// @brief Get the global rotation around Z-axis.
-        [[nodiscard]] float GlobalRotationZ() const;
     };
 } // namespace Ers

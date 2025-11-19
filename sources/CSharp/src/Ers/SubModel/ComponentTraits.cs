@@ -48,39 +48,14 @@ namespace Ers
             // Ensure correct disposing of the handle to a callback
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-            // Check for core components
-            // TODO: Check if this is needed. Is this not already handled by GetTYpeId() in the components themselves?
-            if (typeof(T) == typeof(NameComponent))
+            // Check if T has a static CoreTypeId() method (for core components)
+            var coreTypeIdMethod =
+                typeof(T).GetMethod("CoreTypeId", BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+
+            if (coreTypeIdMethod != null && coreTypeIdMethod.ReturnType == typeof(nuint))
             {
-                componentTypeId = ErsEngine.ERS_NameComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(RelationComponent))
-            {
-                componentTypeId = ErsEngine.ERS_RelationComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(TransformComponent))
-            {
-                componentTypeId = ErsEngine.ERS_TransformComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(BoxComponent))
-            {
-                componentTypeId = ErsEngine.ERS_BoxComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(PathComponent))
-            {
-                componentTypeId = ErsEngine.ERS_PathComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(OutlineComponent))
-            {
-                componentTypeId = ErsEngine.ERS_OutlineComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(ResourceComponent))
-            {
-                componentTypeId = ErsEngine.ERS_ResourceComponent_TypeId();
-            }
-            else if (typeof(T) == typeof(ChannelComponent))
-            {
-                componentTypeId = ErsEngine.ERS_ChannelComponent_TypeId();
+                // This is a core component - call CoreTypeId() once and cache the result
+                componentTypeId = (UInt32)(nuint)coreTypeIdMethod.Invoke(null, null)!;
             }
             else
             {

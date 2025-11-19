@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ers::Visualization
+namespace Ers
 {
     struct Font
     {
@@ -19,4 +19,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

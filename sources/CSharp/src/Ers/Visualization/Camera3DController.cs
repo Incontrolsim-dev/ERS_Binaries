@@ -1,6 +1,6 @@
 ﻿using Ers.Engine;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// The available camera modes.

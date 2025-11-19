@@ -1,6 +1,6 @@
 ﻿using Ers.Engine;
 
-namespace Ers.Math
+namespace Ers
 {
     /// <summary>
     /// A random number generator that is not owned by user-code, not the ERS core.

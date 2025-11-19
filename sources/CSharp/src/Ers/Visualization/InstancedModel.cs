@@ -1,7 +1,7 @@
 ﻿using Ers.Engine;
 using System.Numerics;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// A model of which multiple instances are drawn in one draw call.

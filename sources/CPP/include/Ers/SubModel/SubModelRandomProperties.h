@@ -20,7 +20,7 @@ namespace Ers
         SubModelRandomProperties& operator=(const SubModelRandomProperties&) = delete;
         ~SubModelRandomProperties()                                          = delete;
 
-        void SetRandomGenerator(Ers::Math::RandomGeneratorType randomNumberGeneratorType);
+        void SetRandomGenerator(Ers::RandomGeneratorType randomNumberGeneratorType);
         void SetRepetitive(bool value);
         void SetAntithetical(bool value);
         void SetSeed(size_t seed);
@@ -29,7 +29,7 @@ namespace Ers
 
         [[nodiscard]] size_t GetOriginalSeed() const;
 
-        [[nodiscard]] Ers::Math::RandomGenerator& GetRandomNumberGenerator();
+        [[nodiscard]] Ers::RandomGenerator& GetRandomNumberGenerator();
 
         void* Data();
         const void* const Data() const;

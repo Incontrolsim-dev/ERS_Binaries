@@ -2,12 +2,13 @@
 using System.Numerics;
 using Ers.Engine;
 
-namespace Ers.Math
+namespace Ers
 {
     public enum PathSegmentType
     {
         Straight,
         Helical,
+        CubicBezier,
     }
 
     public ref struct PathSegment
@@ -31,9 +32,7 @@ namespace Ers.Math
         public Vector3 To
         {
             get => new Vector3(
-                ErsEngine.ERS_PathSegment_GetToX(Data),
-                ErsEngine.ERS_PathSegment_GetToY(Data),
-                ErsEngine.ERS_PathSegment_GetToZ(Data));
+                ErsEngine.ERS_PathSegment_GetToX(Data), ErsEngine.ERS_PathSegment_GetToY(Data), ErsEngine.ERS_PathSegment_GetToZ(Data));
         }
 
         public Vector3 Center
@@ -51,6 +50,30 @@ namespace Ers.Math
         public float EndAngle => ErsEngine.ERS_PathSegment_GetEndAngle(Data);
 
         public float EndZ => ErsEngine.ERS_PathSegment_GetEndZ(Data);
+
+        public Vector3 P0
+        {
+            get => new Vector3(
+                ErsEngine.ERS_PathSegment_GetP0X(Data), ErsEngine.ERS_PathSegment_GetP0Y(Data), ErsEngine.ERS_PathSegment_GetP0Z(Data));
+        }
+
+        public Vector3 P1
+        {
+            get => new Vector3(
+                ErsEngine.ERS_PathSegment_GetP1X(Data), ErsEngine.ERS_PathSegment_GetP1Y(Data), ErsEngine.ERS_PathSegment_GetP1Z(Data));
+        }
+
+        public Vector3 P2
+        {
+            get => new Vector3(
+                ErsEngine.ERS_PathSegment_GetP2X(Data), ErsEngine.ERS_PathSegment_GetP2Y(Data), ErsEngine.ERS_PathSegment_GetP2Z(Data));
+        }
+
+        public Vector3 P3
+        {
+            get => new Vector3(
+                ErsEngine.ERS_PathSegment_GetP3X(Data), ErsEngine.ERS_PathSegment_GetP3Y(Data), ErsEngine.ERS_PathSegment_GetP3Z(Data));
+        }
 
         public Vector3 GetPointAlongPath(float t)
         {

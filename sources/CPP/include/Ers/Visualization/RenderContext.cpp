@@ -3,7 +3,7 @@
 
 #include "InstancedModel.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     RenderContext::RenderContext(int screenWidth, int screenHeight)
     {
@@ -40,114 +40,57 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_RenderContext_ClearScreen(coreHandle);
     }
 
-    void RenderContext::DrawLine2D(
-        float startX, float startY, float endX, float endY, float thickness, float colorR, float colorG, float colorB, float colorA)
+    void RenderContext::DrawLine2D(Vector2 start, Vector2 end, float thickness, Color color)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawLine2D(
-            coreHandle, startX, startY, endX, endY, thickness, colorR, colorG, colorB, colorA);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawLine2D(coreHandle, start.X, start.Y, end.X, end.Y, thickness, color.Value);
     }
 
-    void RenderContext::DrawTriangle2D(
-        float v0X, float v0Y, float v1X, float v1Y, float v2X, float v2Y, float colorR, float colorG, float colorB, float colorA)
+    void RenderContext::DrawTriangle2D(Vector2 v0, Vector2 v1, Vector2 v2, Color color)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawTriangle2D(coreHandle, v0X, v0Y, v1X, v1Y, v2X, v2Y, colorR, colorG, colorB, colorA);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawTriangle2D(coreHandle, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, color.Value);
     }
 
-    void RenderContext::DrawTriangle2D(
-        float centerX, float centerY, float sizeX, float sizeY, float angle, float colorR, float colorG, float colorB, float colorA)
+    void RenderContext::DrawTriangle2D(Vector2 center, Vector2 size, float angle, Color color)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawTriangle2D_Box(
-            coreHandle, centerX, centerY, sizeX, sizeY, angle, colorR, colorG, colorB, colorA);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawTriangle2D_Box(coreHandle, center.X, center.Y, size.X, size.Y, angle, color.Value);
     }
 
-    void RenderContext::DrawRect2D(
-        float centerX,
-        float centerY,
-        float sizeX,
-        float sizeY,
-        float angle,
-        float colorR,
-        float colorG,
-        float colorB,
-        float colorA,
-        int64_t zIndex)
+    void RenderContext::DrawRect2D(Vector2 center, Vector2 size, float angle, Color color, int64_t zIndex)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawRect2D(
-            coreHandle, centerX, centerY, sizeX, sizeY, angle, colorR, colorG, colorB, colorA, zIndex);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawRect2D(coreHandle, center.X, center.Y, size.X, size.Y, angle, color.Value, zIndex);
     }
 
-    void RenderContext::DrawQuad2D(
-        float x0,
-        float y0,
-        float x1,
-        float y1,
-        float x2,
-        float y2,
-        float x3,
-        float y3,
-        float colorR,
-        float colorG,
-        float colorB,
-        float colorA)
+    void RenderContext::DrawQuad2D(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, Color color)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawQuad2D(coreHandle, x0, y0, x1, y1, x2, y2, x3, y3, colorR, colorG, colorB, colorA);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawQuad2D(coreHandle, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, v3.X, v3.Y, color.Value);
+    }
+
+    void RenderContext::DrawInfiniteGrid2D(Color color, float lineThickness, float armLength, float targetPixelSize)
+    {
+        ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid2D(coreHandle, color.Value, lineThickness, armLength, targetPixelSize);
+    }
+
+    void RenderContext::DrawInfiniteGrid3D(Color color, float lineThickness, float targetPixelSize)
+    {
+        ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid3D(coreHandle, color.Value, lineThickness, targetPixelSize);
     }
 
     void
-    RenderContext::DrawInfiniteGrid2D(float colorR, float colorG, float colorB, float lineThickness, float armLength, float targetPixelSize)
-    {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid2D(
-            coreHandle, colorR, colorG, colorB, lineThickness, armLength, targetPixelSize);
-    }
-
-    void RenderContext::DrawInfiniteGrid3D(float colorR, float colorG, float colorB, float lineThickness, float targetPixelSize)
-    {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawInfiniteGrid3D(coreHandle, colorR, colorG, colorB, lineThickness, targetPixelSize);
-    }
-
-    void RenderContext::DrawTexture2D(
-        Texture& texture,
-        float x,
-        float y,
-        float width,
-        float height,
-        float angle,
-        float r,
-        float g,
-        float b,
-        float a,
-        float uvMinX,
-        float uvMinY,
-        float uvMaxX,
-        float uvMaxY)
+    RenderContext::DrawTexture2D(Texture& texture, Vector2 position, Vector2 size, float angle, Color color, Vector2 uvMin, Vector2 uvMax)
     {
         ersAPIFunctionPointers.ERS_RenderContext_DrawTexture2D(
-            coreHandle, texture.Data(), x, y, width, height, uvMinX, uvMinY, uvMaxX, uvMaxY, angle, r, g, b, a);
+            coreHandle, texture.Data(), position.X, position.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.Value);
     }
 
-    void RenderContext::DrawText2D(
-        const std::string& text, float x, float y, float scale, float colorR, float colorG, float colorB, float colorA)
+    void RenderContext::DrawText2D(const std::string& text, Vector2 position, float scale, Color color)
     {
-        ersAPIFunctionPointers.ERS_RenderContext_DrawText2D(coreHandle, text.c_str(), x, y, scale, colorR, colorG, colorB, colorA);
+        ersAPIFunctionPointers.ERS_RenderContext_DrawText2D(coreHandle, text.c_str(), position.X, position.Y, scale, color.Value);
     }
 
-    void RenderContext::DrawCube3D(
-        float x,
-        float y,
-        float z,
-        float xRotation,
-        float yRotation,
-        float zRotation,
-        float xScale,
-        float yScale,
-        float zScale,
-        float colorR,
-        float colorG,
-        float colorB,
-        float colorA)
+    void RenderContext::DrawCube3D(Vector3 position, Vector3 rotation, Vector3 scale, Color color)
     {
         ersAPIFunctionPointers.ERS_RenderContext_DrawCube3D(
-            coreHandle, x, y, z, xRotation, yRotation, zRotation, xScale, yScale, zScale, colorR, colorG, colorB, colorA);
+            coreHandle, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, color.Value);
     }
 
     Camera2D RenderContext::GetCamera2D()
@@ -185,40 +128,16 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_RenderContext_DrawMesh(coreHandle, mesh.Data());
     }
 
-    void RenderContext::DrawText3D(
-        const std::string& text,
-        float centerX,
-        float centerY,
-        float centerZ,
-        float normalX,
-        float normalY,
-        float normalZ,
-        float worldUpX,
-        float worldUpY,
-        float worldUpZ,
-        float scale,
-        float colorR,
-        float colorG,
-        float colorB,
-        float colorA)
+    void RenderContext::DrawText3D(const std::string& text, Vector3 center, Vector3 normal, Vector3 worldUp, float scale, Color color)
     {
         ersAPIFunctionPointers.ERS_RenderContext_DrawText3D(
-            coreHandle, text.c_str(), centerX, centerY, centerZ, normalX, normalY, normalZ, worldUpX, worldUpY, worldUpZ, scale, colorR,
-            colorG, colorB, colorA);
+            coreHandle, text.c_str(), center.X, center.Y, center.Z, normal.X, normal.Y, normal.Z, worldUp.X, worldUp.Y, worldUp.Z, scale,
+            color.Value);
     }
 
-    void RenderContext::DrawTextBillboard(
-        const std::string& text,
-        float centerX,
-        float centerY,
-        float centerZ,
-        float scale,
-        float colorR,
-        float colorG,
-        float colorB,
-        float colorA)
+    void RenderContext::DrawTextBillboard(const std::string& text, Vector3 center, float scale, Color color)
     {
         ersAPIFunctionPointers.ERS_RenderContext_DrawTextBillboard(
-            coreHandle, text.c_str(), centerX, centerY, centerZ, scale, colorR, colorG, colorB, colorA);
+            coreHandle, text.c_str(), center.X, center.Y, center.Z, scale, color.Value);
     }
-} // namespace Ers::Visualization
+} // namespace Ers

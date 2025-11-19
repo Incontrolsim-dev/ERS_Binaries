@@ -1,7 +1,7 @@
 #include "Window.h"
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Window::Window(void* windowHandle, void* displayHandle, int screenWidth, int screenHeight)
     {
@@ -23,4 +23,4 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_Window_Destroy(data);
     }
 
-} // namespace Ers::Visualization
+} // namespace Ers

@@ -66,6 +66,7 @@ namespace Ers
         void UpdateParentOnEntity(Entity entity, Entity parent);
 
         Entity FindEntity(const std::string_view& entityName);
+        Entity FindEntity(const std::string_view& entityName, Entity parentEntity);
 
         template <typename T> T& AddSubModelContext();
 
@@ -96,15 +97,37 @@ namespace Ers
         void CreateInterpreter();
         void RunSimpleString(const std::string& code);
         void LoadPythonModuleFromFile(const std::string& filePath);
+        void LoadPythonPackage(const std::string& packageFolderPath);
+
+        /// @brief Add the interpreter script component type.
+        void AddInterpreterScriptComponentType();
+
+        /// @brief Add an interpreter script component to an entity.
+        /// @param entity The entity to add the component to
+        /// @return Pointer to the interpreter variable
+        void* AddInterpreterScriptComponent(Entity entity);
+
+        /// @brief Get an interpreter script component from an entity.
+        /// @param entity The entity to get the component from
+        /// @return Pointer to the interpreter variable
+        void* GetInterpreterScriptComponent(Entity entity);
+
+        /// @brief Check if an entity has an interpreter script component.
+        /// @param entity The entity to check
+        /// @return True if the entity has the component
+        bool HasInterpreterScriptComponent(Entity entity);
+
+        /// @brief Print garbage collector statistics for the interpreter.
+        void PrintGCStats();
 
         /// @brief Assign a RenderContext to the interpreter attached to this submodel.
         /// @param renderContext
-        void BeginInterpreterRenderContext(Ers::Visualization::RenderContext& renderContext);
+        void BeginInterpreterRenderContext(Ers::RenderContext& renderContext);
         /// @brief Unassign a RenderContext from the interpreter attached to this submodel.
         void EndInterpreterRenderContext();
         /// @brief Get the RenderContext currently assigned to the interpreter attached to this submodel.
         /// @return
-        Ers::Visualization::RenderContext GetInterpreterRenderContext();
+        Ers::RenderContext GetInterpreterRenderContext();
 
         /// @brief Remove a component of type T from the entity
         /// @tparam T Data component or Core component

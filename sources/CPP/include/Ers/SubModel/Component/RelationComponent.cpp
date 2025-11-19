@@ -4,6 +4,11 @@
 
 namespace Ers
 {
+    uint32_t Ers::RelationComponent::CoreTypeId()
+    {
+        return ersAPIFunctionPointers.ERS_RelationComponent_TypeId();
+    }
+
     EntityID Ers::RelationComponent::Parent() const
     {
         return ersAPIFunctionPointers.ERS_RelationComponent_GetParent(const_cast<RelationComponent*>(this));

@@ -1,7 +1,7 @@
 ﻿using Ers.Engine;
 using System.Runtime.InteropServices;
 
-namespace Ers.Math
+namespace Ers
 {
     /// <summary>
     /// A random number generator.

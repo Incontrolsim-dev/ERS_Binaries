@@ -1,8 +1,9 @@
 #include "InstancedModel.h"
 
 #include "Ers/Api.h"
+#include "Ers/Math/HMM/VectorMath.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     InstancedModel::InstancedModel()
     {
@@ -16,16 +17,13 @@ namespace Ers::Visualization
 
     void InstancedModel::PushInstance(const TransformComponent& globalTransform)
     {
-        PushInstance(
-            globalTransform.GlobalPositionX(), globalTransform.GlobalPositionY(), globalTransform.GlobalPositionZ(),
-            globalTransform.GlobalRotationX(), globalTransform.GlobalRotationY(), globalTransform.GlobalRotationZ(),
-            globalTransform.GlobalScaleX(), globalTransform.GlobalScaleY(), globalTransform.GlobalScaleZ());
+        PushInstance(globalTransform.GetGlobalPosition(), globalTransform.GetGlobalRotation(), globalTransform.GetGlobalScale());
     }
 
-    void InstancedModel::PushInstance(
-        float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ)
+    void InstancedModel::PushInstance(Vector3 pos, Vector3 rotation, Vector3 scale)
     {
-        ersAPIFunctionPointers.ERS_InstancedModel_PushInstance(Data(), posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ);
+        ersAPIFunctionPointers.ERS_InstancedModel_PushInstance(
+            Data(), pos.X, pos.Y, pos.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
     }
 
     void InstancedModel::Clear()
@@ -42,4 +40,4 @@ namespace Ers::Visualization
     {
         return coreInstance;
     }
-} // namespace Ers::Visualization
+} // namespace Ers

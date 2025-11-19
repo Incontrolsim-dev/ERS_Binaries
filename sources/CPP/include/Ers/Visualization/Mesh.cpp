@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Mesh::Mesh()
     {
@@ -20,14 +20,10 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_Mesh_Release(Data());
     }
 
-    void Mesh::PushMesh(Mesh* other, float posX, float posY, float posZ)
+    void Mesh::PushMesh(Mesh* other, Vector3 pos, Vector3 axis, float turns, Vector3 scale)
     {
-        ersAPIFunctionPointers.ERS_Mesh_PushMesh(Data(), other->Data(), posX, posY, posZ, 0, 0, 1, 0, 1, 1, 1);
-    }
-
-    void Mesh::PushMesh(Mesh* other, float posX, float posY, float posZ, float axisX, float axisY, float axisZ, float turns, float scale)
-    {
-        ersAPIFunctionPointers.ERS_Mesh_PushMesh(Data(), other->Data(), posX, posY, posZ, axisX, axisY, axisZ, turns, scale, scale, scale);
+        ersAPIFunctionPointers.ERS_Mesh_PushMesh(
+            Data(), other->Data(), pos.X, pos.Y, pos.Z, axis.X, axis.Y, axis.Z, turns, scale.X, scale.Y, scale.Z);
     }
 
     void Mesh::TranslateToFloor()
@@ -35,14 +31,14 @@ namespace Ers::Visualization
         ersAPIFunctionPointers.ERS_Mesh_TranslateToFloor(Data());
     }
 
-    void Mesh::PushCube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float colorR, float colorG, float colorB)
+    void Mesh::PushCube(Vector3 pos, Vector3 scale, Color color)
     {
-        ersAPIFunctionPointers.ERS_Mesh_PushCube(Data(), x, y, z, sizeX, sizeY, sizeZ, colorR, colorG, colorB);
+        ersAPIFunctionPointers.ERS_Mesh_PushCube(Data(), pos.X, pos.Y, pos.Z, scale.X, scale.Y, scale.Z, color.Value);
     }
 
-    void Mesh::SetColor(float colorR, float colorG, float colorB)
+    void Mesh::SetColor(Color color)
     {
-        ersAPIFunctionPointers.ERS_Mesh_SetColor(Data(), colorR, colorG, colorB);
+        ersAPIFunctionPointers.ERS_Mesh_SetColor(Data(), color.Value);
     }
 
     uint32_t Mesh::GetVertexCount() const
@@ -74,4 +70,4 @@ namespace Ers::Visualization
     {
         return coreInstance;
     }
-} // namespace Ers::Visualization
+} // namespace Ers

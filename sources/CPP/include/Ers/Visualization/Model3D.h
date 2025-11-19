@@ -3,7 +3,7 @@
 #include "Ers/Visualization/Font.h"
 #include "Ers/Visualization/Mesh.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     class Model3D
     {
@@ -25,4 +25,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

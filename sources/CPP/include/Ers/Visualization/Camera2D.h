@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Ers::Visualization
+namespace Ers
 {
     class Camera2D
     {
@@ -30,4 +30,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

@@ -93,9 +93,6 @@ namespace Ers
             return false;
         result = ValidateAPIVersion();
 
-        // Setup core types
-        SetupCoreComponentIDS();
-
         return result;
     }
 

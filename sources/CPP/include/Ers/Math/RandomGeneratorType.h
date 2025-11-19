@@ -1,11 +1,14 @@
 #pragma once
 
-namespace Ers::Math
+#include <cstdint>
+
+namespace Ers
 {
-    enum class RandomGeneratorType
+    /// @brief Enum for random generator types.
+    enum class RandomGeneratorType : uint8_t
     {
         WichmannHill    = 0,
         MersenneTwister = 1,
         Invalid         = 2
     };
-}
+} // namespace Ers

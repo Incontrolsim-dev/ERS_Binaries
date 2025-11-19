@@ -56,9 +56,9 @@ namespace Ers
                 unsafe
                 {
                     return new Vector3(
-                        ErsEngine.ERS_OutlineComponent_Dimensions_X(CorePointer()),
-                        ErsEngine.ERS_OutlineComponent_Dimensions_Y(CorePointer()),
-                        ErsEngine.ERS_OutlineComponent_Dimensions_Z(CorePointer()));
+                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_X(CorePointer()),
+                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_Y(CorePointer()),
+                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_Z(CorePointer()));
                 }
             }
             set => ErsEngine.ERS_OutlineComponent_SetDimensions(CorePointer(), value.X, value.Y, value.Z);

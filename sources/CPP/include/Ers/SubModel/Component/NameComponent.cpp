@@ -4,6 +4,11 @@
 
 namespace Ers
 {
+    uint32_t NameComponent::CoreTypeId()
+    {
+        return ersAPIFunctionPointers.ERS_NameComponent_TypeId();
+    }
+
     std::string_view NameComponent::Name() const
     {
         return {ersAPIFunctionPointers.ERS_NameComponent_GetName(const_cast<NameComponent*>(this))};

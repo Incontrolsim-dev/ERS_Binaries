@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Ers.Engine;
-using Ers.Visualization;
 
 namespace Ers
 {
@@ -11,7 +10,7 @@ namespace Ers
     ///
     /// <para>
     /// Apply just a color to render a rectangle in 2D and a cube in 3D.
-    /// Add an <see cref="Ers.Visualization.InstancedModel"/> to set a custom 3D model.
+    /// Add an <see cref="Ers.InstancedModel"/> to set a custom 3D model.
     /// </para>
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
@@ -20,26 +19,14 @@ namespace Ers
         /// <summary>
         /// The color of the entity.
         /// </summary>
-        public Vector4 Color
+        public Color Color
         {
-            get {
-                unsafe
-                {
-                    IntPtr r = IntPtr.Zero;
-                    IntPtr g = IntPtr.Zero;
-                    IntPtr b = IntPtr.Zero;
-                    IntPtr a = IntPtr.Zero;
-                    ErsEngine.ERS_BasicRenderComponent_GetColor(CorePointer(), r, g, b, a);
-                    return new Vector4(*(float*)r, *(float*)g, *(float*)b, *(float*)a);
-                }
-            }
-            set {
-                ErsEngine.ERS_BasicRenderComponent_SetColor(CorePointer(), value.X, value.Y, value.Z, value.W);
-            }
+            get => Color.FromInt(ErsEngine.ERS_BasicRenderComponent_GetColor(CorePointer()));
+            set => ErsEngine.ERS_BasicRenderComponent_SetColor(CorePointer(), value.Value);
         }
 
         /// <summary>
-        /// The <see cref="Ers.Visualization.InstancedModel"/> used for 3D rendering.
+        /// The <see cref="Ers.InstancedModel"/> used for 3D rendering.
         /// </summary>
         public InstancedModel InstancedModel
         {

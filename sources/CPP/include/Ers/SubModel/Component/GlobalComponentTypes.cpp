@@ -75,11 +75,4 @@ namespace Ers
         script->OnSubModelMove(newEntityId);
     }
 
-    void SetupCoreComponentIDS()
-    {
-        TypeToComponentID<Ers::NameComponent>::ComponentTypeID      = ersAPIFunctionPointers.ERS_NameComponent_TypeId();
-        TypeToComponentID<Ers::RelationComponent>::ComponentTypeID  = ersAPIFunctionPointers.ERS_RelationComponent_TypeId();
-        TypeToComponentID<Ers::TransformComponent>::ComponentTypeID = ersAPIFunctionPointers.ERS_TransformComponent_TypeId();
-    }
-
 } // namespace Ers

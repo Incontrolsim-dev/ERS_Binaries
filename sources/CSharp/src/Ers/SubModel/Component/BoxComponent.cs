@@ -48,23 +48,6 @@ namespace Ers
         }
 
         /// <summary>
-        /// The center of the bounding box.
-        /// </summary>
-        [Category("Bounding box")]
-        [Description("The center of the bounding box.")]
-        public Vector3 Center
-        {
-            get {
-                unsafe
-                {
-                    float x, y, z;
-                    ErsEngine.ERS_BoxComponent_Center(CorePointer(), (IntPtr)(&x), (IntPtr)(&y), (IntPtr)(&z));
-                    return new Vector3(x, y, z);
-                }
-            }
-        }
-
-        /// <summary>
         /// The dimensions of the bounding box.
         /// </summary>
         [Category("Bounding box")]
@@ -75,8 +58,18 @@ namespace Ers
                 unsafe
                 {
                     Vector3 result = new Vector3();
-                    ErsEngine.ERS_BoxComponent_Dimensions(CorePointer(), (IntPtr)(&result.X), (IntPtr)(&result.Y), (IntPtr)(&result.Z));
+                    result.X       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_X(CorePointer());
+                    result.Y       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Y(CorePointer());
+                    result.Z       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Z(CorePointer());
                     return result;
+                }
+            }
+            set {
+                unsafe
+                {
+                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_X(CorePointer()) = value.X;
+                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Y(CorePointer()) = value.Y;
+                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Z(CorePointer()) = value.Z;
                 }
             }
         }

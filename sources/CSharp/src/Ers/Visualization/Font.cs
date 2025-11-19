@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ers.Visualization
+namespace Ers
 {
     public class Font
     {

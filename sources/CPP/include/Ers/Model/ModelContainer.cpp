@@ -156,6 +156,11 @@ namespace Ers
         return ersAPIFunctionPointers.ERS_ModelContainer_GetModelPrecision(coreModelContainerInstance);
     }
 
+    double ModelContainer::GetSpeedUp() const
+    {
+        return ersAPIFunctionPointers.ERS_ModelContainer_SimulationSpeedOverRealtime(coreModelContainerInstance);
+    }
+
     bool ModelContainer::Valid() const
     {
         return coreModelContainerInstance != nullptr;

@@ -1,6 +1,5 @@
 using Ers;
 using Ers.Engine;
-using Ers.Visualization;
 
 namespace Ers
 {

@@ -2,7 +2,7 @@
 
 #include "Ers/Visualization/RenderContext.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     class Window
     {
@@ -17,4 +17,4 @@ namespace Ers::Visualization
       private:
         void* data;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

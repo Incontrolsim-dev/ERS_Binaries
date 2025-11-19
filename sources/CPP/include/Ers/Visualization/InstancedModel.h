@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Ers/Math/HMM/VectorMath.h"
 #include "Ers/SubModel/Component/TransformComponent.h"
-#include "Model3D.h"
+#include "Ers/Visualization/Model3D.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     class InstancedModel
     {
@@ -16,16 +17,7 @@ namespace Ers::Visualization
         ~InstancedModel();
 
         void PushInstance(const TransformComponent& globalTransform);
-        void PushInstance(
-            float posX,
-            float posY,
-            float posZ,
-            float rotX   = 0.0f,
-            float rotY   = 0.0f,
-            float rotZ   = 0.0f,
-            float scaleX = 1.0f,
-            float scaleY = 1.0f,
-            float scaleZ = 1.0f);
+        void PushInstance(Vector3 pos, Vector3 rotation = Vec3(0, 0, 0), Vector3 scale = Vec3(1, 1, 1));
         void Clear();
 
         void* Data();
@@ -34,4 +26,4 @@ namespace Ers::Visualization
       private:
         void* coreInstance;
     };
-} // namespace Ers::Visualization
+} // namespace Ers

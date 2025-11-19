@@ -18,19 +18,10 @@ namespace Ers
         /// </summary>
         [Category("Rendering")]
         [Description("The color of the rendered object (RGBA).")]
-        public Vector4 Color
+        public Color Color
         {
-            get {
-                unsafe
-                {
-                    float r, g, b, a;
-                    ErsEngine.ERS_BasicRenderComponent_GetColor(CorePointer(), (IntPtr)(&r), (IntPtr)(&g), (IntPtr)(&b), (IntPtr)(&a));
-                    return new Vector4(r, g, b, a);
-                }
-            }
-            set {
-                ErsEngine.ERS_BasicRenderComponent_SetColor(CorePointer(), value.X, value.Y, value.Z, value.W);
-            }
+            get => Color.FromInt(ErsEngine.ERS_BasicRenderComponent_GetColor(CorePointer()));
+            set => ErsEngine.ERS_BasicRenderComponent_SetColor(CorePointer(), value.Value);
         }
 
         /// <summary>

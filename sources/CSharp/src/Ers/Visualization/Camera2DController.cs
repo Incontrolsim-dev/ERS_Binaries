@@ -1,6 +1,6 @@
 ﻿using Ers.Engine;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// Movement controller for 2D cameras using dragging and zooming.

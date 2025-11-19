@@ -11,7 +11,14 @@ namespace Ers
     {
         SimulationTime currentTime = GetSubModel().GetSimulator().CurrentTime();
         ersAPIFunctionPointers.ERS_PathAnimationSystem_Animate(
-            entity, currentTime, duration, fromValue, toValue, entityContainingPath, pathIndex);
+            entity, currentTime, currentTime + duration, fromValue, toValue, entityContainingPath, pathIndex);
+    }
+
+    void PathAnimationSystem::AnimateStraightPath(EntityID entity, SimulationTime duration, Vector3 from, Vector3 to)
+    {
+        SimulationTime currentTime = GetSubModel().GetSimulator().CurrentTime();
+        ersAPIFunctionPointers.ERS_PathAnimationSystem_AnimateStraightPath(
+            entity, currentTime, currentTime + duration, from.X, from.Y, from.Z, to.X, to.Y, to.Z);
     }
 
     void PathAnimationSystem::Update(SimulationTime currentTime)

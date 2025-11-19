@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using Ers.Engine;
 
-namespace Ers.Visualization
+namespace Ers
 {
     /// <summary>
     /// Material containing color and texture information.

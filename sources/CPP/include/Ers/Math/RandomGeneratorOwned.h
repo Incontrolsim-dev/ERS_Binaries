@@ -4,7 +4,7 @@
 
 #include "Ers/Math/RandomGeneratorType.h"
 
-namespace Ers::Math
+namespace Ers
 {
     class RandomGeneratorOwned
     {
@@ -24,9 +24,9 @@ namespace Ers::Math
         void SetSeed(size_t seed);
         double Sample();
 
-        Ers::Math::RandomGeneratorType GetRandomGeneratorType();
+        Ers::RandomGeneratorType GetRandomGeneratorType();
 
       private:
         void* coreRandomGeneratorInstance = nullptr;
     };
-} // namespace Ers::Math
+} // namespace Ers

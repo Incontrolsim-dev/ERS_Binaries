@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     InputAction::InputAction(void* coreInstance) :
         coreInstance(coreInstance)
@@ -54,4 +54,4 @@ namespace Ers::Visualization
     {
         ersAPIFunctionPointers.ERS_InputHandler_UpdateMousePos(x, y);
     }
-} // namespace Ers::Visualization
+} // namespace Ers

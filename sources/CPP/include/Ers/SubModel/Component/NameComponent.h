@@ -1,6 +1,7 @@
 #pragma once
 #include "Ers/SubModel/CoreComponent.h"
 
+#include <cstdint>
 #include <string>
 
 namespace Ers
@@ -15,6 +16,10 @@ namespace Ers
         NameComponent& operator=(const NameComponent&) = delete;
         NameComponent& operator=(NameComponent&&)      = delete;
         ~NameComponent()                               = default;
+
+        /// @brief Get the core type ID for this component
+        /// @return The component type ID from ers-core
+        static uint32_t CoreTypeId();
 
         /// @brief Get name
         /// @return

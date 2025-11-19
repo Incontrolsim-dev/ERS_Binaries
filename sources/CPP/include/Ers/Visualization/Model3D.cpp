@@ -2,7 +2,7 @@
 
 #include "Ers/Api.h"
 
-namespace Ers::Visualization
+namespace Ers
 {
     Model3D::Model3D()
     {
@@ -29,4 +29,4 @@ namespace Ers::Visualization
     {
         return Mesh(ersAPIFunctionPointers.ERS_Model3D_GetMesh(coreInstance, index));
     }
-} // namespace Ers::Visualization
+} // namespace Ers

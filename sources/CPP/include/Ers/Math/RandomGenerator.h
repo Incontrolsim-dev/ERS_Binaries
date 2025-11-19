@@ -4,7 +4,7 @@
 
 #include "Ers/Math/RandomGeneratorType.h"
 
-namespace Ers::Math
+namespace Ers
 {
     struct RandomGenerator
     {
@@ -20,9 +20,9 @@ namespace Ers::Math
         void SetSeed(size_t seed);
         double Sample();
 
-        Ers::Math::RandomGeneratorType GetRandomGeneratorType();
+        Ers::RandomGeneratorType GetRandomGeneratorType();
 
         void* Data();
         const void* const Data() const;
     };
-} // namespace Ers::Math
+} // namespace Ers

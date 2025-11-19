@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Ers.Engine;
 
-namespace Ers.Visualization
+namespace Ers
 {
     public class Window
     {

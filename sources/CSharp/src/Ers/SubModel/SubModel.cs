@@ -3,7 +3,6 @@ using Ers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Ers.Interpreter;
-using Ers.Visualization;
 using System.Reflection;
 
 namespace Ers

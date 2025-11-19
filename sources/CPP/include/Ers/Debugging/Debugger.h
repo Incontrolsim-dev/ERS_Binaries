@@ -21,7 +21,7 @@ namespace Ers
         Debugger& operator=(Debugger&&)      = delete;
         ~Debugger();
 
-        Ers::Visualization::RenderContext GetRenderContext();
+        Ers::RenderContext GetRenderContext();
 
         bool Is3DMode() const;
         bool ShowBackgroundGrid() const;
@@ -39,8 +39,8 @@ namespace Ers
         /// @param render3D Optional 3D render function. Uses basic render system when no custom function is given.
         static void
         Run(ModelContainer& modelContainer,
-            const std::function<void(Ers::Visualization::RenderContext&)>& render2D = nullptr,
-            const std::function<void(Ers::Visualization::RenderContext&)>& render3D = nullptr);
+            const std::function<void(Ers::RenderContext&)>& render2D = nullptr,
+            const std::function<void(Ers::RenderContext&)>& render3D = nullptr);
 
       private:
         void* coreInstance;

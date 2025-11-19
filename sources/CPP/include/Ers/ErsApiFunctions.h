@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#define ERS_N_FUNCTIONS 529
+#define ERS_N_FUNCTIONS 538
 
 // Temporary typedef until we found a good place for shared information.
 typedef uint64_t EntityID; typedef uint64_t SimulationTime;
@@ -56,6 +56,7 @@ typedef void (*ERS_Logger_SetLogLevelSignature)(int logLevel);
 typedef void (*ERS_Logger_AddCallbackSignature)(void(*logCallback)(int level, const char* message, void* callbackData), void* callbackData);
 typedef char* (*ERS_Settings_GetSettingSignature)(const char* section, const char* message, const char* defaultValue);
 typedef void (*ERS_Settings_SetSettingSignature)(const char* section, const char* message, const char* value);
+typedef void (*ERS_Settings_ClearSignature)();
 typedef bool (*ERS_VirtualFileSystem_MountDirectorySignature)(const char* path, const char* directoryName);
 typedef bool (*ERS_Serializer_IsWritingSignature)(void* serializerHandle);
 typedef void (*ERS_Serializer_SerializeUInt64Signature)(void* serializerHandle, const char* key, uint64_t* value);
@@ -99,11 +100,11 @@ typedef void (*ERS_SubModel_BeginInterpreterRenderContextSignature)(void* subMod
 typedef void (*ERS_SubModel_EndInterpreterRenderContextSignature)(void* subModelHandle);
 typedef void* (*ERS_SubModel_GetInterpreterRenderContextSignature)(void* subModelHandle);
 typedef void (*ERS_SubModel_PrintInterpreterGCStatsSignature)(void* subModelHandle);
-typedef void (*ERS_Interpreter_RegisterFunctionSignature)(const char* functionName, void* userData, void*(*callback)(void* userData, void* interpreterArgs), char* docs);
+typedef void (*ERS_Interpreter_RegisterFunctionSignature)(const char* functionName, void* userData, void*(*callback)(void* userData, void* interpreterArgs), const char* docs);
 typedef const char* (*ERS_InterpreterArgs_GetStringArgumentSignature)(void* interpreterArgsHandle, int index);
 typedef double (*ERS_InterpreterArgs_GetDoubleArgumentSignature)(void* interpreterArgsHandle, int index);
 typedef EntityID (*ERS_InterpreterArgs_GetEntityArgumentSignature)(void* interpreterArgsHandle, int index);
-typedef uint64_t (*ERS_InterpreterArgs_GetUInt64ArgumentSignature)(void* interpreterArgsHandle, int index);
+typedef int64_t (*ERS_InterpreterArgs_GetInt64ArgumentSignature)(void* interpreterArgsHandle, int index);
 typedef bool (*ERS_InterpreterArgs_GetBoolArgumentSignature)(void* interpreterArgsHandle, int index);
 typedef double (*ERS_InterpreterArgs_GetArgCountSignature)(void* interpreterArgsHandle);
 typedef void* (*ERS_InterpreterArgs_CreateSignature)(int sz);
@@ -133,6 +134,18 @@ typedef float (*ERS_PathSegment_GetRadiusSignature)(void* instance);
 typedef float (*ERS_PathSegment_GetBeginAngleSignature)(void* instance);
 typedef float (*ERS_PathSegment_GetEndAngleSignature)(void* instance);
 typedef float (*ERS_PathSegment_GetEndZSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP0XSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP0YSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP0ZSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP1XSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP1YSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP1ZSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP2XSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP2YSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP2ZSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP3XSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP3YSignature)(void* instance);
+typedef float (*ERS_PathSegment_GetP3ZSignature)(void* instance);
 typedef void (*ERS_PathSegment_GetPointAlongPathSignature)(void* instance, float t, float* vec3out);
 typedef void (*ERS_PathSegment_GetRotationAlongPathSignature)(void* instance, float t, float* vec3out);
 typedef void* (*ERS_Random_Generator_MersenneTwister_CreateSignature)();
@@ -206,25 +219,23 @@ typedef void* (*ERS_Simulator_FindOutgoingDependencyByIdSignature)(void* instanc
 typedef void* (*ERS_Simulator_FindOutgoingDependencyByNameSignature)(void* instance, const char* nameTag, int nameSize);
 typedef SimulationTime (*ERS_Simulator_GetCurrentTimeSignature)(const void* simulatorInstance);
 typedef uint32_t (*ERS_BasicRenderComponent_TypeIdSignature)();
-typedef void* (*ERS_BasicRenderComponent_CreateCallbackSignature)();
-typedef void (*ERS_BasicRenderComponent_GetColorSignature)(void* instance, float* r, float* g, float* b, float* a);
-typedef void (*ERS_BasicRenderComponent_SetColorSignature)(void* instance, float r, float g, float b, float a);
+typedef uint32_t (*ERS_BasicRenderComponent_GetColorSignature)(void* instance);
+typedef void (*ERS_BasicRenderComponent_SetColorSignature)(void* instance, uint32_t color);
 typedef void (*ERS_BasicRenderComponent_SetInstancedModelSignature)(void* instance, void* instancedModel);
 typedef void* (*ERS_BasicRenderComponent_GetInstancedModelSignature)(void* instance);
 typedef uint32_t (*ERS_BoxComponent_TypeIdSignature)();
-typedef void* (*ERS_BoxComponent_CreateCallbackSignature)();
 typedef float* (*ERS_BoxComponent_Min_XSignature)(void* instance);
 typedef float* (*ERS_BoxComponent_Min_YSignature)(void* instance);
 typedef float* (*ERS_BoxComponent_Min_ZSignature)(void* instance);
 typedef float* (*ERS_BoxComponent_Max_XSignature)(void* instance);
 typedef float* (*ERS_BoxComponent_Max_YSignature)(void* instance);
 typedef float* (*ERS_BoxComponent_Max_ZSignature)(void* instance);
-typedef void (*ERS_BoxComponent_CenterSignature)(void* instance, float* outCenterX, float* outCenterY, float* outCenterZ);
-typedef void (*ERS_BoxComponent_DimensionsSignature)(void* instance, float* outDimX, float* outDimY, float* outDimZ);
+typedef float* (*ERS_BoxComponent_Dimensions_XSignature)(void* instance);
+typedef float* (*ERS_BoxComponent_Dimensions_YSignature)(void* instance);
+typedef float* (*ERS_BoxComponent_Dimensions_ZSignature)(void* instance);
 typedef bool (*ERS_BoxComponent_InCollision_Point2DSignature)(void* instance, float pointX, float pointY);
 typedef bool (*ERS_BoxComponent_InCollision_RaySignature)(void* instance, float posX, float posY, float posZ, float dirX, float dirY, float dirZ);
 typedef uint32_t (*ERS_ChannelComponent_TypeIdSignature)();
-typedef void* (*ERS_ChannelComponent_CreateCallbackSignature)();
 typedef void (*ERS_ChannelComponent_RegisterTypeSignature)(void* submodelInstance);
 typedef int (*ERS_ChannelComponent_GetTypeSignature)(void* instance);
 typedef EntityID (*ERS_ChannelComponent_GetConnectedToSignature)(void* instance);
@@ -240,24 +251,23 @@ typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterResourceComponentSignatur
 typedef uint32_t (*ERS_GlobalComponentRegistry_RegisterComponentSignature)(const char* name, size_t sz, void* typeInfoPtr, void* customSerialize);
 typedef bool (*ERS_GlobalComponentRegistry_IsRegisteredSignature)(uint32_t componentID);
 typedef uint32_t (*ERS_NameComponent_TypeIdSignature)();
-typedef void* (*ERS_NameComponent_CreateCallbackSignature)();
 typedef const char* (*ERS_NameComponent_GetNameSignature)(void* nameComponentPointer);
 typedef void (*ERS_NameComponent_SetNameSignature)(void* nameComponentPointer, const char* newName, int newNameSize);
 typedef uint32_t (*ERS_OutlineComponent_TypeIdSignature)();
-typedef void* (*ERS_OutlineComponent_CreateCallbackSignature)();
 typedef float* (*ERS_OutlineComponent_Center_XSignature)(void* instance);
 typedef float* (*ERS_OutlineComponent_Center_YSignature)(void* instance);
 typedef float* (*ERS_OutlineComponent_Center_ZSignature)(void* instance);
-typedef float (*ERS_OutlineComponent_Dimensions_XSignature)(void* instance);
-typedef float (*ERS_OutlineComponent_Dimensions_YSignature)(void* instance);
-typedef float (*ERS_OutlineComponent_Dimensions_ZSignature)(void* instance);
+typedef float* (*ERS_OutlineComponent_Dimensions_XSignature)(void* instance);
+typedef float* (*ERS_OutlineComponent_Dimensions_YSignature)(void* instance);
+typedef float* (*ERS_OutlineComponent_Dimensions_ZSignature)(void* instance);
 typedef void (*ERS_OutlineComponent_SetDimensionsSignature)(void* instance, float dimsX, float dimsY, float dimsZ);
 typedef uint32_t (*ERS_PathComponent_TypeIdSignature)();
-typedef void* (*ERS_PathComponent_CreateCallbackSignature)();
 typedef void* (*ERS_PathComponent_GetSegmentSignature)(void* instance, int index);
 typedef int (*ERS_PathComponent_GetNumSegmentsSignature)(void* instance);
 typedef void (*ERS_PathComponent_AddStraightSignature)(void* instance, float fromX, float fromY, float fromZ, float toX, float toY, float toZ);
 typedef void (*ERS_PathComponent_AddHelicalSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ);
+typedef void (*ERS_PathComponent_AddCubicBezierSignature)(void* instance, float p0X, float p0Y, float p0Z, float p1X, float p1Y, float p1Z, float p2X, float p2Y, float p2Z, float p3X, float p3Y, float p3Z);
+typedef void (*ERS_PathComponent_AddCubicBezierFromDirectionsSignature)(void* instance, float startX, float startY, float startZ, float startDirX, float startDirY, float startDirZ, float endX, float endY, float endZ, float endDirX, float endDirY, float endDirZ, float curvature);
 typedef uint32_t (*ERS_RelationComponent_TypeIdSignature)();
 typedef void (*ERS_RelationComponent_RegisterTypeSignature)(void* submodelInstance);
 typedef EntityID (*ERS_RelationComponent_GetParentSignature)(void* relationComponent);
@@ -267,14 +277,12 @@ typedef EntityID (*ERS_RelationComponent_GetPreviousSignature)(void* relationCom
 typedef EntityID (*ERS_RelationComponent_GetNextSignature)(void* relationComponent);
 typedef uint32_t (*ERS_RelationComponent_GetChildCountSignature)(void* relationComponent);
 typedef uint32_t (*ERS_ResourceComponent_TypeIdSignature)();
-typedef void* (*ERS_ResourceComponent_CreateCallbackSignature)();
 typedef void (*ERS_ResourceComponent_RegisterTypeSignature)(void* submodelInstance);
 typedef size_t (*ERS_ResourceComponent_GetNumInputChannelsSignature)(void* instance);
 typedef size_t (*ERS_ResourceComponent_GetNumOutputChannelsSignature)(void* instance);
 typedef EntityID (*ERS_ResourceComponent_GetInputChannelSignature)(void* instance, size_t index);
 typedef EntityID (*ERS_ResourceComponent_GetOutputChannelSignature)(void* instance, size_t index);
 typedef uint32_t (*ERS_TransformComponent_TypeIdSignature)();
-typedef void* (*ERS_TransformComponent_CreateCallbackSignature)();
 typedef void (*ERS_TransformComponent_RegisterTypeSignature)(void* submodelInstance);
 typedef float (*ERS_TransformComponent_Position_XSignature)(void* instance);
 typedef void (*ERS_TransformComponent_SetPosition_XSignature)(void* instance, float x);
@@ -403,6 +411,7 @@ typedef void (*ERS_InterpreterRenderSystem_Render2DSignature)();
 typedef void (*ERS_InterpreterRenderSystem_BuildMesh3DSignature)(void* meshPtr);
 typedef void (*ERS_PathAnimationSystem_UpdateSignature)(SimulationTime currentTime);
 typedef void (*ERS_PathAnimationSystem_AnimateSignature)(EntityID toAnimate, SimulationTime startTime, SimulationTime endTime, float fromValue, float toValue, EntityID entityContainingPath, int pathIndex);
+typedef void (*ERS_PathAnimationSystem_AnimateStraightPathSignature)(EntityID toAnimate, SimulationTime startTime, SimulationTime endTime, float fromX, float fromY, float fromZ, float toX, float toY, float toZ);
 typedef void (*ERS_TransformSystem_UpdateGlobalsSignature)(void* subModelInstance);
 typedef void (*ERS_Camera2D_UpdateTransformSignature)(void* instance, int screenWidth, int screenHeight);
 typedef float* (*ERS_Camera2D_PositionXSignature)(void* instance);
@@ -459,18 +468,18 @@ typedef void (*ERS_Mesh_IncreaseSignature)(void* instance);
 typedef void (*ERS_Mesh_DisposeSignature)(void* instance);
 typedef void (*ERS_Mesh_SetDefaultMaterialSignature)(void* instance);
 typedef void (*ERS_Mesh_ClearSignature)(void* instance);
-typedef void (*ERS_Mesh_PushVertex3DSignature)(void* instance, float x, float y, float z, float nx, float ny, float nz, float u, float v, float colorR, float colorG, float colorB);
+typedef void (*ERS_Mesh_PushVertex3DSignature)(void* instance, float x, float y, float z, float nx, float ny, float nz, float u, float v, uint32_t color);
 typedef void (*ERS_Mesh_PushIndexSignature)(void* instance, uint32_t index);
-typedef void (*ERS_Mesh_PushQuadSignature)(void* instance, float pos0X, float pos0Y, float pos0Z, float uv0X, float uv0Y, float pos1X, float pos1Y, float pos1Z, float uv1X, float uv1Y, float pos2X, float pos2Y, float pos2Z, float uv2X, float uv2Y, float pos3X, float pos3Y, float pos3Z, float uv3X, float uv3Y, float colorR, float colorG, float colorB, float normX, float normY, float normZ);
-typedef void (*ERS_Mesh_PushCubeSignature)(void* instance, float posX, float posY, float posZ, float dimsX, float dimsY, float dimsZ, float colorR, float colorG, float colorB);
-typedef void (*ERS_Mesh_PushBeamSignature)(void* instance, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float upX, float upY, float upZ, float width, float height, float colorR, float colorG, float colorB);
+typedef void (*ERS_Mesh_PushQuadSignature)(void* instance, float pos0X, float pos0Y, float pos0Z, float uv0X, float uv0Y, float pos1X, float pos1Y, float pos1Z, float uv1X, float uv1Y, float pos2X, float pos2Y, float pos2Z, float uv2X, float uv2Y, float pos3X, float pos3Y, float pos3Z, float uv3X, float uv3Y, uint32_t color, float normX, float normY, float normZ);
+typedef void (*ERS_Mesh_PushCubeSignature)(void* instance, float posX, float posY, float posZ, float dimsX, float dimsY, float dimsZ, uint32_t color);
+typedef void (*ERS_Mesh_PushBeamSignature)(void* instance, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float upX, float upY, float upZ, float width, float height, uint32_t color);
 typedef void (*ERS_Mesh_PushText3DSignature)(void* instance, void* fontInstance, const char* text, float posX, float posY, float posZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ, float scale, uint32_t color);
 typedef void (*ERS_Mesh_PushText3DAlignedSignature)(void* instance, void* fontInstance, const char* text, float centerX, float centerY, float centerZ, float normalX, float normalY, float normalZ, float worldUpx, float worldUpy, float worldUpz, float scale, uint32_t color);
 typedef void (*ERS_Mesh_PushTextBillboardSignature)(void* instance, void* fontInstance, const char* text, float posX, float posY, float posZ, float cameraX, float cameraY, float cameraZ, float worldUpX, float worldUpY, float worldUpZ, float scale, uint32_t color);
 typedef void (*ERS_Mesh_PushText3DDefaultSignature)(void* instance, const char* text, float posX, float posY, float posZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ, float scale, uint32_t color);
-typedef void (*ERS_Mesh_PushVerticalHelicalStripSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float stripHeight, float colorR, float colorG, float colorB, int segments, bool normalsInward);
-typedef void (*ERS_Mesh_PushHorizontalHelicalStripSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float stripLength, float colorR, float colorG, float colorB, int segments, bool normalUp);
-typedef void (*ERS_Mesh_PushHelicalBeamSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float beamWidth, float beamHeight, float colorR, float colorG, float colorB, int segments);
+typedef void (*ERS_Mesh_PushVerticalHelicalStripSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float stripHeight, uint32_t color, int segments, bool normalsInward);
+typedef void (*ERS_Mesh_PushHorizontalHelicalStripSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float stripLength, uint32_t color, int segments, bool normalUp);
+typedef void (*ERS_Mesh_PushHelicalBeamSignature)(void* instance, float centerX, float centerY, float centerZ, float radius, float beginAngle, float endAngle, float endZ, float beamWidth, float beamHeight, uint32_t color, int segments);
 typedef void (*ERS_Mesh_PushText3DAlignedDefaultSignature)(void* instance, const char* text, float centerX, float centerY, float centerZ, float normalX, float normalY, float normalZ, float worldUpx, float worldUpy, float worldUpz, float scale, uint32_t color);
 typedef void (*ERS_Mesh_PushTextBillboardDefaultSignature)(void* instance, const char* text, float posX, float posY, float posZ, float cameraX, float cameraY, float cameraZ, float worldUpx, float worldUpy, float worldUpz, float scale, uint32_t color);
 typedef bool (*ERS_Mesh_CreateBuffersSignature)(void* instance);
@@ -486,7 +495,7 @@ typedef void (*ERS_Mesh_TransformVerticesSignature)(void* instance, float* trans
 typedef void (*ERS_Mesh_TransformVerticesRangeSignature)(void* instance, float* transform16, uint32_t startIdx, uint32_t endIdx);
 typedef void (*ERS_Mesh_CenterAtOriginSignature)(void* instance);
 typedef void (*ERS_Mesh_TranslateToFloorSignature)(void* instance);
-typedef void (*ERS_Mesh_SetColorSignature)(void* instance, float colorR, float colorG, float colorB);
+typedef void (*ERS_Mesh_SetColorSignature)(void* instance, uint32_t color);
 typedef void (*ERS_Mesh_NormalizeSignature)(void* instance);
 typedef void (*ERS_Mesh_GetMaxSignature)(void* instance, float* outX, float* outY, float* outZ);
 typedef void (*ERS_Mesh_GetMinSignature)(void* instance, float* outX, float* outY, float* outZ);
@@ -504,32 +513,32 @@ typedef void* (*ERS_RenderContext_CreateSignature)(int screenWidth, int screenHe
 typedef void (*ERS_RenderContext_DisposeSignature)(void* instance);
 typedef void* (*ERS_RenderContext_GetCamera2DSignature)(void* instance);
 typedef void (*ERS_RenderContext_SetViewportSignature)(void* instance, int width, int height);
-typedef void (*ERS_RenderContext_SetBackgroundColorSignature)(void* instance, float r, float g, float b, float a);
+typedef void (*ERS_RenderContext_SetBackgroundColorSignature)(void* instance, uint32_t color);
 typedef void* (*ERS_RenderContext_GetCamera3DSignature)(void* instance);
 typedef void (*ERS_RenderContext_ClearScreenSignature)(void* instance);
 typedef void (*ERS_RenderContext_Begin2DSignature)(void* instance);
 typedef void (*ERS_RenderContext_End2DSignature)(void* instance);
 typedef void (*ERS_RenderContext_Begin3DSignature)(void* instance);
 typedef void (*ERS_RenderContext_End3DSignature)(void* instance);
-typedef void (*ERS_RenderContext_DrawQuad2DSignature)(void* instance, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawRect2DSignature)(void* instance, float x, float y, float sizeX, float sizeY, float angle, float colorR, float colorG, float colorB, float colorA, int64_t zIndex);
-typedef void (*ERS_RenderContext_DrawScreenLine2DSignature)(void* instance, float x0, float y0, float x1, float y1, float thickness, float colorR, float colorG, float colorB, float colorA, int64_t zIndex);
-typedef void (*ERS_RenderContext_DrawScreenLineRect2DSignature)(void* instance, float x, float y, float sizeX, float sizeY, float angle, float thickness, float colorR, float colorG, float colorB, float colorA, int64_t zIndex);
-typedef void (*ERS_RenderContext_DrawTextBillboardSignature)(void* instance, const char* text, float centerX, float centerY, float centerZ, float scale, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawText2DSignature)(void* instance, const char* text, float x, float y, float scale, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawTexture2DSignature)(void* instance, void* textureHandle, float x, float y, float width, float height, float uvMinX, float uvMinY, float uvMaxX, float uvMaxY, float angle, float r, float g, float b, float a);
-typedef void (*ERS_RenderContext_DrawCube3DSignature)(void* instance, float x, float y, float z, float xRotation, float yRotation, float zRotation, float xScale, float yScale, float zScale, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawInfiniteGrid2DSignature)(void* instance, float colorR, float colorG, float colorB, float lineThickness, float armLength, float targetPixelSize);
-typedef void (*ERS_RenderContext_DrawInfiniteGrid3DSignature)(void* instance, float colorR, float colorG, float colorB, float lineThickness, float targetPixelSize);
-typedef void (*ERS_RenderContext_DrawText3DSignature)(void* instance, const char* text, float centerX, float centerY, float centerZ, float normalX, float normalY, float normalZ, float worldUpX, float worldUpY, float worldUpZ, float scale, float colorR, float colorG, float colorB, float colorA);
+typedef void (*ERS_RenderContext_DrawQuad2DSignature)(void* instance, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, uint32_t color);
+typedef void (*ERS_RenderContext_DrawRect2DSignature)(void* instance, float x, float y, float sizeX, float sizeY, float angle, uint32_t color, int64_t zIndex);
+typedef void (*ERS_RenderContext_DrawScreenLine2DSignature)(void* instance, float x0, float y0, float x1, float y1, float thickness, uint32_t color, int64_t zIndex);
+typedef void (*ERS_RenderContext_DrawScreenLineRect2DSignature)(void* instance, float x, float y, float sizeX, float sizeY, float angle, float thickness, uint32_t color, int64_t zIndex);
+typedef void (*ERS_RenderContext_DrawTextBillboardSignature)(void* instance, const char* text, float centerX, float centerY, float centerZ, float scale, uint32_t color);
+typedef void (*ERS_RenderContext_DrawText2DSignature)(void* instance, const char* text, float x, float y, float scale, uint32_t color);
+typedef void (*ERS_RenderContext_DrawTexture2DSignature)(void* instance, void* textureHandle, float x, float y, float width, float height, float uvMinX, float uvMinY, float uvMaxX, float uvMaxY, float angle, uint32_t color);
+typedef void (*ERS_RenderContext_DrawCube3DSignature)(void* instance, float x, float y, float z, float xRotation, float yRotation, float zRotation, float xScale, float yScale, float zScale, uint32_t color);
+typedef void (*ERS_RenderContext_DrawInfiniteGrid2DSignature)(void* instance, uint32_t color, float lineThickness, float armLength, float targetPixelSize);
+typedef void (*ERS_RenderContext_DrawInfiniteGrid3DSignature)(void* instance, uint32_t color, float lineThickness, float targetPixelSize);
+typedef void (*ERS_RenderContext_DrawText3DSignature)(void* instance, const char* text, float centerX, float centerY, float centerZ, float normalX, float normalY, float normalZ, float worldUpX, float worldUpY, float worldUpZ, float scale, uint32_t color);
 typedef void (*ERS_RenderContext_SetLightDirectionSignature)(void* instance, float x, float y, float z);
-typedef void (*ERS_RenderContext_DrawLine2DSignature)(void* instance, float x0, float y0, float x1, float y1, float thickness, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawTriangle2DSignature)(void* instance, float x0, float y0, float x1, float y1, float x2, float y2, float colorR, float colorG, float colorB, float colorA);
-typedef void (*ERS_RenderContext_DrawTriangle2D_BoxSignature)(void* instance, float centerX, float centerY, float sizeX, float sizeY, float angle, float colorR, float colorG, float colorB, float colorA);
+typedef void (*ERS_RenderContext_DrawLine2DSignature)(void* instance, float x0, float y0, float x1, float y1, float thickness, uint32_t color);
+typedef void (*ERS_RenderContext_DrawTriangle2DSignature)(void* instance, float x0, float y0, float x1, float y1, float x2, float y2, uint32_t color);
+typedef void (*ERS_RenderContext_DrawTriangle2D_BoxSignature)(void* instance, float centerX, float centerY, float sizeX, float sizeY, float angle, uint32_t color);
 typedef void (*ERS_RenderContext_DrawInstancedModel3DWithMeshSignature)(void* renderContextHandle, void* meshHandle, void* instancedModelHandle);
 typedef void (*ERS_RenderContext_PresentSignature)(void* instance);
 typedef void (*ERS_RenderContext_DrawInstancedModel3DSignature)(void* renderContextHandle, void* instancedModelHandle);
-typedef void (*ERS_RenderContext_DrawArc2DSignature)(void* renderContextHandle, float x, float y, float radius, float width, float beginAngle, float endAngle, int segments, float colorR, float colorG, float colorB, float colorA);
+typedef void (*ERS_RenderContext_DrawArc2DSignature)(void* renderContextHandle, float x, float y, float radius, float width, float beginAngle, float endAngle, int segments, uint32_t color);
 typedef void (*ERS_RenderContext_DrawModel3DSignature)(void* instanceHandle, void* modelHandle);
 typedef void (*ERS_RenderContext_DrawMeshSignature)(void* instance, void* meshHandle);
 typedef void (*ERS_RenderContext_CalculateTextSizeSignature)(void* instance, const char* text, float scale, float* width, float* height);
@@ -588,6 +597,7 @@ union ErsAPIFunctionPointers {
         ERS_Logger_AddCallbackSignature ERS_Logger_AddCallback;
         ERS_Settings_GetSettingSignature ERS_Settings_GetSetting;
         ERS_Settings_SetSettingSignature ERS_Settings_SetSetting;
+        ERS_Settings_ClearSignature ERS_Settings_Clear;
         ERS_VirtualFileSystem_MountDirectorySignature ERS_VirtualFileSystem_MountDirectory;
         ERS_Serializer_IsWritingSignature ERS_Serializer_IsWriting;
         ERS_Serializer_SerializeUInt64Signature ERS_Serializer_SerializeUInt64;
@@ -635,7 +645,7 @@ union ErsAPIFunctionPointers {
         ERS_InterpreterArgs_GetStringArgumentSignature ERS_InterpreterArgs_GetStringArgument;
         ERS_InterpreterArgs_GetDoubleArgumentSignature ERS_InterpreterArgs_GetDoubleArgument;
         ERS_InterpreterArgs_GetEntityArgumentSignature ERS_InterpreterArgs_GetEntityArgument;
-        ERS_InterpreterArgs_GetUInt64ArgumentSignature ERS_InterpreterArgs_GetUInt64Argument;
+        ERS_InterpreterArgs_GetInt64ArgumentSignature ERS_InterpreterArgs_GetInt64Argument;
         ERS_InterpreterArgs_GetBoolArgumentSignature ERS_InterpreterArgs_GetBoolArgument;
         ERS_InterpreterArgs_GetArgCountSignature ERS_InterpreterArgs_GetArgCount;
         ERS_InterpreterArgs_CreateSignature ERS_InterpreterArgs_Create;
@@ -665,6 +675,18 @@ union ErsAPIFunctionPointers {
         ERS_PathSegment_GetBeginAngleSignature ERS_PathSegment_GetBeginAngle;
         ERS_PathSegment_GetEndAngleSignature ERS_PathSegment_GetEndAngle;
         ERS_PathSegment_GetEndZSignature ERS_PathSegment_GetEndZ;
+        ERS_PathSegment_GetP0XSignature ERS_PathSegment_GetP0X;
+        ERS_PathSegment_GetP0YSignature ERS_PathSegment_GetP0Y;
+        ERS_PathSegment_GetP0ZSignature ERS_PathSegment_GetP0Z;
+        ERS_PathSegment_GetP1XSignature ERS_PathSegment_GetP1X;
+        ERS_PathSegment_GetP1YSignature ERS_PathSegment_GetP1Y;
+        ERS_PathSegment_GetP1ZSignature ERS_PathSegment_GetP1Z;
+        ERS_PathSegment_GetP2XSignature ERS_PathSegment_GetP2X;
+        ERS_PathSegment_GetP2YSignature ERS_PathSegment_GetP2Y;
+        ERS_PathSegment_GetP2ZSignature ERS_PathSegment_GetP2Z;
+        ERS_PathSegment_GetP3XSignature ERS_PathSegment_GetP3X;
+        ERS_PathSegment_GetP3YSignature ERS_PathSegment_GetP3Y;
+        ERS_PathSegment_GetP3ZSignature ERS_PathSegment_GetP3Z;
         ERS_PathSegment_GetPointAlongPathSignature ERS_PathSegment_GetPointAlongPath;
         ERS_PathSegment_GetRotationAlongPathSignature ERS_PathSegment_GetRotationAlongPath;
         ERS_Random_Generator_MersenneTwister_CreateSignature ERS_Random_Generator_MersenneTwister_Create;
@@ -738,25 +760,23 @@ union ErsAPIFunctionPointers {
         ERS_Simulator_FindOutgoingDependencyByNameSignature ERS_Simulator_FindOutgoingDependencyByName;
         ERS_Simulator_GetCurrentTimeSignature ERS_Simulator_GetCurrentTime;
         ERS_BasicRenderComponent_TypeIdSignature ERS_BasicRenderComponent_TypeId;
-        ERS_BasicRenderComponent_CreateCallbackSignature ERS_BasicRenderComponent_CreateCallback;
         ERS_BasicRenderComponent_GetColorSignature ERS_BasicRenderComponent_GetColor;
         ERS_BasicRenderComponent_SetColorSignature ERS_BasicRenderComponent_SetColor;
         ERS_BasicRenderComponent_SetInstancedModelSignature ERS_BasicRenderComponent_SetInstancedModel;
         ERS_BasicRenderComponent_GetInstancedModelSignature ERS_BasicRenderComponent_GetInstancedModel;
         ERS_BoxComponent_TypeIdSignature ERS_BoxComponent_TypeId;
-        ERS_BoxComponent_CreateCallbackSignature ERS_BoxComponent_CreateCallback;
         ERS_BoxComponent_Min_XSignature ERS_BoxComponent_Min_X;
         ERS_BoxComponent_Min_YSignature ERS_BoxComponent_Min_Y;
         ERS_BoxComponent_Min_ZSignature ERS_BoxComponent_Min_Z;
         ERS_BoxComponent_Max_XSignature ERS_BoxComponent_Max_X;
         ERS_BoxComponent_Max_YSignature ERS_BoxComponent_Max_Y;
         ERS_BoxComponent_Max_ZSignature ERS_BoxComponent_Max_Z;
-        ERS_BoxComponent_CenterSignature ERS_BoxComponent_Center;
-        ERS_BoxComponent_DimensionsSignature ERS_BoxComponent_Dimensions;
+        ERS_BoxComponent_Dimensions_XSignature ERS_BoxComponent_Dimensions_X;
+        ERS_BoxComponent_Dimensions_YSignature ERS_BoxComponent_Dimensions_Y;
+        ERS_BoxComponent_Dimensions_ZSignature ERS_BoxComponent_Dimensions_Z;
         ERS_BoxComponent_InCollision_Point2DSignature ERS_BoxComponent_InCollision_Point2D;
         ERS_BoxComponent_InCollision_RaySignature ERS_BoxComponent_InCollision_Ray;
         ERS_ChannelComponent_TypeIdSignature ERS_ChannelComponent_TypeId;
-        ERS_ChannelComponent_CreateCallbackSignature ERS_ChannelComponent_CreateCallback;
         ERS_ChannelComponent_RegisterTypeSignature ERS_ChannelComponent_RegisterType;
         ERS_ChannelComponent_GetTypeSignature ERS_ChannelComponent_GetType;
         ERS_ChannelComponent_GetConnectedToSignature ERS_ChannelComponent_GetConnectedTo;
@@ -772,11 +792,9 @@ union ErsAPIFunctionPointers {
         ERS_GlobalComponentRegistry_RegisterComponentSignature ERS_GlobalComponentRegistry_RegisterComponent;
         ERS_GlobalComponentRegistry_IsRegisteredSignature ERS_GlobalComponentRegistry_IsRegistered;
         ERS_NameComponent_TypeIdSignature ERS_NameComponent_TypeId;
-        ERS_NameComponent_CreateCallbackSignature ERS_NameComponent_CreateCallback;
         ERS_NameComponent_GetNameSignature ERS_NameComponent_GetName;
         ERS_NameComponent_SetNameSignature ERS_NameComponent_SetName;
         ERS_OutlineComponent_TypeIdSignature ERS_OutlineComponent_TypeId;
-        ERS_OutlineComponent_CreateCallbackSignature ERS_OutlineComponent_CreateCallback;
         ERS_OutlineComponent_Center_XSignature ERS_OutlineComponent_Center_X;
         ERS_OutlineComponent_Center_YSignature ERS_OutlineComponent_Center_Y;
         ERS_OutlineComponent_Center_ZSignature ERS_OutlineComponent_Center_Z;
@@ -785,11 +803,12 @@ union ErsAPIFunctionPointers {
         ERS_OutlineComponent_Dimensions_ZSignature ERS_OutlineComponent_Dimensions_Z;
         ERS_OutlineComponent_SetDimensionsSignature ERS_OutlineComponent_SetDimensions;
         ERS_PathComponent_TypeIdSignature ERS_PathComponent_TypeId;
-        ERS_PathComponent_CreateCallbackSignature ERS_PathComponent_CreateCallback;
         ERS_PathComponent_GetSegmentSignature ERS_PathComponent_GetSegment;
         ERS_PathComponent_GetNumSegmentsSignature ERS_PathComponent_GetNumSegments;
         ERS_PathComponent_AddStraightSignature ERS_PathComponent_AddStraight;
         ERS_PathComponent_AddHelicalSignature ERS_PathComponent_AddHelical;
+        ERS_PathComponent_AddCubicBezierSignature ERS_PathComponent_AddCubicBezier;
+        ERS_PathComponent_AddCubicBezierFromDirectionsSignature ERS_PathComponent_AddCubicBezierFromDirections;
         ERS_RelationComponent_TypeIdSignature ERS_RelationComponent_TypeId;
         ERS_RelationComponent_RegisterTypeSignature ERS_RelationComponent_RegisterType;
         ERS_RelationComponent_GetParentSignature ERS_RelationComponent_GetParent;
@@ -799,14 +818,12 @@ union ErsAPIFunctionPointers {
         ERS_RelationComponent_GetNextSignature ERS_RelationComponent_GetNext;
         ERS_RelationComponent_GetChildCountSignature ERS_RelationComponent_GetChildCount;
         ERS_ResourceComponent_TypeIdSignature ERS_ResourceComponent_TypeId;
-        ERS_ResourceComponent_CreateCallbackSignature ERS_ResourceComponent_CreateCallback;
         ERS_ResourceComponent_RegisterTypeSignature ERS_ResourceComponent_RegisterType;
         ERS_ResourceComponent_GetNumInputChannelsSignature ERS_ResourceComponent_GetNumInputChannels;
         ERS_ResourceComponent_GetNumOutputChannelsSignature ERS_ResourceComponent_GetNumOutputChannels;
         ERS_ResourceComponent_GetInputChannelSignature ERS_ResourceComponent_GetInputChannel;
         ERS_ResourceComponent_GetOutputChannelSignature ERS_ResourceComponent_GetOutputChannel;
         ERS_TransformComponent_TypeIdSignature ERS_TransformComponent_TypeId;
-        ERS_TransformComponent_CreateCallbackSignature ERS_TransformComponent_CreateCallback;
         ERS_TransformComponent_RegisterTypeSignature ERS_TransformComponent_RegisterType;
         ERS_TransformComponent_Position_XSignature ERS_TransformComponent_Position_X;
         ERS_TransformComponent_SetPosition_XSignature ERS_TransformComponent_SetPosition_X;
@@ -935,6 +952,7 @@ union ErsAPIFunctionPointers {
         ERS_InterpreterRenderSystem_BuildMesh3DSignature ERS_InterpreterRenderSystem_BuildMesh3D;
         ERS_PathAnimationSystem_UpdateSignature ERS_PathAnimationSystem_Update;
         ERS_PathAnimationSystem_AnimateSignature ERS_PathAnimationSystem_Animate;
+        ERS_PathAnimationSystem_AnimateStraightPathSignature ERS_PathAnimationSystem_AnimateStraightPath;
         ERS_TransformSystem_UpdateGlobalsSignature ERS_TransformSystem_UpdateGlobals;
         ERS_Camera2D_UpdateTransformSignature ERS_Camera2D_UpdateTransform;
         ERS_Camera2D_PositionXSignature ERS_Camera2D_PositionX;
@@ -1125,6 +1143,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_Logger_AddCallback",
     "ERS_Settings_GetSetting",
     "ERS_Settings_SetSetting",
+    "ERS_Settings_Clear",
     "ERS_VirtualFileSystem_MountDirectory",
     "ERS_Serializer_IsWriting",
     "ERS_Serializer_SerializeUInt64",
@@ -1172,7 +1191,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_InterpreterArgs_GetStringArgument",
     "ERS_InterpreterArgs_GetDoubleArgument",
     "ERS_InterpreterArgs_GetEntityArgument",
-    "ERS_InterpreterArgs_GetUInt64Argument",
+    "ERS_InterpreterArgs_GetInt64Argument",
     "ERS_InterpreterArgs_GetBoolArgument",
     "ERS_InterpreterArgs_GetArgCount",
     "ERS_InterpreterArgs_Create",
@@ -1202,6 +1221,18 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_PathSegment_GetBeginAngle",
     "ERS_PathSegment_GetEndAngle",
     "ERS_PathSegment_GetEndZ",
+    "ERS_PathSegment_GetP0X",
+    "ERS_PathSegment_GetP0Y",
+    "ERS_PathSegment_GetP0Z",
+    "ERS_PathSegment_GetP1X",
+    "ERS_PathSegment_GetP1Y",
+    "ERS_PathSegment_GetP1Z",
+    "ERS_PathSegment_GetP2X",
+    "ERS_PathSegment_GetP2Y",
+    "ERS_PathSegment_GetP2Z",
+    "ERS_PathSegment_GetP3X",
+    "ERS_PathSegment_GetP3Y",
+    "ERS_PathSegment_GetP3Z",
     "ERS_PathSegment_GetPointAlongPath",
     "ERS_PathSegment_GetRotationAlongPath",
     "ERS_Random_Generator_MersenneTwister_Create",
@@ -1275,25 +1306,23 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_Simulator_FindOutgoingDependencyByName",
     "ERS_Simulator_GetCurrentTime",
     "ERS_BasicRenderComponent_TypeId",
-    "ERS_BasicRenderComponent_CreateCallback",
     "ERS_BasicRenderComponent_GetColor",
     "ERS_BasicRenderComponent_SetColor",
     "ERS_BasicRenderComponent_SetInstancedModel",
     "ERS_BasicRenderComponent_GetInstancedModel",
     "ERS_BoxComponent_TypeId",
-    "ERS_BoxComponent_CreateCallback",
     "ERS_BoxComponent_Min_X",
     "ERS_BoxComponent_Min_Y",
     "ERS_BoxComponent_Min_Z",
     "ERS_BoxComponent_Max_X",
     "ERS_BoxComponent_Max_Y",
     "ERS_BoxComponent_Max_Z",
-    "ERS_BoxComponent_Center",
-    "ERS_BoxComponent_Dimensions",
+    "ERS_BoxComponent_Dimensions_X",
+    "ERS_BoxComponent_Dimensions_Y",
+    "ERS_BoxComponent_Dimensions_Z",
     "ERS_BoxComponent_InCollision_Point2D",
     "ERS_BoxComponent_InCollision_Ray",
     "ERS_ChannelComponent_TypeId",
-    "ERS_ChannelComponent_CreateCallback",
     "ERS_ChannelComponent_RegisterType",
     "ERS_ChannelComponent_GetType",
     "ERS_ChannelComponent_GetConnectedTo",
@@ -1309,11 +1338,9 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_GlobalComponentRegistry_RegisterComponent",
     "ERS_GlobalComponentRegistry_IsRegistered",
     "ERS_NameComponent_TypeId",
-    "ERS_NameComponent_CreateCallback",
     "ERS_NameComponent_GetName",
     "ERS_NameComponent_SetName",
     "ERS_OutlineComponent_TypeId",
-    "ERS_OutlineComponent_CreateCallback",
     "ERS_OutlineComponent_Center_X",
     "ERS_OutlineComponent_Center_Y",
     "ERS_OutlineComponent_Center_Z",
@@ -1322,11 +1349,12 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_OutlineComponent_Dimensions_Z",
     "ERS_OutlineComponent_SetDimensions",
     "ERS_PathComponent_TypeId",
-    "ERS_PathComponent_CreateCallback",
     "ERS_PathComponent_GetSegment",
     "ERS_PathComponent_GetNumSegments",
     "ERS_PathComponent_AddStraight",
     "ERS_PathComponent_AddHelical",
+    "ERS_PathComponent_AddCubicBezier",
+    "ERS_PathComponent_AddCubicBezierFromDirections",
     "ERS_RelationComponent_TypeId",
     "ERS_RelationComponent_RegisterType",
     "ERS_RelationComponent_GetParent",
@@ -1336,14 +1364,12 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_RelationComponent_GetNext",
     "ERS_RelationComponent_GetChildCount",
     "ERS_ResourceComponent_TypeId",
-    "ERS_ResourceComponent_CreateCallback",
     "ERS_ResourceComponent_RegisterType",
     "ERS_ResourceComponent_GetNumInputChannels",
     "ERS_ResourceComponent_GetNumOutputChannels",
     "ERS_ResourceComponent_GetInputChannel",
     "ERS_ResourceComponent_GetOutputChannel",
     "ERS_TransformComponent_TypeId",
-    "ERS_TransformComponent_CreateCallback",
     "ERS_TransformComponent_RegisterType",
     "ERS_TransformComponent_Position_X",
     "ERS_TransformComponent_SetPosition_X",
@@ -1472,6 +1498,7 @@ const char* ersFunctionNames[ERS_N_FUNCTIONS] = {
     "ERS_InterpreterRenderSystem_BuildMesh3D",
     "ERS_PathAnimationSystem_Update",
     "ERS_PathAnimationSystem_Animate",
+    "ERS_PathAnimationSystem_AnimateStraightPath",
     "ERS_TransformSystem_UpdateGlobals",
     "ERS_Camera2D_UpdateTransform",
     "ERS_Camera2D_PositionX",
