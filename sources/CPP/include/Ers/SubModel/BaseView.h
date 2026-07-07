@@ -28,6 +28,6 @@ namespace Ers
             uint32_t includedTypeArraySize,
             uint32_t* excludedTypeIdArray,
             uint32_t excludedTypeArraySize);
-        void* instance;
+        void* corePtr;
     };
 } // namespace Ers

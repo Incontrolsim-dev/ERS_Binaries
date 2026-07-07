@@ -41,6 +41,9 @@ namespace Ers
         [[nodiscard]] std::vector<std::string> GetDependencyNames() const;
 
         SimulationTime CurrentTime() const;
+        /// @brief Get the ModelContainer to which this simulator is attached.
+        /// @return
+        ModelContainer GetAttachedModelContainer();
 
         Simulator FindDependency(const std::string_view& name);
         Simulator FindDependency(uint32_t id);
@@ -64,12 +67,12 @@ namespace Ers
         /// @return The seed value of this simulator's SubModel
         size_t GetSeed() const;
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
         bool Valid();
 
       private:
-        void* coreSimulatorInstance; // pointer to the simulator instance in ers-core
+        void* corePtr; // pointer to the simulator instance in ers-core
     };
 } // namespace Ers

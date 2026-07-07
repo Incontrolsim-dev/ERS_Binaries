@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Ers.Engine;
 
 namespace Ers
@@ -21,35 +22,33 @@ namespace Ers
         /// </summary>
         [Category("Simulation")]
         [Description("The current time of the simulation.")]
-        public SimulationTime CurrentTime { get => GetCurrentTime(); }
+        public SimulationTime CurrentTime { get => ErsEngine.ERS_ModelContainer_CurrentTime(CorePtr); }
 
         // clang-format on
 
-        private readonly IntPtr coreModelContainerInstance;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr = IntPtr.Zero;
 
-        internal IntPtr Data
+        internal ModelContainer(IntPtr corePtr)
         {
-            get => coreModelContainerInstance;
-        }
-
-        internal ModelContainer(IntPtr coreInstance)
-        {
-            this.coreModelContainerInstance = coreInstance;
-            ErsEngine.ERS_ModelContainer_Increase(coreInstance);
+            this.CorePtr = corePtr;
+            ErsEngine.ERS_ModelContainer_Increase(corePtr);
         }
 
         /// <summary>
         /// Finalizer.
         /// </summary>
-        ~ModelContainer() { ErsEngine.ERS_ModelContainer_Release(coreModelContainerInstance); }
+        ~ModelContainer() { ErsEngine.ERS_ModelContainer_Release(CorePtr); }
 
         /// <summary>
         /// Create a new ModelContainer.
         /// </summary>
         /// <returns></returns>
-        public static ModelContainer CreateModelContainer()
+        public static ModelContainer Create()
         {
-            IntPtr ptr            = ErsEngine.ERS_ModelContainer_CreateModelContainer();
+            IntPtr ptr            = ErsEngine.ERS_ModelContainer_Create();
             ModelContainer output = new ModelContainer(ptr);
             ErsEngine.ERS_ModelContainer_Release(ptr);
             return output;
@@ -72,7 +71,7 @@ namespace Ers
                     if (FindSimulator(tag).Valid())
                         throw new ArgumentException("Tag is already used, unique tag for this Container is required");
 
-                    IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_AddSimulator(coreModelContainerInstance, tagByte, (byte)type);
+                    IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_AddSimulator(CorePtr, tagByte, (byte)type);
                     return new Simulator(coreSimulator);
                 }
             }
@@ -86,7 +85,7 @@ namespace Ers
         {
             Debug.Assert(simulator.Valid());
             Debug.Assert(FindSimulator(simulator.ID).Valid());
-            ErsEngine.ERS_ModelContainer_RemoveSimulator(coreModelContainerInstance, simulator.Data);
+            ErsEngine.ERS_ModelContainer_RemoveSimulator(CorePtr, simulator.CorePtr);
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace Ers
             {
                 fixed(byte* tagByte = tagUtf8)
                 {
-                    IntPtr foundCoreSimulator = ErsEngine.ERS_ModelContainer_FindSimulatorByTag(coreModelContainerInstance, tagByte);
+                    IntPtr foundCoreSimulator = ErsEngine.ERS_ModelContainer_FindSimulatorByTag(CorePtr, tagByte);
                     return new Simulator(foundCoreSimulator);
                 }
             }
@@ -114,15 +113,9 @@ namespace Ers
         /// <returns></returns>
         public Simulator FindSimulator(int simulatorId)
         {
-            IntPtr foundCoreSimulator = ErsEngine.ERS_ModelContainer_FindSimulatorById(coreModelContainerInstance, simulatorId);
+            IntPtr foundCoreSimulator = ErsEngine.ERS_ModelContainer_FindSimulatorById(CorePtr, simulatorId);
             return new Simulator(foundCoreSimulator);
         }
-
-        /// <summary>
-        /// The elapsed time of the simulation in the ModelContainer.
-        /// </summary>
-        /// <returns></returns>
-        private SimulationTime GetCurrentTime() => ErsEngine.ERS_ModelContainer_CurrentTime(coreModelContainerInstance);
 
         /// <summary>
         /// Whether the ModelContainer is started.
@@ -133,18 +126,21 @@ namespace Ers
         /// </para>
         /// </summary>
         /// <returns></returns>
-        public bool IsStarted() => ErsEngine.ERS_ModelContainer_IsStarted(coreModelContainerInstance);
+        public bool IsStarted
+        {
+            get => ErsEngine.ERS_ModelContainer_IsStarted(CorePtr);
+        }
 
         /// <summary>
         /// Start the ModelContainer. See <see cref="IsStarted"/> for more details.
         /// </summary>
-        public void Start() => ErsEngine.ERS_ModelContainer_Start(coreModelContainerInstance);
+        public void Start() => ErsEngine.ERS_ModelContainer_Start(CorePtr);
 
         /// <summary>
         /// Perform an update step on the ModelContainer, updating all of its simulators.
         /// </summary>
         /// <param name="timeStep">The size of the step to perform.</param>
-        public void Update(SimulationTime timeStep) => ErsEngine.ERS_ModelContainer_Update_Blocking(coreModelContainerInstance, timeStep);
+        public void Update(SimulationTime timeStep) => ErsEngine.ERS_ModelContainer_Update_Blocking(CorePtr, timeStep);
 
         /// <summary>
         /// Add a dependency from one simulator to another, so from simulator A can be schedule to simulator B.
@@ -155,7 +151,7 @@ namespace Ers
         {
             Debug.Assert(from.Valid());
             Debug.Assert(to.Valid());
-            ErsEngine.ERS_ModelContainer_AddSimulatorDependency(coreModelContainerInstance, from.Data, to.Data);
+            ErsEngine.ERS_ModelContainer_AddSimulatorDependency(CorePtr, from.CorePtr, to.CorePtr);
         }
 
         /// <summary>
@@ -167,7 +163,7 @@ namespace Ers
         {
             Debug.Assert(from.Valid());
             Debug.Assert(to.Valid());
-            ErsEngine.ERS_ModelContainer_RemoveSimulatorDependency(coreModelContainerInstance, from.Data, to.Data);
+            ErsEngine.ERS_ModelContainer_RemoveSimulatorDependency(CorePtr, from.CorePtr, to.CorePtr);
         }
 
         /// <summary>
@@ -176,10 +172,10 @@ namespace Ers
         /// <returns></returns>
         public Simulator[] GetSimulators()
         {
-            Simulator[] simulators = new Simulator[SimulatorCount()];
+            Simulator[] simulators = new Simulator[SimulatorCount];
             for (int i = 0; i < simulators.Length; i++)
             {
-                IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulator(coreModelContainerInstance, i);
+                IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulator(CorePtr, i);
                 simulators[i]        = new Simulator(coreSimulator);
             }
             return simulators;
@@ -192,7 +188,7 @@ namespace Ers
         /// <returns></returns>
         public Simulator GetSimulator(int simulatorId)
         {
-            IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulatorById(coreModelContainerInstance, simulatorId);
+            IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulatorById(CorePtr, simulatorId);
             return new Simulator(coreSimulator);
         }
 
@@ -203,7 +199,7 @@ namespace Ers
         /// <returns></returns>
         public Simulator GetSimulatorByIndex(int index)
         {
-            IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulator(coreModelContainerInstance, index);
+            IntPtr coreSimulator = ErsEngine.ERS_ModelContainer_GetSimulator(CorePtr, index);
             return new Simulator(coreSimulator);
         }
 
@@ -211,31 +207,35 @@ namespace Ers
         /// Get the number of simulators in this ModelContainer.
         /// </summary>
         /// <returns></returns>
-        public nuint SimulatorCount() => ErsEngine.ERS_ModelContainer_GetSimulatorsCount(coreModelContainerInstance);
+        public nuint SimulatorCount
+        {
+            get => ErsEngine.ERS_ModelContainer_GetSimulatorsCount(CorePtr);
+        }
 
         /// <summary>
-        /// Get the random seed of this ModelContainer.
+        /// The random seed of this model container.
         /// </summary>
-        /// <returns></returns>
-        public nuint GetSeed() => ErsEngine.ERS_ModelContainer_Seed(coreModelContainerInstance);
-
-        /// <summary>
-        /// Set the random seed of this ModelContainer.
-        /// </summary>
-        /// <param name="newSeed">The new seed.</param>
-        public void SetSeed(nuint newSeed) => ErsEngine.ERS_ModelContainer_SetSeed(coreModelContainerInstance, newSeed);
+        public nuint Seed
+        {
+            get => ErsEngine.ERS_ModelContainer_Seed(CorePtr);
+            set => ErsEngine.ERS_ModelContainer_SetSeed(CorePtr, value);
+        }
 
         /// <summary>
         /// Generate a random seed for this ModelContainer.
         /// </summary>
-        public void GenerateRandomSeed() => ErsEngine.ERS_ModelContainer_GenerateRandomSeed(coreModelContainerInstance);
+        public void GenerateRandomSeed() => ErsEngine.ERS_ModelContainer_GenerateRandomSeed(CorePtr);
 
-        /// @brief set an arbitary value as the model precision, this precision will be used in ERS for monitoring & displayed graphics
-        public void SetPrecision(SimulationTime precision)
+        /// <summary>
+        /// The precision used for this model.
+        ///
+        /// <para>This is an arbitrary value that is used to imitate decimal values for the simulation time.</para>
+        /// </summary>
+        public SimulationTime Precision
         {
-            ErsEngine.ERS_ModelContainer_SetModelPrecision(coreModelContainerInstance, precision);
+            get => ErsEngine.ERS_ModelContainer_GetModelPrecision(CorePtr);
+            set => ErsEngine.ERS_ModelContainer_SetModelPrecision(CorePtr, value);
         }
-        public SimulationTime GetPrecision() { return ErsEngine.ERS_ModelContainer_GetModelPrecision(coreModelContainerInstance); }
 
         /// <summary>
         /// Get the simulation speed over real-time.
@@ -247,6 +247,31 @@ namespace Ers
         /// simulation completes too quickly.
         /// </remarks>
         /// <returns>The speedup factor (simulation time / real time)</returns>
-        public double GetSpeedUp() { return ErsEngine.ERS_ModelContainer_SimulationSpeedOverRealtime(coreModelContainerInstance); }
+        public double GetSpeedUp() { return ErsEngine.ERS_ModelContainer_SimulationSpeedOverRealtime(CorePtr); }
+
+        /// <summary>
+        /// The working directory for this model container.
+        ///
+        /// <para>The working directory is used to store the scripts and assets related to the model container.</para>
+        /// </summary>
+        public string WorkingDir
+        {
+            get {
+                IntPtr ptr     = ErsEngine.ERS_ModelContainer_GetWorkingDir(CorePtr);
+                string? result = Marshal.PtrToStringAnsi(ptr);
+                Debug.Assert(result != null);
+                return result;
+            }
+            set {
+                unsafe
+                {
+                    var utf8 = value.ToUtf8NullTerminated();
+                    fixed(byte* path = utf8)
+                    {
+                        ErsEngine.ERS_ModelContainer_SetWorkingDir(CorePtr, path);
+                    }
+                }
+            }
+        }
     }
 }

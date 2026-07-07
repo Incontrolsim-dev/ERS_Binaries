@@ -1,5 +1,4 @@
 using Ers.Engine;
-using Ers.Interpreter;
 
 namespace Ers
 {
@@ -36,7 +35,7 @@ namespace Ers
         /// <returns>The ID of the newly created entity.</returns>
         public static Entity Create()
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.CreateEntity();
         }
 
@@ -47,7 +46,7 @@ namespace Ers
         /// <returns>The ID of the newly created entity.</returns>
         public static Entity Create(string name)
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.CreateEntity(name);
         }
 
@@ -58,7 +57,7 @@ namespace Ers
         /// <returns>The ID of the found entity. If no entity is found, the <see cref="CEntity.InvalidEntity()"/> ID is returned.</returns>
         public static Entity Find(string name)
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.FindEntity(name);
         }
     }
@@ -78,7 +77,7 @@ namespace Ers
         public static bool IsValid(this Entity id)
         {
             bool validID = id != ErsEngine.ERS_Entity_Invalid();
-            return validID ? SubModel.GetSubModel().EntityExists(id) : false;
+            return validID ? SubModel.Get().EntityExists(id) : false;
         }
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace Ers
         public static Ref<T> GetComponent<T>(this Entity id)
             where T : IDACComponent
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.GetComponent<T>(id);
         }
 
@@ -103,7 +102,7 @@ namespace Ers
         public static Ref<T> AddComponent<T>(this Entity id)
             where T : unmanaged, IDACComponent
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.AddComponent<T>(id);
         }
 
@@ -116,7 +115,7 @@ namespace Ers
         public static void RemoveComponent<T>(this Entity id)
             where T : IComponentBase
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             subModel.RemoveComponent<T>(id);
         }
 
@@ -129,7 +128,7 @@ namespace Ers
         public static bool HasComponent<T>(this Entity id)
             where T : IComponentBase
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.HasComponent<T>(id);
         }
 
@@ -143,7 +142,7 @@ namespace Ers
         public static T AddComponent<T>(this Entity id, bool scriptBehavior = true)
             where T : ScriptBehaviorComponent, new()
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.AddComponent<T>(id);
         }
 
@@ -157,7 +156,7 @@ namespace Ers
         public static T GetComponent<T>(this Entity id, bool scriptBehavior = true)
             where T : ScriptBehaviorComponent
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.GetComponent<T>(id);
         }
 
@@ -171,7 +170,7 @@ namespace Ers
         public static bool HasComponent<T>(this Entity id, bool scriptBehavior = true)
             where T : ScriptBehaviorComponent
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.HasComponent<T>(id);
         }
 
@@ -183,14 +182,8 @@ namespace Ers
         /// <returns></returns>
         public static string GetName(this Entity id)
         {
-            SubModel subModel = SubModel.GetSubModel();
+            SubModel subModel = SubModel.Get();
             return subModel.GetComponent<NameComponent>(id).Value.Name;
-        }
-
-        public static InterpreterVariable AddInterpreterScriptComponent(this Entity id)
-        {
-            SubModel subModel = SubModel.GetSubModel();
-            return subModel.AddInterpreterScriptComponent(id);
         }
     }
 }

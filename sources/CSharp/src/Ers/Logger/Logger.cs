@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

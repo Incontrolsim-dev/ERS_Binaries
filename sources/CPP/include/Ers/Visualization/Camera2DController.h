@@ -66,6 +66,6 @@ namespace Ers
         void Zoom(float base, float power);
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

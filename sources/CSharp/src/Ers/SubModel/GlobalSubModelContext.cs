@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Ers.Engine;
 
 namespace Ers
@@ -21,7 +21,7 @@ namespace Ers
 
         public static SubModelContextTypeIndex RegisterSubModelContextTypeIndex<T>()
         {
-            // Only register if it wasn't registed before
+            // Only register if it wasn't registered before
             if (RegisteredSubModelContext<T>.Index == InvalidSubModelContextTypeIndex)
             {
                 RegisteredSubModelContext<T>.Index = ErsEngine.ERS_SubModel_RegisterSubModelContext();
@@ -33,7 +33,6 @@ namespace Ers
     [StructLayout(LayoutKind.Sequential)]
     internal struct RegisteredSubModelContext<T>
     {
-
         static RegisteredSubModelContext() { Index = RegisteredSubModelContext.InvalidSubModelContextTypeIndex; }
 
         public static uint Index;

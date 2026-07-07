@@ -2,18 +2,18 @@
 
 namespace Ers
 {
-    Font::Font(void* coreInstance) :
-        coreInstance(coreInstance)
+    Font::Font(void* corePtr) :
+        corePtr(corePtr)
     {
     }
 
-    void* Font::Data()
+    void* Font::CorePtr()
     {
-        return coreInstance;
+        return corePtr;
     }
 
-    const void* const Font::Data() const
+    const void* const Font::CorePtr() const
     {
-        return coreInstance;
+        return corePtr;
     }
 } // namespace Ers

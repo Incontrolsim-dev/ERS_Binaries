@@ -5,7 +5,7 @@ namespace Ers
     class InputAction
     {
       public:
-        InputAction(void* coreInstance);
+        InputAction(void* corePtr);
         InputAction(const char* name);
         InputAction()                              = delete;
         InputAction(const InputAction&)            = default;
@@ -21,7 +21,7 @@ namespace Ers
         void SetTriggered(bool triggered, float strength = 1.0f);
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 
     class InputHandler

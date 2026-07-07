@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -20,7 +20,7 @@ namespace Ers
         /// </summary>
         [Category("Simulator")]
         [Description("The ID of the simulator.")]
-        public readonly Int32 ID { get => ErsEngine.ERS_Simulator_GetID(Data); }
+        public readonly Int32 ID { get => ErsEngine.ERS_Simulator_GetID(CorePtr); }
 
         /// <summary>
         /// The name of the simulator.
@@ -35,20 +35,28 @@ namespace Ers
         /// </summary>
         [Category("Simulator")]
         [Description("The type of simulator.")]
-        public readonly SimulatorType Type { get => (SimulatorType)ErsEngine.ERS_Simulator_GetSimulatorType(Data); }
+        public readonly SimulatorType Type { get => (SimulatorType)ErsEngine.ERS_Simulator_GetSimulatorType(CorePtr); }
 
         /// <summary>
         /// The current time of the simulator.
         /// </summary>
         [Category("Simulator")]
         [Description("The current time of the simulator.")]
-        public SimulationTime CurrentTime { get => GetCurrentTime(); }
+        public readonly SimulationTime CurrentTime { get => ErsEngine.ERS_Simulator_GetCurrentTime(CorePtr); }
+
+        /// <summary>
+        /// Get the <see cref="ModelContainer"/> to which this simulator is attached.
+        /// </summary>
+        public readonly ModelContainer AttachedModelContainer { get => new ModelContainer(ErsEngine.ERS_Simulator_GetAttachedModelContainer(CorePtr));  }
 
         // clang-format on
 
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr = IntPtr.Zero;
 
-        internal Simulator(IntPtr instance) { Data = instance; }
+        internal Simulator(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Check whether the Simulator is valid.
@@ -58,16 +66,17 @@ namespace Ers
         /// <returns>True when it is valid, false when it is not.</returns>
         public readonly bool Valid()
         {
-            if (Data == IntPtr.Zero)
+            if (CorePtr == IntPtr.Zero)
                 return false;
 
             return true;
         }
 
-        public void EnterSubModel() => ErsEngine.ERS_ThreadLocal_EnterSubModel(ErsEngine.ERS_Simulator_GetSubModel(Data));
+        public void EnterSubModel() => ErsEngine.ERS_ThreadLocal_EnterSubModel(ErsEngine.ERS_Simulator_GetSubModel(CorePtr));
+
         public void ExitSubModel()
         {
-            Debug.Assert(ErsEngine.ERS_Simulator_GetSubModel(Data) == ErsEngine.ERS_ThreadLocal_GetSubModel());
+            Debug.Assert(ErsEngine.ERS_Simulator_GetSubModel(CorePtr) == ErsEngine.ERS_ThreadLocal_GetSubModel());
             ErsEngine.ERS_ThreadLocal_ExitSubModel();
         }
 
@@ -77,16 +86,16 @@ namespace Ers
         /// <returns>The library collection</returns>
         public LibraryCollection GetLibraryCollection()
         {
-            IntPtr ptr = ErsEngine.ERS_Simulator_GetLibraryCollection(Data);
+            IntPtr ptr = ErsEngine.ERS_Simulator_GetLibraryCollection(CorePtr);
             return new LibraryCollection(ptr);
         }
 
         private readonly string GetName()
         {
-            IntPtr ptr     = ErsEngine.ERS_Simulator_GetName(Data);
+            IntPtr ptr     = ErsEngine.ERS_Simulator_GetName(CorePtr);
             string? result = Marshal.PtrToStringAnsi(ptr);
             Debug.Assert(result != null);
-            ErsEngine.ERS_STRING_DISPOSE(ptr);
+            ErsEngine.ERS_String_Destroy(ptr);
             return result;
         }
 
@@ -96,25 +105,19 @@ namespace Ers
         /// <returns></returns>
         public readonly string[] GetDependencyNames()
         {
-            nuint totalDependencies  = ErsEngine.ERS_Simulator_GetDependenciesAmount(Data);
+            nuint totalDependencies  = ErsEngine.ERS_Simulator_GetDependenciesAmount(CorePtr);
             string[] dependencyNames = new string[totalDependencies];
 
             for (nuint i = 0; i < (nuint)dependencyNames.Length; i++)
             {
-                IntPtr ptr             = ErsEngine.ERS_Simulator_GetDependencyName(Data, i);
+                IntPtr ptr             = ErsEngine.ERS_Simulator_GetDependencyName(CorePtr, i);
                 string? dependencyName = Marshal.PtrToStringAnsi(ptr);
                 Debug.Assert(dependencyName != null);
-                ErsEngine.ERS_STRING_DISPOSE(ptr);
+                ErsEngine.ERS_String_Destroy(ptr);
                 dependencyNames[i] = dependencyName;
             }
             return dependencyNames;
         }
-
-        /// <summary>
-        /// Get the time the Simulator is currently at.
-        /// </summary>
-        /// <returns></returns>
-        public readonly SimulationTime GetCurrentTime() => ErsEngine.ERS_Simulator_GetCurrentTime(Data);
 
         /// <summary>
         /// Find a dependency of this simulator by its name.
@@ -128,7 +131,7 @@ namespace Ers
             {
                 fixed(byte* tagByte = tagUtf8)
                 {
-                    IntPtr foundDependencyPtr = ErsEngine.ERS_Simulator_FindDependencyByName(Data, tagByte, tag.Length);
+                    IntPtr foundDependencyPtr = ErsEngine.ERS_Simulator_FindDependencyByName(CorePtr, tagByte, tag.Length);
                     return new Simulator(foundDependencyPtr);
                 }
             }
@@ -141,7 +144,7 @@ namespace Ers
         /// <returns></returns>
         public Simulator FindDependency(Int32 simulatorId)
         {
-            IntPtr foundDependencyPtr = ErsEngine.ERS_Simulator_FindDependencyById(Data, simulatorId);
+            IntPtr foundDependencyPtr = ErsEngine.ERS_Simulator_FindDependencyById(CorePtr, simulatorId);
             return new Simulator(foundDependencyPtr);
         }
 
@@ -157,7 +160,7 @@ namespace Ers
             {
                 fixed(byte* nameByte = nameUtf8)
                 {
-                    IntPtr found = ErsEngine.ERS_Simulator_FindOutgoingDependencyByName(Data, nameByte, name.Length);
+                    IntPtr found = ErsEngine.ERS_Simulator_FindOutgoingDependencyByName(CorePtr, nameByte, name.Length);
                     if (found == IntPtr.Zero)
                         return null;
 
@@ -173,7 +176,7 @@ namespace Ers
         /// <returns>The simulator, or null if no such simulator exists.</returns>
         public Simulator? FindOutgoingDependency(Int32 simulatorId)
         {
-            IntPtr found = ErsEngine.ERS_Simulator_FindOutgoingDependencyById(Data, simulatorId);
+            IntPtr found = ErsEngine.ERS_Simulator_FindOutgoingDependencyById(CorePtr, simulatorId);
             if (found == IntPtr.Zero)
                 return null;
 
@@ -185,7 +188,7 @@ namespace Ers
         /// </summary>
         /// <param name="otherSimulatorId">The ID of the other simulator.</param>
         /// <returns></returns>
-        public readonly bool IsRunTogether(int otherSimulatorId) => ErsEngine.ERS_Simulator_IsRunTogether(Data, otherSimulatorId);
+        public readonly bool IsRunTogether(int otherSimulatorId) => ErsEngine.ERS_Simulator_IsRunTogether(CorePtr, otherSimulatorId);
 
         /// <summary>
         /// Check whether this simulator has a direct dependency with another simulator that is bidirectional (both can schedule events on
@@ -193,26 +196,26 @@ namespace Ers
         /// </summary>
         /// <param name="otherSimulatorId">The ID of the other simulator.</param>
         /// <returns></returns>
-        public readonly bool IsBiDirectional(int otherSimulatorId) => ErsEngine.ERS_Simulator_IsBiDirectional(Data, otherSimulatorId);
-
-        /// @brief Get the Timestep of the given Simulator
-        /// <param name="instance [in]">Pointer to the given instance of the Simulator in the core.</param>
-        /// @return the timestep set on the simulator
-        public SimulationTime GetTimeStep() { return ErsEngine.ERS_Simulator_GetTimeStep(Data); }
-
-        /// @brief Set the Timestep of the given Simulator
-        /// <param name="instance [in]">Pointer to the given instance of the Simulator in the core.</param>
-        /// <param name="newTimeStep [in]">New timestep.</param>
-        void SetTimeStep(SimulationTime newTimeStep) { ErsEngine.ERS_Simulator_SetTimeStep(Data, newTimeStep); }
+        public readonly bool IsBiDirectional(int otherSimulatorId) => ErsEngine.ERS_Simulator_IsBiDirectional(CorePtr, otherSimulatorId);
 
         /// <summary>
-        /// Get the random seed of this Simulator.
+        /// The time step of the simulator.
         /// </summary>
-        /// <returns>The seed value of this simulator's SubModel.</returns>
-        public nuint GetSeed()
+        public SimulationTime TimeStep
         {
-            IntPtr subModel = ErsEngine.ERS_Simulator_GetSubModel(Data);
-            return ErsEngine.ERS_SubModelRandomProperties_GetOriginalSeed(subModel);
+            get => ErsEngine.ERS_Simulator_GetTimeStep(CorePtr);
+            set => ErsEngine.ERS_Simulator_SetTimeStep(CorePtr, value);
+        }
+
+        /// <summary>
+        /// The random seed of the simulator.
+        /// </summary>
+        public nuint Seed
+        {
+            get {
+                IntPtr subModel = ErsEngine.ERS_Simulator_GetSubModel(CorePtr);
+                return ErsEngine.ERS_SubModelRandomProperties_GetOriginalSeed(subModel);
+            }
         }
     }
 }

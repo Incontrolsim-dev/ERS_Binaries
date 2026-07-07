@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Runtime.InteropServices;
 
 namespace Ers
@@ -9,9 +9,12 @@ namespace Ers
     [StructLayout(LayoutKind.Sequential)]
     public ref struct SubModelRandomProperties
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal SubModelRandomProperties(IntPtr data) { Data = data; }
+        internal SubModelRandomProperties(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Set the random number generator by its type.
@@ -20,7 +23,7 @@ namespace Ers
         /// cref="RandomGeneratorType"/>.</param>
         public void SetRandomGenerator(RandomGeneratorType randomNumberGeneratorType)
         {
-            ErsEngine.ERS_SubModelRandomProperties_SetRandomGenerator_Type(Data, (int)randomNumberGeneratorType);
+            ErsEngine.ERS_SubModelRandomProperties_SetRandomGenerator_Type(CorePtr, (int)randomNumberGeneratorType);
         }
 
         /// <summary>
@@ -29,7 +32,7 @@ namespace Ers
         /// <returns></returns>
         public RandomGenerator GetRandomNumberGenerator()
         {
-            IntPtr coreRandomGeneratorInstance = ErsEngine.ERS_SubModelRandomProperties_GetRandomNumberGenerator(Data);
+            IntPtr coreRandomGeneratorInstance = ErsEngine.ERS_SubModelRandomProperties_GetRandomNumberGenerator(CorePtr);
 
             unsafe
             {

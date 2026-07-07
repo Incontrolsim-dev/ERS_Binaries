@@ -161,7 +161,9 @@ namespace Ers
                             &GlobalScriptBehavior.OnCreation, &GlobalScriptBehavior.OnAwake, &GlobalScriptBehavior.OnStart,
                             &GlobalScriptBehavior.OnUpdate, &GlobalScriptBehavior.OnLateUpdate, &GlobalScriptBehavior.OnDestroy,
                             &GlobalScriptBehavior.OnEntering, &GlobalScriptBehavior.OnEntered, &GlobalScriptBehavior.OnExiting,
-                            &GlobalScriptBehavior.OnExited, &GlobalScriptBehavior.Serialization, &GlobalScriptBehavior.OnSubModelMove);
+                            &GlobalScriptBehavior.OnExited, &GlobalScriptBehavior.OnInputChannelReady,
+                            &GlobalScriptBehavior.OnOutputChannelReady, &GlobalScriptBehavior.OnReceive,
+                            &GlobalScriptBehavior.Serialization, &GlobalScriptBehavior.OnSubModelMove);
                     }
                     else if (componentTypeId == UInt32.MaxValue)
                     {
@@ -187,36 +189,5 @@ namespace Ers
             GCHandle handle = GCHandle.FromIntPtr(createInstanceCallbackHandle);
             handle.Free(); // Should always be allocated
         }
-    }
-
-    /// <summary>
-    /// Information about all registered component types.
-    /// </summary>
-    public static class RegisteredComponentTypes
-    {
-        private static readonly Dictionary<IntPtr, List<Type>> subModelTypes = [];
-
-        internal static void AddType(in SubModel subModel, Type type)
-        {
-            if (!subModelTypes.ContainsKey(subModel.Data))
-            {
-                // Add core components by default
-                subModelTypes.Add(subModel.Data, [
-                    // typeof(NameComponent),
-                    typeof(RelationComponent),
-                    typeof(TransformComponent),
-                    typeof(BoxComponent),
-                    typeof(OutlineComponent),
-                ]);
-            }
-            subModelTypes[subModel.Data].Add(type);
-        }
-
-        /// <summary>
-        /// Get the component types that are registered on a given <see cref="SubModel"/>.
-        /// </summary>
-        /// <param name="subModel">The SubModel of which to get the registered component types.</param>
-        /// <returns></returns>
-        public static List<Type> GetTypes(in SubModel subModel) => subModelTypes[subModel.Data];
     }
 }

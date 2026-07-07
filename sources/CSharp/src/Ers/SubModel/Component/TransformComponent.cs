@@ -1,4 +1,3 @@
-﻿using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Ers.Engine;
@@ -17,10 +16,10 @@ namespace Ers
         public Vector3 Position
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_Position_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Position_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Position_Z(CorePointer()));
-            set => ErsEngine.ERS_TransformComponent_SetPosition(CorePointer(), value.X, value.Y, value.Z);
+                ErsEngine.ERS_TransformComponent_Position_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_Position_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_Position_Z(CorePtr));
+            set => ErsEngine.ERS_TransformComponent_SetPosition(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -29,9 +28,9 @@ namespace Ers
         public Vector3 GlobalPosition
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_GlobalPosition_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalPosition_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalPosition_Z(CorePointer()));
+                ErsEngine.ERS_TransformComponent_GlobalPosition_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalPosition_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalPosition_Z(CorePtr));
         }
 
         /// <summary>
@@ -40,9 +39,9 @@ namespace Ers
         public Vector3 Rotation
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_Rotation_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Rotation_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Rotation_Z(CorePointer()));
+                ErsEngine.ERS_TransformComponent_Rotation_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_Rotation_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_Rotation_Z(CorePtr));
             set => SetRotationEuler(value.X, value.Y, value.Z);
         }
 
@@ -52,9 +51,9 @@ namespace Ers
         public Vector3 GlobalRotation
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_GlobalRotation_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalRotation_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalRotation_Z(CorePointer()));
+                ErsEngine.ERS_TransformComponent_GlobalRotation_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalRotation_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalRotation_Z(CorePtr));
         }
 
         /// <summary>
@@ -63,10 +62,10 @@ namespace Ers
         public Vector3 Scale
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_Scale_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Scale_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_Scale_Z(CorePointer()));
-            set => ErsEngine.ERS_TransformComponent_SetScale(CorePointer(), value.X, value.Y, value.Z);
+                ErsEngine.ERS_TransformComponent_Scale_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_Scale_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_Scale_Z(CorePtr));
+            set => ErsEngine.ERS_TransformComponent_SetScale(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -75,26 +74,26 @@ namespace Ers
         public Vector3 GlobalScale
         {
             get => new Vector3(
-                ErsEngine.ERS_TransformComponent_GlobalScale_X(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalScale_Y(CorePointer()),
-                ErsEngine.ERS_TransformComponent_GlobalScale_Z(CorePointer()));
+                ErsEngine.ERS_TransformComponent_GlobalScale_X(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalScale_Y(CorePtr),
+                ErsEngine.ERS_TransformComponent_GlobalScale_Z(CorePtr));
         }
 
         /// <summary>
         /// Rotate counterclockwise around the X-axis by a given angle.
         /// </summary>
         /// <param name="angle">The angle in turns (1 turn = 360 degrees).</param>
-        public void RotateX(float angle) => ErsEngine.ERS_TransformComponent_Rotate_X(CorePointer(), angle);
+        public void RotateX(float angle) => ErsEngine.ERS_TransformComponent_Rotate_X(CorePtr, angle);
         /// <summary>
         /// Rotate counterclockwise around the Y-axis by a given angle.
         /// </summary>
         /// <param name="angle">The angle in turns (1 turn = 360 degrees).</param>
-        public void RotateY(float angle) => ErsEngine.ERS_TransformComponent_Rotate_Y(CorePointer(), angle);
+        public void RotateY(float angle) => ErsEngine.ERS_TransformComponent_Rotate_Y(CorePtr, angle);
         /// <summary>
         /// Rotate counterclockwise around the Z-axis by a given angle.
         /// </summary>
         /// <param name="angle">The angle in turns (1 turn = 360 degrees).</param>
-        public void RotateZ(float angle) => ErsEngine.ERS_TransformComponent_Rotate_Z(CorePointer(), angle);
+        public void RotateZ(float angle) => ErsEngine.ERS_TransformComponent_Rotate_Z(CorePtr, angle);
 
         /// <summary>
         /// Set the rotation in Euler angles.
@@ -102,8 +101,7 @@ namespace Ers
         /// <param name="x">The angle around the X-axis in turns (1 turn = 360 degrees).</param>
         /// <param name="y">The angle around the Y-axis in turns (1 turn = 360 degrees).</param>
         /// <param name="z">The angle around the Z-axis in turns (1 turn = 360 degrees).</param>
-        public void SetRotationEuler(float x, float y, float z) =>
-            ErsEngine.ERS_TransformComponent_SetRotationEuler(CorePointer(), x, y, z);
+        public void SetRotationEuler(float x, float y, float z) => ErsEngine.ERS_TransformComponent_SetRotationEuler(CorePtr, x, y, z);
         /// <summary>
         /// Set the rotation by a given quaternion.
         /// </summary>
@@ -112,7 +110,7 @@ namespace Ers
         /// <param name="z">The Z-component of the quaternion.</param>
         /// <param name="w">The W-component of the quaternion.</param>
         public void SetQuaternion(float x, float y, float z, float w) =>
-            ErsEngine.ERS_TransformComponent_SetQuaternion(CorePointer(), x, y, z, w);
+            ErsEngine.ERS_TransformComponent_SetQuaternion(CorePtr, x, y, z, w);
 
         /// <summary>
         /// Returns the component ID
@@ -120,13 +118,18 @@ namespace Ers
         /// <returns></returns>
         public static nuint CoreTypeId() => ErsEngine.ERS_TransformComponent_TypeId();
 
-        private IntPtr CorePointer()
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr
         {
-            unsafe
-            {
-                fixed(TransformComponent* ptr = &this)
+            get {
+                unsafe
                 {
-                    return (IntPtr)ptr;
+                    fixed(TransformComponent* ptr = &this)
+                    {
+                        return (IntPtr)ptr;
+                    }
                 }
             }
         }

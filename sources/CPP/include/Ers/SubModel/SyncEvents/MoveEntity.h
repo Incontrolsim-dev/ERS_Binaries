@@ -1,4 +1,5 @@
 #pragma once
+#include "Ers/SubModel/ErsEvent.h"
 #include "Ers/SubModel/SubModel.h"
 #include "Ers/SubModel/SyncEvent.h"
 #include "Ers/Utility/Util.h"
@@ -15,13 +16,15 @@ namespace Ers
         void OnSenderSide()
         {
             // Copy from source to intermediate
-            EntityInFlight = Ers::GetSubModel().SendEntity(SyncEvent::GetSyncEventTarget(), EntityInFlight).id;
+            EntityInFlight = Ers::SubModel::Get().SendEntity(SyncEvent::GetSyncEventTarget(), EntityInFlight).id;
         }
 
         void OnTargetSide()
         {
             // Copy from intermediate to target
-            EntityInFlight = Ers::GetSubModel().ReceiveEntity(SyncEvent::GetSyncEventSender(), SentEntity(EntityInFlight));
+            EntityInFlight = Ers::SubModel::Get().ReceiveEntity(SyncEvent::GetSyncEventSender(), SentEntity(EntityInFlight));
         }
+
+        ERS_EVENT(EntityInFlight)
     };
 } // namespace Ers

@@ -3,37 +3,37 @@
 
 void Ers::Logger::Trace(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Trace(message.data());
+    Ers::Engine::ERS_Logger_Trace(message.data());
 }
 
 void Ers::Logger::Debug(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Debug(message.data());
+    Ers::Engine::ERS_Logger_Debug(message.data());
 }
 
 void Ers::Logger::Info(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Info(message.data());
+    Ers::Engine::ERS_Logger_Info(message.data());
 }
 
 void Ers::Logger::Warning(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Warning(message.data());
+    Ers::Engine::ERS_Logger_Warning(message.data());
 }
 
 void Ers::Logger::Error(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Error(message.data());
+    Ers::Engine::ERS_Logger_Error(message.data());
 }
 
 void Ers::Logger::Critical(const std::string_view& message)
 {
-    ersAPIFunctionPointers.ERS_Logger_Critical(message.data());
+    Ers::Engine::ERS_Logger_Critical(message.data());
 }
 
 void Ers::Logger::SetLogLevel(LogLevel level)
 {
-    ersAPIFunctionPointers.ERS_Logger_SetLogLevel(static_cast<int>(level));
+    Ers::Engine::ERS_Logger_SetLogLevel(static_cast<int>(level));
 }
 
 static void CallbackWrapper(int level, const char* message, void* userData)
@@ -45,5 +45,5 @@ static void CallbackWrapper(int level, const char* message, void* userData)
 
 void Ers::Logger::AddCallback(void (*callback)(int level, const char* message))
 {
-    ersAPIFunctionPointers.ERS_Logger_AddCallback(CallbackWrapper, reinterpret_cast<void*>(callback));
+    Ers::Engine::ERS_Logger_AddCallback(CallbackWrapper, reinterpret_cast<void*>(callback));
 }

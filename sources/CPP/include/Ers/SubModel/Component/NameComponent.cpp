@@ -6,16 +6,16 @@ namespace Ers
 {
     uint32_t NameComponent::CoreTypeId()
     {
-        return ersAPIFunctionPointers.ERS_NameComponent_TypeId();
+        return Ers::Engine::ERS_NameComponent_TypeId();
     }
 
     std::string_view NameComponent::Name() const
     {
-        return {ersAPIFunctionPointers.ERS_NameComponent_GetName(const_cast<NameComponent*>(this))};
+        return {Ers::Engine::ERS_NameComponent_GetName(const_cast<NameComponent*>(this))};
     }
 
     void NameComponent::Name(const std::string_view& newName) const
     {
-        ersAPIFunctionPointers.ERS_NameComponent_SetName(const_cast<NameComponent*>(this), newName.data(), newName.length());
+        Ers::Engine::ERS_NameComponent_SetName(const_cast<NameComponent*>(this), newName.data(), newName.length());
     }
 } // namespace Ers

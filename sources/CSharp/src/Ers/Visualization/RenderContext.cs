@@ -8,7 +8,10 @@ namespace Ers
     /// </summary>
     public class RenderContext : IDisposable
     {
-        private IntPtr coreInstance;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr;
 
         /// <summary>
         /// Create a new RenderContext.
@@ -17,10 +20,10 @@ namespace Ers
         /// <param name="screenHeight">The height of the render area.</param>
         public RenderContext(int screenWidth, int screenHeight)
         {
-            this.coreInstance = ErsEngine.ERS_RenderContext_Create(screenWidth, screenHeight);
+            this.CorePtr = ErsEngine.ERS_RenderContext_Create(screenWidth, screenHeight);
         }
 
-        public RenderContext(IntPtr corePtr) { coreInstance = corePtr; }
+        internal RenderContext(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Finalizer / Destructor for RenderContext.
@@ -37,66 +40,79 @@ namespace Ers
         }
 
         /// <summary>
-        /// Clear the currently queued draw calls (those that have net yet been drawn by calling <see cref="NextFrame"/>).
+        /// Whether to draw the background grid (applies to both 2D and 3D).
         /// </summary>
-        public void Clear() => ErsEngine.ERS_RenderContext_ClearScreen(coreInstance);
+        public bool DrawBackgroundGrid
+        {
+            get => ErsEngine.ERS_RenderContext_Get_DrawBackgroundGrid(CorePtr);
+            set => ErsEngine.ERS_RenderContext_Set_DrawBackgroundGrid(CorePtr, value);
+        }
 
-        public void Present() => ErsEngine.ERS_RenderContext_Present(coreInstance);
+        /// <summary>
+        /// The background color.
+        /// </summary>
+        public Color BackgroundColor
+        {
+            get => Color.FromInt(ErsEngine.ERS_RenderContext_Get_BackgroundColor(CorePtr));
+            set => ErsEngine.ERS_RenderContext_Set_BackgroundColor(CorePtr, value.Value);
+        }
+
+        /// <summary>
+        /// The background grid color.
+        /// </summary>
+        public Color BackgroundGridColor
+        {
+            get => Color.FromInt(ErsEngine.ERS_RenderContext_Get_BackgroundGridColor(CorePtr));
+            set => ErsEngine.ERS_RenderContext_Set_BackgroundGridColor(CorePtr, value.Value);
+        }
+
+        /// <summary>
+        /// Clear the currently queued draw calls.
+        /// </summary>
+        public void Clear() => ErsEngine.ERS_RenderContext_ClearScreen(CorePtr);
 
         /// <summary>
         /// Clear the screen.
         /// <para>The screen will be cleared using the configured background color.</para>
         /// </summary>
-        public void ClearScreen() => ErsEngine.ERS_RenderContext_ClearScreen(coreInstance);
+        public void ClearScreen() => ErsEngine.ERS_RenderContext_ClearScreen(CorePtr);
 
         /// <summary>
         /// Set the viewport size.
         /// </summary>
         /// <param name="width">The width of the viewport.</param>
         /// <param name="height">The height of the viewport.</param>
-        public void SetViewport(int width, int height) => ErsEngine.ERS_RenderContext_SetViewport(coreInstance, width, height);
+        public void SetViewport(int width, int height) => ErsEngine.ERS_RenderContext_SetViewport(CorePtr, width, height);
 
         /// <summary>
         /// Begin 2D rendering mode.
         /// </summary>
-        public void Begin2D() => ErsEngine.ERS_RenderContext_Begin2D(coreInstance);
+        public void Begin2D() => ErsEngine.ERS_RenderContext_Begin2D(CorePtr);
 
         /// <summary>
         /// End 2D rendering mode.
         /// </summary>
-        public void End2D() => ErsEngine.ERS_RenderContext_End2D(coreInstance);
+        public void End2D() => ErsEngine.ERS_RenderContext_End2D(CorePtr);
 
         /// <summary>
         /// Begin 3D rendering mode.
         /// </summary>
-        public void Begin3D() => ErsEngine.ERS_RenderContext_Begin3D(coreInstance);
+        public void Begin3D() => ErsEngine.ERS_RenderContext_Begin3D(CorePtr);
 
         /// <summary>
         /// End 3D rendering mode.
         /// </summary>
-        public void End3D() => ErsEngine.ERS_RenderContext_End3D(coreInstance);
-
-        /// <summary>
-        /// Set the background color.
-        /// </summary>
-        /// <param name="color">The background color.</param>
-        public void SetBackgroundColor(Color color = default)
-        {
-            if (color == default)
-                color = Color.FromFloats(0.7f, 0.7f, 1.0f, 1.0f);
-
-            ErsEngine.ERS_RenderContext_SetBackgroundColor(coreInstance, color.Value);
-        }
+        public void End3D() => ErsEngine.ERS_RenderContext_End3D(CorePtr);
 
         public void DrawScreenLine2D(Vector2 start, Vector2 end, float thickness, Color color, int zIndex = 0)
         {
-            ErsEngine.ERS_RenderContext_DrawScreenLine2D(coreInstance, start.X, start.Y, end.X, end.Y, thickness, color.Value, zIndex);
+            ErsEngine.ERS_RenderContext_DrawScreenLine2D(CorePtr, start.X, start.Y, end.X, end.Y, thickness, color.Value, zIndex);
         }
 
         public void DrawScreenLineRect2D(Vector2 center, Vector2 size, float angle, float thickness, Color color, int zIndex = 0)
         {
             ErsEngine.ERS_RenderContext_DrawScreenLineRect2D(
-                coreInstance, center.X, center.Y, size.X, size.Y, angle, thickness, color.Value, zIndex);
+                CorePtr, center.X, center.Y, size.X, size.Y, angle, thickness, color.Value, zIndex);
         }
 
         /// <summary>
@@ -106,9 +122,10 @@ namespace Ers
         /// <param name="end">The end position of the line.</param>
         /// <param name="thickness">The thickness of the line.</param>
         /// <param name="color">The color of the line.</param>
-        public void DrawLine2D(Vector2 start, Vector2 end, float thickness, Color color)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawLine2D(Vector2 start, Vector2 end, float thickness, Color color, Int64 zIndex = 0)
         {
-            ErsEngine.ERS_RenderContext_DrawLine2D(coreInstance, start.X, start.Y, end.X, end.Y, thickness, color.Value);
+            ErsEngine.ERS_RenderContext_DrawLine2D(CorePtr, start.X, start.Y, end.X, end.Y, thickness, color.Value, zIndex);
         }
 
         /// <summary>
@@ -118,9 +135,10 @@ namespace Ers
         /// <param name="v1">The second vertex of the triangle.</param>
         /// <param name="v2">The third vertex of the triangle.</param>
         /// <param name="color">The color of the triangle.</param>
-        public void DrawTriangle2D(Vector2 v0, Vector2 v1, Vector2 v2, Color color)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawTriangle2D(Vector2 v0, Vector2 v1, Vector2 v2, Color color, Int64 zIndex = 0)
         {
-            ErsEngine.ERS_RenderContext_DrawTriangle2D(coreInstance, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, color.Value);
+            ErsEngine.ERS_RenderContext_DrawTriangle2D(CorePtr, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, color.Value, zIndex);
         }
 
         /// <summary>
@@ -133,9 +151,10 @@ namespace Ers
         /// <param name="size">The dimensions of the bounding box.</param>
         /// <param name="angle">The counterclockwise rotation of the triangle.</param>
         /// <param name="color">The color of the triangle.</param>
-        public void DrawTriangle2D(Vector2 center, Vector2 size, float angle, Color color)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawTriangle2D(Vector2 center, Vector2 size, float angle, Color color, Int64 zIndex = 0)
         {
-            ErsEngine.ERS_RenderContext_DrawTriangle2D_Box(coreInstance, center.X, center.Y, size.X, size.Y, angle, color.Value);
+            ErsEngine.ERS_RenderContext_DrawTriangle2D_Box(CorePtr, center.X, center.Y, size.X, size.Y, angle, color.Value, zIndex);
         }
 
         /// <summary>
@@ -145,13 +164,30 @@ namespace Ers
         /// <param name="size">The width and height of the rectangle.</param>
         /// <param name="angle">The counterclockwise rotation in turns.</param>
         /// <param name="color">The color of the rectangle.</param>
-        /// <param name="zIndex">The z-index of the rectangle.</param>
+        /// <param name="zIndex">The z-index for layering.</param>
         public void DrawRect2D(Vector2 center, Vector2 size, float angle = 0.0f, Color color = default, int zIndex = 0)
         {
             if (color == default)
                 color = Color.FromFloats(1.0f, 1.0f, 1.0f, 1.0f);
 
-            ErsEngine.ERS_RenderContext_DrawRect2D(coreInstance, center.X, center.Y, size.X, size.Y, angle, color.Value, zIndex);
+            ErsEngine.ERS_RenderContext_DrawRect2D(CorePtr, center.X, center.Y, size.X, size.Y, angle, color.Value, zIndex);
+        }
+
+        /// <summary>
+        /// Draw a 2D circle.
+        /// </summary>
+        /// <param name="center">The center of the circle.</param>
+        /// <param name="size">The width and height of the circle.</param>
+        /// <param name="segments">The number of segments the circle is made of.</param>
+        /// <param name="angle">The counterclockwise rotation in turns.</param>
+        /// <param name="color">The color of the circle.</param>
+        /// <param name="zIndex">The z-index of the circle.</param>
+        public void DrawCircle2D(Vector2 center, Vector2 size, int segments, float angle = 0.0f, Color color = default, int zIndex = 0)
+        {
+            if (color == default)
+                color = Color.FromBytes(255, 255, 255, 255);
+
+            ErsEngine.ERS_RenderContext_DrawCircle2D(CorePtr, center.X, center.Y, size.X, size.Y, segments, angle, color.Value, zIndex);
         }
 
         /// <summary>
@@ -160,34 +196,26 @@ namespace Ers
         /// <param name="center">The center of the arc.</param>
         /// <param name="radius">The radius of the arc.</param>
         /// <param name="width">The width of the arc.</param>
-        /// <param name="beginAngle">The angle at the start of the arc.</param>
-        /// <param name="endAngle">The angle at the end of the arc.</param>
+        /// <param name="beginAngle">The angle (in turns) at the start of the arc (1 turn = 360 degrees).</param>
+        /// <param name="endAngle">The angle (in turns) at the end of the arc (1 turn = 360 degrees).</param>
         /// <param name="color">The color of the arc.</param>
         /// <param name="segments">The number of segments the arc consists of.</param>
+        /// <param name="zIndex">The z-index for layering.</param>
         public void DrawArc2D(
-            Vector2 center, float radius, float width, float beginAngle, float endAngle, Color color = default, int segments = 10)
+            Vector2 center,
+            float radius,
+            float width,
+            float beginAngle,
+            float endAngle,
+            Color color  = default,
+            int segments = 10,
+            Int64 zIndex = 0)
         {
             if (color == default)
                 color = Color.FromFloats(1.0f, 1.0f, 1.0f, 1.0f);
 
             ErsEngine.ERS_RenderContext_DrawArc2D(
-                coreInstance, center.X, center.Y, radius, width, beginAngle, endAngle, segments, color.Value);
-        }
-
-        /// <summary>
-        /// Draw an infinite 2D grid. The grid fades between different grid sizes based on the camera zoom.
-        /// </summary>
-        /// <param name="color">The color of the grid lines.</param>
-        /// <param name="lineThickness">The thickness of the grid lines.</param>
-        /// <param name="armLength">The length of the grid arms. A value of 0.5 creates a full grid.</param>
-        /// <param name="targetPixelSize">The target pixel size of the grid cells.</param>
-        public void DrawInfiniteGrid2D(
-            Color color = default, float lineThickness = 1.0f, float armLength = 0.1f, float targetPixelSize = 64.0f)
-        {
-            if (color == default)
-                color = Color.FromBytes(0, 0, 0, 255);
-
-            ErsEngine.ERS_RenderContext_DrawInfiniteGrid2D(coreInstance, color.Value, lineThickness, armLength, targetPixelSize);
+                CorePtr, center.X, center.Y, radius, width, beginAngle, endAngle, segments, color.Value, zIndex);
         }
 
         /// <summary>
@@ -198,7 +226,9 @@ namespace Ers
         /// <param name="size">The size of the rectangle.</param>
         /// <param name="angle">The counterclockwise rotation in turns.</param>
         /// <param name="color">The color tint of the texture.</param>
-        public void DrawTexture2D(Texture texture, Vector2 center, Vector2 size, float angle = 0.0f, Color color = default)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawTexture2D(
+            Texture texture, Vector2 center, Vector2 size, float angle = 0.0f, Color color = default, Int64 zIndex = 0)
         {
             if (color == default)
                 color = Color.FromBytes(255, 255, 255, 255);
@@ -206,46 +236,33 @@ namespace Ers
             Vector2 uvMax = new Vector2(1, 1);
 
             ErsEngine.ERS_RenderContext_DrawTexture2D(
-                coreInstance, texture.Data, center.X, center.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.Value);
+                CorePtr, texture.CorePtr, center.X, center.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.Value,
+                zIndex);
         }
 
         /// <summary>
         /// Draw mesh data.
         /// </summary>
         /// <param name="mesh">The mesh to draw.</param>
-        public void DrawMesh(Mesh mesh) => ErsEngine.ERS_RenderContext_DrawMesh(coreInstance, mesh.Data);
+        public void DrawMesh(Mesh mesh) => ErsEngine.ERS_RenderContext_DrawMesh(CorePtr, mesh.CorePtr);
 
         /// <summary>
         /// Draw a 3D model.
         /// </summary>
         /// <param name="model">The 3D model to draw.</param>
-        public void DrawModel3D(Model3D model) => ErsEngine.ERS_RenderContext_DrawModel3D(coreInstance, model.Data);
-
-        /// <summary>
-        /// Draw an infinite 3D grid. The grid fades between different grid sizes based on the camera zoom.
-        /// </summary>
-        /// <param name="color">The color of the grid.</param>
-        /// <param name="lineThickness">The thickness of the grid lines.</param>
-        /// <param name="targetPixelSize">The target pixel size of the grid cells.</param>
-        public void DrawInfiniteGrid3D(Color color = default, float lineThickness = 1.0f, float targetPixelSize = 64.0f)
-        {
-            if (color == default)
-                color = Color.FromBytes(0, 0, 0, 255);
-
-            ErsEngine.ERS_RenderContext_DrawInfiniteGrid3D(coreInstance, color.Value, lineThickness, targetPixelSize);
-        }
+        public void DrawModel3D(Model3D model) => ErsEngine.ERS_RenderContext_DrawModel3D(CorePtr, model.CorePtr);
 
         /// <summary>
         /// Get the camera used for 2D rendering.
         /// </summary>
         /// <returns></returns>
-        public Camera2D GetCamera2D() => new Camera2D(ErsEngine.ERS_RenderContext_GetCamera2D(coreInstance));
+        public Camera2D GetCamera2D() => new Camera2D(ErsEngine.ERS_RenderContext_GetCamera2D(CorePtr));
 
         /// <summary>
         /// Get the camera used for 3D rendering.
         /// </summary>
         /// <returns></returns>
-        public Camera3D GetCamera3D() => new Camera3D(ErsEngine.ERS_RenderContext_GetCamera3D(coreInstance));
+        public Camera3D GetCamera3D() => new Camera3D(ErsEngine.ERS_RenderContext_GetCamera3D(CorePtr));
 
         /// <summary>
         /// Draw a 2D quadrilateral.
@@ -255,9 +272,10 @@ namespace Ers
         /// <param name="v2">The third vertex of the quad.</param>
         /// <param name="v3">The fourth vertex of the quad.</param>
         /// <param name="color">The color of the quad.</param>
-        public void DrawQuad2D(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, Color color)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawQuad2D(Vector2 v0, Vector2 v1, Vector2 v2, Vector2 v3, Color color, Int64 zIndex = 0)
         {
-            ErsEngine.ERS_RenderContext_DrawQuad2D(coreInstance, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, v3.X, v3.Y, color.Value);
+            ErsEngine.ERS_RenderContext_DrawQuad2D(CorePtr, v0.X, v0.Y, v1.X, v1.Y, v2.X, v2.Y, v3.X, v3.Y, color.Value, zIndex);
         }
 
         /// <summary>
@@ -277,8 +295,7 @@ namespace Ers
                 color = Color.FromBytes(255, 255, 255, 255);
 
             ErsEngine.ERS_RenderContext_DrawCube3D(
-                coreInstance, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z,
-                color.Value);
+                CorePtr, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, color.Value);
         }
 
         /// <summary>
@@ -288,12 +305,12 @@ namespace Ers
         /// <param name="instancedModel">The instancing data.</param>
         public void DrawInstancedModel3D(Mesh mesh, InstancedModel instancedModel)
         {
-            ErsEngine.ERS_RenderContext_DrawInstancedModel3DWithMesh(coreInstance, mesh.Data, instancedModel.Data);
+            ErsEngine.ERS_RenderContext_DrawInstancedModel3DWithMesh(CorePtr, mesh.CorePtr, instancedModel.CorePtr);
         }
 
         public void DrawInstancedModel3D(InstancedModel instancedModel)
         {
-            ErsEngine.ERS_RenderContext_DrawInstancedModel3D(coreInstance, instancedModel.Data);
+            ErsEngine.ERS_RenderContext_DrawInstancedModel3D(CorePtr, instancedModel.CorePtr);
         }
 
         /// <summary>
@@ -303,7 +320,8 @@ namespace Ers
         /// <param name="pos">The position to draw the text from (top-left of first character).</param>
         /// <param name="scale">The scale of the font.</param>
         /// <param name="color">The color of the text.</param>
-        public void DrawText2D(string text, Vector2 pos, float scale, Color color = default)
+        /// <param name="zIndex">The z-index for layering.</param>
+        public void DrawText2D(string text, Vector2 pos, float scale, Color color = default, Int64 zIndex = 0)
         {
             if (color == default)
                 color = Color.FromBytes(0, 0, 0, 255);
@@ -313,7 +331,7 @@ namespace Ers
             {
                 fixed(byte* textByte = textUtf8)
                 {
-                    ErsEngine.ERS_RenderContext_DrawText2D(coreInstance, textByte, pos.X, pos.Y, scale, color.Value);
+                    ErsEngine.ERS_RenderContext_DrawText2D(CorePtr, textByte, pos.X, pos.Y, scale, color.Value, zIndex);
                 }
             }
         }
@@ -338,7 +356,7 @@ namespace Ers
                 fixed(byte* textByte = textUtf8)
                 {
                     ErsEngine.ERS_RenderContext_DrawText3D(
-                        coreInstance, textByte, center.X, center.Y, center.Z, normal.X, normal.Y, normal.Z, worldUp.X, worldUp.Y, worldUp.Z,
+                        CorePtr, textByte, center.X, center.Y, center.Z, normal.X, normal.Y, normal.Z, worldUp.X, worldUp.Y, worldUp.Z,
                         scale, color.Value);
                 }
             }
@@ -360,7 +378,7 @@ namespace Ers
             {
                 fixed(byte* textByte = textUtf8)
                 {
-                    ErsEngine.ERS_RenderContext_DrawTextBillboard(coreInstance, textByte, center.X, center.Y, center.Z, scale, color.Value);
+                    ErsEngine.ERS_RenderContext_DrawTextBillboard(CorePtr, textByte, center.X, center.Y, center.Z, scale, color.Value);
                 }
             }
         }
@@ -371,7 +389,7 @@ namespace Ers
         /// <param name="direction">The direction of the light.</param>
         public void SetLightDirection(Vector3 direction)
         {
-            ErsEngine.ERS_RenderContext_SetLightDirection(coreInstance, direction.X, direction.Y, direction.Z);
+            ErsEngine.ERS_RenderContext_SetLightDirection(CorePtr, direction.X, direction.Y, direction.Z);
         }
 
         /// <summary>
@@ -384,14 +402,23 @@ namespace Ers
         /// <param name="uvMax">The maximum UV coordinates.</param>
         /// <param name="angle">The counterclockwise rotation in turns.</param>
         /// <param name="color">The color tint.</param>
+        /// <param name="zIndex">The z-index for layering.</param>
         public void DrawTexture2D(
-            Texture texture, Vector2 position, Vector2 size, Vector2 uvMin, Vector2 uvMax, float angle = 0.0f, Color color = default)
+            Texture texture,
+            Vector2 position,
+            Vector2 size,
+            Vector2 uvMin,
+            Vector2 uvMax,
+            float angle  = 0.0f,
+            Color color  = default,
+            Int64 zIndex = 0)
         {
             if (color == default)
                 color = Color.FromBytes(255, 255, 255, 255);
 
             ErsEngine.ERS_RenderContext_DrawTexture2D(
-                coreInstance, texture.Data, position.X, position.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.Value);
+                CorePtr, texture.CorePtr, position.X, position.Y, size.X, size.Y, uvMin.X, uvMin.Y, uvMax.X, uvMax.Y, angle, color.Value,
+                zIndex);
         }
 
         /// <summary>
@@ -408,38 +435,10 @@ namespace Ers
 
                 fixed(byte* textByte = text.ToUtf8NullTerminated())
                 {
-                    ErsEngine.ERS_RenderContext_CalculateTextSize(coreInstance, textByte, scale, (IntPtr)(&width), (IntPtr)(&height));
+                    ErsEngine.ERS_RenderContext_CalculateTextSize(CorePtr, textByte, scale, (IntPtr)(&width), (IntPtr)(&height));
                 }
                 return new Vector2(width, height);
             }
         }
-
-        internal IntPtr GetCoreInstance() { return coreInstance; }
-
-        /// <summary>
-        /// The ambient light color of the scene.
-        ///
-        /// <para>The color channels are in range [0,1].</para>
-        /// </summary>
-        // public Vector3 AmbientLightColor
-        //{
-        //     get {
-        //         unsafe
-        //         {
-        //             return new Vector3(
-        //                 *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_X(coreInstance),
-        //                 *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_Y(coreInstance),
-        //                 *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_Z(coreInstance));
-        //         }
-        //     }
-        //     set {
-        //         unsafe
-        //         {
-        //             *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_X(coreInstance) = value.X;
-        //             *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_Y(coreInstance) = value.Y;
-        //             *(float*)ErsEngine.ERS_RenderContext_AmbientLightColor_Z(coreInstance) = value.Z;
-        //         }
-        //     }
-        // }
     }
 }

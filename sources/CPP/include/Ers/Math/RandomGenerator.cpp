@@ -9,32 +9,32 @@ namespace Ers
     /// @brief Reset the seed of the random number generator.
     void RandomGenerator::Reset()
     {
-        ersAPIFunctionPointers.ERS_Random_Generator_Reset(Data());
+        Ers::Engine::ERS_Random_Generator_Reset(CorePtr());
     }
 
     /// @brief Set the set of the random number generator.
     /// @param seed The seed to set.
     void RandomGenerator::SetSeed(size_t seed)
     {
-        ersAPIFunctionPointers.ERS_Random_Generator_Set_Seed(Data(), seed);
+        Ers::Engine::ERS_Random_Generator_Set_Seed(CorePtr(), seed);
     }
 
     /// @brief Sample a random value from the random number generator.
     /// @return The sampled value.
     double RandomGenerator::Sample()
     {
-        return ersAPIFunctionPointers.ERS_Random_Generator_Sample(Data());
+        return Ers::Engine::ERS_Random_Generator_Sample(CorePtr());
     }
 
     Ers::RandomGeneratorType RandomGenerator::GetRandomGeneratorType()
     {
-        return static_cast<Ers::RandomGeneratorType>(ersAPIFunctionPointers.ERS_Random_Generator_GetType(Data()));
+        return static_cast<Ers::RandomGeneratorType>(Ers::Engine::ERS_Random_Generator_GetType(CorePtr()));
     }
-    void* RandomGenerator::Data()
+    void* RandomGenerator::CorePtr()
     {
         return this;
     }
-    const void* const RandomGenerator::Data() const
+    const void* const RandomGenerator::CorePtr() const
     {
         return this;
     }

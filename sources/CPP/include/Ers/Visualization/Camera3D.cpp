@@ -4,53 +4,53 @@
 
 namespace Ers
 {
-    Camera3D::Camera3D(void* coreInstance) :
-        coreInstance(coreInstance)
+    Camera3D::Camera3D(void* corePtr) :
+        corePtr(corePtr)
     {
     }
 
     float Camera3D::GetFovInTurns() const
     {
-        return *ersAPIFunctionPointers.ERS_Camera3D_FovInTurns(coreInstance);
+        return Ers::Engine::ERS_Camera3D_GetFovInTurns(corePtr);
     }
 
     void Camera3D::SetFovInTurns(float value)
     {
-        *(ersAPIFunctionPointers.ERS_Camera3D_FovInTurns(coreInstance)) = value;
+        Ers::Engine::ERS_Camera3D_SetFovInTurns(corePtr, value);
     }
 
     float Camera3D::GetZNear() const
     {
-        return *ersAPIFunctionPointers.ERS_Camera3D_ZNear(coreInstance);
+        return Ers::Engine::ERS_Camera3D_GetZNear(corePtr);
     }
 
     void Camera3D::SetZNear(float value)
     {
-        *(ersAPIFunctionPointers.ERS_Camera3D_ZNear(coreInstance)) = value;
+        Ers::Engine::ERS_Camera3D_SetZNear(corePtr, value);
     }
 
     float Camera3D::GetZFar() const
     {
-        return *ersAPIFunctionPointers.ERS_Camera3D_ZFar(coreInstance);
+        return Ers::Engine::ERS_Camera3D_GetZFar(corePtr);
     }
 
     void Camera3D::SetZFar(float value)
     {
-        *(ersAPIFunctionPointers.ERS_Camera3D_ZFar(coreInstance)) = value;
+        Ers::Engine::ERS_Camera3D_SetZFar(corePtr, value);
     }
 
     void Camera3D::SetLookAt(float x, float y, float z)
     {
-        ersAPIFunctionPointers.ERS_Camera3D_SetLookAt(coreInstance, x, y, z);
+        Ers::Engine::ERS_Camera3D_SetLookAt(corePtr, x, y, z);
     }
 
-    void* Camera3D::Data()
+    void* Camera3D::CorePtr()
     {
-        return coreInstance;
+        return corePtr;
     }
 
-    const void* const Camera3D::Data() const
+    const void* const Camera3D::CorePtr() const
     {
-        return coreInstance;
+        return corePtr;
     }
 } // namespace Ers

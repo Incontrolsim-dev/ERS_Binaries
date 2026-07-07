@@ -12,18 +12,26 @@ namespace Ers.Engine
         public static extern IntPtr ERS_Debugger_Create(IntPtr modelContainerPtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_Debugger_Create_Window(IntPtr modelContainerPtr, IntPtr windowPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Debugger_Destroy(IntPtr ptr);
 
-        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_Debugger_WantsRestart(IntPtr ptr);
+        public static extern void ERS_Debugger_BeginUpdate(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Debugger_EndUpdate(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_Debugger_GetWindow(IntPtr ptr);
 
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_Debugger_ShowBackgroundGrid(IntPtr ptr);
+        public static extern bool ERS_Debugger_Get_IsRunning(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Debugger_SetModelContainer(IntPtr ptr, IntPtr modelContainerPtr);
+        public static extern void ERS_Debugger_Set_IsRunning(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_Debugger_GetRenderContext(IntPtr ptr);
@@ -38,25 +46,26 @@ namespace Ers.Engine
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern Entity ERS_Debugger_GetSelectedEntity(IntPtr ptr);
 
-        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_Debugger_Update(IntPtr ptr);
+        public static extern UInt32 ERS_Debugger_Get_TopBarDockID(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Platform_Create();
+        public static extern UInt32 ERS_Debugger_Get_MainDockID(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Platform_Destroy(IntPtr ptr);
+        public static extern UInt32 ERS_Debugger_Get_LeftSidebarDockID(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Platform_BeginFrame(IntPtr ptr);
+        public static extern UInt32 ERS_Debugger_Get_CenterDockID(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Platform_EndFrame(IntPtr ptr);
+        public static extern UInt32 ERS_Debugger_Get_RightSidebarDockID(IntPtr ptr);
 
-        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_Platform_WantsClose(IntPtr ptr);
+        public static extern UInt32 ERS_Debugger_Get_CenterMainDockID(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_Debugger_Get_CenterBottomDockID(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RunWithProgressBar();
@@ -172,13 +181,13 @@ namespace Ers.Engine
         public static extern unsafe void ERS_Serializer_SerializeDouble(IntPtr serializerHandle, /* ASCII String */ byte* key, IntPtr value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Serializer_SerializeBool(IntPtr serializerHandle, /* ASCII String */ byte* key, IntPtr value);
+        public static extern unsafe void ERS_Serializer_SerializeBool(IntPtr serializerHandle, /* ASCII String */ byte* key, bool* value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe void ERS_Serializer_SerializeFloat(IntPtr serializerHandle, /* ASCII String */ byte* key, IntPtr value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Serializer_SerializeString(IntPtr serializerHandle, /* ASCII String */ byte* key, /* ASCII String */ byte* value, IntPtr length);
+        public static extern unsafe void ERS_Serializer_SerializeString(IntPtr serializerHandle, /* ASCII String */ byte* key, /* ASCII String */ byte* value, ref int length);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe void ERS_Serializer_PushObject(IntPtr serializerHandle, /* ASCII String */ byte* key);
@@ -190,7 +199,7 @@ namespace Ers.Engine
         public static extern void ERS_Serializer_SetObject(IntPtr serializerHandle, int index);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Serializer_PushArray(IntPtr serializerHandle, /* ASCII String */ byte* key, IntPtr size);
+        public static extern unsafe void ERS_Serializer_PushArray(IntPtr serializerHandle, /* ASCII String */ byte* key, ref int size);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Serializer_PopArray(IntPtr serializerHandle);
@@ -229,118 +238,19 @@ namespace Ers.Engine
         public static extern void ERS_Serializer_SerializeValueDouble(IntPtr serializerHandle, nuint index, IntPtr value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Serializer_SerializeValueBool(IntPtr serializerHandle, nuint index, IntPtr value);
+        public static extern unsafe void ERS_Serializer_SerializeValueBool(IntPtr serializerHandle, nuint index, bool* value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Serializer_SerializeValueFloat(IntPtr serializerHandle, nuint index, IntPtr value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Serializer_SerializeValueString(IntPtr serializerHandle, nuint index, /* ASCII String */ byte* value, IntPtr length);
+        public static extern unsafe void ERS_Serializer_SerializeValueString(IntPtr serializerHandle, nuint index, /* ASCII String */ byte* value, ref int length);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Serializer_PushArrayElement(IntPtr serializerHandle, nuint index, IntPtr size);
+        public static extern void ERS_Serializer_PushArrayElement(IntPtr serializerHandle, nuint index, ref int size);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Serializer_PushObjectElement(IntPtr serializerHandle, nuint index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_CreateInterpreter(IntPtr subModelHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_SubModel_RunSimpleString(IntPtr subModelHandle, /* ASCII String */ byte* code);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_SubModel_LoadPythonModuleFromFile(IntPtr subModelHandle, /* ASCII String */ byte* filePath);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_SubModel_LoadPythonPackage(IntPtr subModelHandle, /* ASCII String */ byte* packageFolderPath);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_AddInterpreterScriptComponentType(IntPtr subModelHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_AddInterpreterScriptComponent(IntPtr subModelHandle, Entity entity);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_GetInterpreterScriptComponent(IntPtr subModelHandle, Entity entity);
-
-        [return: MarshalAs(UnmanagedType.I1)]
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_SubModel_HasInterpreterScriptComponent(IntPtr subModelHandle, Entity entity);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_BeginInterpreterRenderContext(IntPtr subModelHandle, IntPtr renderContextHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_EndInterpreterRenderContext(IntPtr subModelHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_GetInterpreterRenderContext(IntPtr subModelHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_PrintInterpreterGCStats(IntPtr subModelHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Interpreter_RegisterFunction(/* ASCII String */ byte* functionName, IntPtr userData, delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr> callback, /* ASCII String */ byte* docs);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterArgs_GetStringArgument(IntPtr interpreterArgsHandle, int index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern double ERS_InterpreterArgs_GetDoubleArgument(IntPtr interpreterArgsHandle, int index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Entity ERS_InterpreterArgs_GetEntityArgument(IntPtr interpreterArgsHandle, int index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Int64 ERS_InterpreterArgs_GetInt64Argument(IntPtr interpreterArgsHandle, int index);
-
-        [return: MarshalAs(UnmanagedType.I1)]
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool ERS_InterpreterArgs_GetBoolArgument(IntPtr interpreterArgsHandle, int index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern double ERS_InterpreterArgs_GetArgCount(IntPtr interpreterArgsHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterArgs_Create(int sz);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InterpreterArgs_Destruct(IntPtr interpreterArgsHandle);
-
-        [return: MarshalAs(UnmanagedType.I1)]
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe bool ERS_InterpreterArgs_HasAttribute(IntPtr interpreterArgsHandle, IntPtr interpreterObject, /* ASCII String */ byte* name);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe IntPtr ERS_InterpreterArgs_DynamicInvoke(IntPtr interpreterArgsHandle, IntPtr interpreterObject, /* ASCII String */ byte* name);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InterpreterArgs_SetArgument(IntPtr interpreterArgsHandle, int index, IntPtr value);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterComponent_UpdateEnabled(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterComponent_Render2DEnabled(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterVariable_None();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterVariable_CreateBool([MarshalAs(UnmanagedType.I1)] bool value);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterVariable_CreateUInt64(UInt64 value);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe IntPtr ERS_InterpreterVariable_CreateString(/* ASCII String */ byte* value);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterVariable_CreateDouble(double value);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InterpreterVariable_CreateEntity(Entity entityId);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern int ERS_PathSegment_GetType(IntPtr instance);
@@ -427,15 +337,6 @@ namespace Ers.Engine
         public static extern void ERS_PathSegment_GetRotationAlongPath(IntPtr instance, float t, IntPtr vec3out);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Random_Generator_MersenneTwister_Create();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Random_Generator_WichmannHill_Create();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Random_Generator_Destroy(IntPtr generator);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Random_Generator_Set_Seed(IntPtr generator, nuint seed);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -454,7 +355,7 @@ namespace Ers.Engine
         public static extern void ERS_Profiler_PrintResults();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_STRING_DISPOSE(IntPtr str);
+        public static extern void ERS_String_Destroy(IntPtr str);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_ThreadLocal_GetSubModel();
@@ -486,16 +387,13 @@ namespace Ers.Engine
         public static extern Int32 ERS_ThreadLocal_GetSyncEventSender();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_ModelContainer_CreateModelContainer();
+        public static extern IntPtr ERS_ModelContainer_Create();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_ModelContainer_Release(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_ModelContainer_Increase(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_ModelContainer_Dispose(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern nuint ERS_ModelContainer_GetSimulatorsCount(IntPtr modelContainerInstance);
@@ -556,6 +454,12 @@ namespace Ers.Engine
         public static extern void ERS_ModelContainer_Start(IntPtr modelContainerInstance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_ModelContainer_GetWorkingDir(IntPtr modelContainerInstance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_ModelContainer_SetWorkingDir(IntPtr modelContainerInstance, /* ASCII String */ byte* path);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_ModelManager_GetModelManager();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -590,6 +494,32 @@ namespace Ers.Engine
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe IntPtr ERS_LibraryCollection_GetLibraryHandle(IntPtr instance, /* ASCII String */ byte* libraryPath);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_PersistentEvent_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_PersistentEvent_Release(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_PersistentEvent_IsEmpty(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_PersistentEvent_GetSimulator(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_PersistentEvent_GetSimEvent(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt64 ERS_SimEvent_Get_Time(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_SimEvent_Get_Priority(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_SimEvent_IsSyncEvent(IntPtr ptr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_Simulator_GetLibraryCollection(IntPtr instance);
@@ -645,49 +575,43 @@ namespace Ers.Engine
         public static extern SimulationTime ERS_Simulator_GetCurrentTime(IntPtr simulatorInstance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 ERS_BasicRenderComponent_TypeId();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 ERS_BasicRenderComponent_GetColor(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_BasicRenderComponent_SetColor(IntPtr instance, UInt32 color);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_BasicRenderComponent_SetInstancedModel(IntPtr instance, IntPtr instancedModel);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BasicRenderComponent_GetInstancedModel(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_BoxComponent_TypeId();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Min_X(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Min_X(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Min_Y(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Min_Y(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Min_Z(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Min_Z(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Max_X(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Max_X(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Max_Y(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Max_Y(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Max_Z(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Max_Z(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Dimensions_X(IntPtr instance);
+        public static extern void ERS_BoxComponent_Set_Min(IntPtr instance, float minX, float minY, float minZ);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Dimensions_Y(IntPtr instance);
+        public static extern void ERS_BoxComponent_Set_Max(IntPtr instance, float maxX, float maxY, float maxZ);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_BoxComponent_Dimensions_Z(IntPtr instance);
+        public static extern float ERS_BoxComponent_Get_Dimensions_X(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_BoxComponent_Get_Dimensions_Y(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_BoxComponent_Get_Dimensions_Z(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_BoxComponent_Set_Dimensions(IntPtr instance, float dimsX, float dimsY, float dimsZ);
 
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -713,17 +637,19 @@ namespace Ers.Engine
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool ERS_ChannelComponent_IsOpen(IntPtr instance);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern float ERS_ChannelComponent_GetlongitudinalPosition(IntPtr instance);
+        public static extern bool ERS_ChannelComponent_IsOpenStatic(Entity channel);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_ChannelComponent_SetlongitudinalPosition(IntPtr instance, float position);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Channel_Send(Entity channelFrom, Entity child);
+        public static extern bool ERS_Channel_Send(Entity channelFrom, Entity child);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Channel_Open(Entity channel);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Channel_Close(Entity channel);
 
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -733,10 +659,10 @@ namespace Ers.Engine
         public static extern void ERS_Channel_Connect(Entity channelA, Entity channelB);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe UInt32 ERS_GlobalComponentRegistry_RegisterScriptBehavior(/* ASCII String */ byte* name, delegate* unmanaged[Cdecl]<IntPtr, IntPtr> CreateInstance, IntPtr handle, delegate* unmanaged[Cdecl]<IntPtr, void> OnCreation, delegate* unmanaged[Cdecl]<IntPtr, void> OnAwake, delegate* unmanaged[Cdecl]<IntPtr, void> OnStart, delegate* unmanaged[Cdecl]<IntPtr, void> OnUpdate, delegate* unmanaged[Cdecl]<IntPtr, void> OnLateUpdate, delegate* unmanaged[Cdecl]<IntPtr, void> OnDestroy, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnEntering, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnEntered, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnExiting, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnExited, delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> Serialization, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnSubModelMove);
+        public static extern void ERS_Channel_AddChannelComponent(Entity channel, int type, Entity resource);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe UInt32 ERS_GlobalComponentRegistry_RegisterResourceComponent(UInt32 componentIDValue, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnOutputChannelReady, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnInputChannelReady, delegate* unmanaged[Cdecl]<IntPtr, Entity, Entity, void> OnReceive);
+        public static extern unsafe UInt32 ERS_GlobalComponentRegistry_RegisterScriptBehavior(/* ASCII String */ byte* name, delegate* unmanaged[Cdecl]<IntPtr, IntPtr> CreateInstance, IntPtr handle, delegate* unmanaged[Cdecl]<IntPtr, void> OnCreation, delegate* unmanaged[Cdecl]<IntPtr, void> OnAwake, delegate* unmanaged[Cdecl]<IntPtr, void> OnStart, delegate* unmanaged[Cdecl]<IntPtr, void> OnUpdate, delegate* unmanaged[Cdecl]<IntPtr, void> OnLateUpdate, delegate* unmanaged[Cdecl]<IntPtr, void> OnDestroy, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnEntering, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnEntered, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnExiting, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnExited, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnInputChannelReady, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnOutputChannelReady, delegate* unmanaged[Cdecl]<IntPtr, Entity, Entity, void> OnReceive, delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> Serialization, delegate* unmanaged[Cdecl]<IntPtr, Entity, void> OnSubModelMove);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe UInt32 ERS_GlobalComponentRegistry_RegisterComponent(/* ASCII String */ byte* name, nuint sz, IntPtr typeInfoPtr, IntPtr customSerialize);
@@ -758,25 +684,34 @@ namespace Ers.Engine
         public static extern UInt32 ERS_OutlineComponent_TypeId();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Center_X(IntPtr instance);
+        public static extern float ERS_OutlineComponent_Get_Center_X(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Center_Y(IntPtr instance);
+        public static extern void ERS_OutlineComponent_Set_Center_X(IntPtr instance, float x);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Center_Z(IntPtr instance);
+        public static extern float ERS_OutlineComponent_Get_Center_Y(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Dimensions_X(IntPtr instance);
+        public static extern void ERS_OutlineComponent_Set_Center_Y(IntPtr instance, float y);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Dimensions_Y(IntPtr instance);
+        public static extern float ERS_OutlineComponent_Get_Center_Z(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_OutlineComponent_Dimensions_Z(IntPtr instance);
+        public static extern void ERS_OutlineComponent_Set_Center_Z(IntPtr instance, float z);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_OutlineComponent_SetDimensions(IntPtr instance, float dimsX, float dimsY, float dimsZ);
+        public static extern float ERS_OutlineComponent_Get_Dimensions_X(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_OutlineComponent_Get_Dimensions_Y(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_OutlineComponent_Get_Dimensions_Z(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_OutlineComponent_Set_Dimensions(IntPtr instance, float dimsX, float dimsY, float dimsZ);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_PathComponent_TypeId();
@@ -824,6 +759,36 @@ namespace Ers.Engine
         public static extern UInt32 ERS_RelationComponent_GetChildCount(IntPtr relationComponent);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_RenderComponent_TypeId();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte ERS_RenderComponent_GetShape(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderComponent_SetShape(IntPtr instance, byte shape);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_RenderComponent_GetColor(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderComponent_SetColor(IntPtr instance, UInt32 color);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_RenderComponent_GetTexture2D(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderComponent_SetTexture2D(IntPtr instance, IntPtr texturePtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderComponent_RemoveTexture2D(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderComponent_SetInstancedModel(IntPtr instance, IntPtr instancedModel);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_RenderComponent_GetInstancedModel(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_ResourceComponent_TypeId();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -840,6 +805,18 @@ namespace Ers.Engine
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern Entity ERS_ResourceComponent_GetOutputChannel(IntPtr instance, nuint index);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ResourceComponent_CloseAllInput(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ResourceComponent_OpenAllInput(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ResourceComponent_CloseAllOutput(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ResourceComponent_OpenAllOutput(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_TransformComponent_TypeId();
@@ -975,7 +952,13 @@ namespace Ers.Engine
         public static extern bool ERS_Entity_IsValid(Entity currentEntity);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe UInt64 ERS_EventScheduler_ScheduleLocalEvent(int priority, UInt64 delay, IntPtr dataPtr, delegate* unmanaged[Cdecl]<IntPtr, void> callback, delegate* unmanaged[Cdecl]<IntPtr, void> destructor);
+        public static extern unsafe IntPtr ERS_EventScheduler_RegisterLocalEventType(UInt64 typeIdentifier, delegate* unmanaged[Cdecl]<IntPtr, void> callback, delegate* unmanaged[Cdecl]<IntPtr, void> destructor, delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> serialize, delegate* unmanaged[Cdecl]<IntPtr> allocator, /* ASCII String */ byte* uniqueName, /* ASCII String */ byte* sourceLibrary, nuint size, /* ASCII String */ byte* filePath, int lineNumber);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe IntPtr ERS_EventScheduler_RegisterSyncEventType(UInt64 eventTypeIdentifier, delegate* unmanaged[Cdecl]<void> onSenderSideCallback, delegate* unmanaged[Cdecl]<void> onTargetSideCallback, delegate* unmanaged[Cdecl]<IntPtr, IntPtr, void> serializeData, UInt32 dataBlockSize, /* ASCII String */ byte* name, /* ASCII String */ byte* sourceLibrary, /* ASCII String */ byte* filePath, int lineNumber);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt64 ERS_EventScheduler_ScheduleLocalEvent(int priority, UInt64 delay, IntPtr dataPtr, IntPtr eventTypeInfo);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_EventScheduler_CancelEvent(UInt64 eventKey);
@@ -990,16 +973,19 @@ namespace Ers.Engine
         public static extern UInt64 ERS_EventScheduler_GetPromise(Int32 outgoingDependencyID);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe IntPtr ERS_EventScheduler_ScheduleSyncEvent(UInt64 delay, Int32 targetSimulatorId, UInt64 eventTypeIdentifier, delegate* unmanaged[Cdecl]<void> onSenderSideCallback, delegate* unmanaged[Cdecl]<void> onTargetSideCallback);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_EventScheduler_SyncEvent_GetData(UInt16 dataContextIdx, IntPtr syncEvent);
+        public static extern IntPtr ERS_EventScheduler_ScheduleSyncEvent(UInt64 delay, Int32 targetSimulatorId, IntPtr syncEventTypeInfo);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_EventScheduler_ExchangeSyncEventForEventID(IntPtr syncEvent);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_EventScheduler_DelayEvent(UInt64 key, UInt64 delayAmount);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_EventScheduler_AllocLocalEvent(IntPtr eventTypeInfo);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventScheduler_FreeLocalEvent(IntPtr dataPtr, IntPtr eventTypeInfo);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern Entity ERS_SubModel_Move_Entity_To(IntPtr targetSubModel, IntPtr sourceSubModel, Entity sourceEntity);
@@ -1054,9 +1040,6 @@ namespace Ers.Engine
         [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool ERS_SubModel_HasComponent(IntPtr subModelHandle, Entity entity, UInt32 componentID);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_AddComponentType(IntPtr subModelHandle, UInt32 componentID);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_SubModel_GetRandomProperties(IntPtr subModelHandle);
@@ -1137,97 +1120,22 @@ namespace Ers.Engine
         public static extern IntPtr ERS_Submodel_View_GetComponent(IntPtr viewHandle, nuint typeIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Submodel_View_GetComponents(IntPtr viewHandle);
+        public static extern ref IntPtr ERS_Submodel_View_GetComponents(IntPtr viewHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern Entity ERS_Submodel_View_GetEntity(IntPtr viewHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Submodel_View_Dispose(IntPtr view);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SubModel_Events_Disconnect(IntPtr connectionObjectPtr);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnAwake();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnAwake_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnStart();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnStart_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnCreate();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnCreate_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnDestroy();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnDestroy_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnEntering();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnEntering_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnEntered();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnEntered_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnExiting();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnExiting_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnExited();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SubModel_RelationEvents_OnExited_Connect(IntPtr signalHandle, IntPtr signalFunction, IntPtr obj);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SyncEvent_GetSyncEventMetaData(IntPtr syncEvent);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_SyncEvent_SetSyncEventMetaData(IntPtr syncEvent, IntPtr dataPtr, byte index);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_SyncEvent_SetSyncEventName(IntPtr syncEvent, /* ASCII String */ byte* name);
+        public static extern void ERS_Submodel_View_Destroy(IntPtr view);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern UInt32 ERS_SyncEvent_GetSyncEventUID(IntPtr syncEvent);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt16 ERS_SyncEvent_GetOrRegisterDataContext(IntPtr syncEvent, UInt64 identifier, UInt32 blockSize);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_SyncEvent_GetData(IntPtr syncEvent, UInt16 dataContextIdx);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_BasicRenderSystem_Render2D(IntPtr subModelInstance, IntPtr renderContextInstance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_BasicRenderSystem_Render3D(IntPtr subModelInstance, IntPtr renderContextInstance);
+        public static extern IntPtr ERS_SyncEvent_GetData(IntPtr syncEvent);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_CollisionSystem_UpdateBoundingBoxes(IntPtr subModelInstance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InterpreterRenderSystem_Render2D();
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InterpreterRenderSystem_BuildMesh3D(IntPtr meshPtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_PathAnimationSystem_Update(SimulationTime currentTime);
@@ -1239,19 +1147,342 @@ namespace Ers.Engine
         public static extern void ERS_PathAnimationSystem_AnimateStraightPath(Entity toAnimate, SimulationTime startTime, SimulationTime endTime, float fromX, float fromY, float fromZ, float toX, float toY, float toZ);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderSystem_Render2D(IntPtr subModelInstance, IntPtr renderContextInstance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderSystem_Render3D(IntPtr subModelInstance, IntPtr renderContextInstance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_TransformSystem_UpdateGlobals(IntPtr subModelInstance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ImGui_StyleColorsErsDark();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ImGui_StyleColorsErsLight();
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe bool ERS_ImGui_SwitchButton(/* ASCII String */ byte* label, bool* value, int flags);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe bool ERS_ImGui_DragVectorXYZ(/* ASCII String */ byte* label, IntPtr x, IntPtr y, IntPtr z, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_Window_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe IntPtr ERS_Window_Create_Title(/* ASCII String */ byte* title);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Window_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Window_BeginFrame(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Window_EndFrame(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_Window_BeginRootDockSpace(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Window_EndRootDockSpace(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_Window_GetRootDockSpaceID(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_Window_Get_WantsClose(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Window_Set_WantsClose(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_Window_SetWindowTitle(IntPtr ptr, /* ASCII String */ byte* title);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe bool ERS_Window_SetWindowIcon(IntPtr ptr, /* ASCII String */ byte* path);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_EntityInspectorWidget_Window(IntPtr simulatorPtr, Entity entity, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EntityInspectorWidget_Widget(IntPtr simulatorPtr, Entity entity);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EntityInspectorWidget_EntityData(IntPtr simulatorPtr, Entity entity);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EntityInspectorWidget_ComponentData(IntPtr simulatorPtr, Entity entity);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_EventInspectorWidget_Window(IntPtr persistentEventPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventInspectorWidget_Widget(IntPtr persistentEventPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventInspectorWidget_EventDetails(IntPtr persistentEventPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventInspectorWidget_SyncEventDetails(IntPtr persistentEventPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventInspectorWidget_LocalEventDetails(IntPtr persistentEventPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_EventTimelineWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventTimeLineWidget_Destroy(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe bool ERS_EventTimelineWidget_Window(IntPtr ptr, IntPtr modelContainerPtr, IntPtr persistentEventPtr, [MarshalAs(UnmanagedType.I1)] bool isRunning, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_EventTimelineWidget_Widget(IntPtr ptr, IntPtr modelContainerPtr, IntPtr persistentEventPtr, [MarshalAs(UnmanagedType.I1)] bool isRunning);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_EventTimelineWidget_Get_ShowLocalEvents(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventTimelineWidget_Set_ShowLocalEvents(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_EventTimelineWidget_Get_ShowSyncEvents(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventTimelineWidget_Set_ShowSyncEvents(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_EventTimelineWidget_Get_AutoScroll(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventTimelineWidget_Set_AutoScroll(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint ERS_EventTimelineWidget_Get_MaxEvents(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_EventTimelineWidget_Set_MaxEvents(IntPtr ptr, nuint value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_InspectorWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_InspectorWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_InspectorWidget_Window(IntPtr ptr, byte selectedType, IntPtr modelContainerPtr, IntPtr simulatorPtr, IntPtr entitySimulatorPtr, Entity entity, IntPtr persistentEventPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_InspectorWidget_Widget(IntPtr ptr, byte selectedType, IntPtr modelContainerPtr, IntPtr simulatorPtr, IntPtr entitySimulatorPtr, Entity entity, IntPtr persistentEventPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_LicensingWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LicensingWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_LicensingWidget_Window(IntPtr ptr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LicensingWidget_Widget(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_LogWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LogWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_LogWidget_Window(IntPtr ptr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LogWidget_Widget(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ERS_LogWidget_Get_SelectedLogLevel(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LogWidget_Set_SelectedLogLevel(IntPtr ptr, int logLevel);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_LogWidget_Get_AutoScroll(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_LogWidget_Set_AutoScroll(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool autoScroll);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_ModelContainerInspectorWidget_Window(IntPtr modelContainerPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelContainerInspectorWidget_Widget(IntPtr modelContainerPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_ModelHierarchyWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelHierarchyWidget_Destroy(IntPtr ptr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe bool ERS_ModelHierarchyWidget_Window(IntPtr ptr, IntPtr modelContainerPtr, ref IntPtr selectedSimulatorPtr, ref IntPtr selectedEntitySimulatorPtr, ref Entity selectedEntity, ref byte selectedTypePtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_ModelHierarchyWidget_Widget(IntPtr modelContainerPtr, int treeNodeFlags, ref IntPtr selectedSimulatorPtr, ref IntPtr selectedEntitySimulatorPtr, ref Entity selectedEntity, ref byte selectedTypePtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_ModelProgressionWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelProgressionWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe IntPtr ERS_ModelProgressionWidget_Window(IntPtr ptr, IntPtr modelContainerPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_ModelProgressionWidget_Widget(IntPtr ptr, IntPtr modelContainerPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelProgressionWidget_Reset(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_ModelStructureWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_ModelStructureWidget_Window(IntPtr ptr, IntPtr modelContainerPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Widget(IntPtr ptr, IntPtr modelContainerPtr, int heatMapMode);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_ModelStructureWidget_Get_ShowGrid(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Set_ShowGrid(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ERS_ModelStructureWidget_Get_SelectedHeatMapMode(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Set_SelectedHeatMapMode(IntPtr ptr, int value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_ModelStructureWidget_Get_ShowSimulatorGroups(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Set_ShowSimulatorGroups(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_ModelStructureWidget_Get_ShowSimulatorSuperGroups(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Set_ShowSimulatorSuperGroups(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ERS_ModelStructureWidget_Get_SelectedGroupStyle(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_ModelStructureWidget_Set_SelectedGroupStyle(IntPtr ptr, int value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_RunControlsWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RunControlsWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_RunControlsWidget_Window(IntPtr ptr, IntPtr modelContainerPtr, bool* isRunning, /* ASCII String */ byte* name);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_RunControlsWidget_Widget(IntPtr ptr, IntPtr modelContainerPtr, bool* isRunning);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_SimulatorInspectorWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_SimulatorInspectorWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_SimulatorInspectorWidget_Window(IntPtr ptr, IntPtr simulatorPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_SimulatorInspectorWidget_Widget(IntPtr ptr, IntPtr simulatorPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_SpeedupWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_SpeedupWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_SpeedupWidget_Window(IntPtr ptr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_SpeedupWidget_Widget(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_SpeedupWidget_Update(IntPtr ptr, IntPtr modelContainerPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_VisualizationWidget_Create();
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_VisualizationWidget_Destroy(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void ERS_VisualizationWidget_Window(IntPtr ptr, IntPtr renderContextPtr, /* ASCII String */ byte* name, bool* open, int flags);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_VisualizationWidget_Widget(IntPtr ptr, IntPtr renderContextPtr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_VisualizationWidget_Get_Is3DMode(IntPtr ptr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_VisualizationWidget_Set_Is3DMode(IntPtr ptr, [MarshalAs(UnmanagedType.I1)] bool value);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Camera2D_UpdateTransform(IntPtr instance, int screenWidth, int screenHeight);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera2D_PositionX(IntPtr instance);
+        public static extern float ERS_Camera2D_GetPositionX(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera2D_PositionY(IntPtr instance);
+        public static extern void ERS_Camera2D_SetPositionX(IntPtr instance, float x);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera2D_Zoom(IntPtr instance);
+        public static extern float ERS_Camera2D_GetPositionY(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera2D_SetPositionY(IntPtr instance, float y);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_Camera2D_GetZoom(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera2D_SetZoom(IntPtr instance, float zoom);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern float ERS_Camera2D_SizePerPixel(IntPtr instance);
@@ -1263,7 +1494,7 @@ namespace Ers.Engine
         public static extern IntPtr ERS_Camera2DController_Create(IntPtr camera2DPtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Camera2DController_Destroy(IntPtr coreInstance);
+        public static extern void ERS_Camera2DController_Destroy(IntPtr corePtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Camera2DController_ControlCamera(IntPtr instance, int screenWidth, int screenHeight);
@@ -1284,31 +1515,58 @@ namespace Ers.Engine
         public static extern void ERS_Camera2DController_Zoom(IntPtr instance, float baseF, float power);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_PositionX(IntPtr instance);
+        public static extern float ERS_Camera3D_GetPositionX(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_PositionY(IntPtr instance);
+        public static extern void ERS_Camera3D_SetPositionX(IntPtr instance, float x);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_PositionZ(IntPtr instance);
+        public static extern float ERS_Camera3D_GetPositionY(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_LookAtX(IntPtr instance);
+        public static extern void ERS_Camera3D_SetPositionY(IntPtr instance, float y);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_LookAtY(IntPtr instance);
+        public static extern float ERS_Camera3D_GetPositionZ(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_LookAtZ(IntPtr instance);
+        public static extern void ERS_Camera3D_SetPositionZ(IntPtr instance, float z);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_FovInTurns(IntPtr instance);
+        public static extern float ERS_Camera3D_GetLookAtX(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_ZNear(IntPtr instance);
+        public static extern void ERS_Camera3D_SetLookAtX(IntPtr instance, float x);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3D_ZFar(IntPtr instance);
+        public static extern float ERS_Camera3D_GetLookAtY(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3D_SetLookAtY(IntPtr instance, float y);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_Camera3D_GetLookAtZ(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3D_SetLookAtZ(IntPtr instance, float z);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_Camera3D_GetFovInTurns(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3D_SetFovInTurns(IntPtr instance, float fov);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_Camera3D_GetZNear(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3D_SetZNear(IntPtr instance, float zNear);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_Camera3D_GetZFar(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3D_SetZFar(IntPtr instance, float zFar);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Camera3D_SetLookAt(IntPtr instance, float x, float y, float z);
@@ -1338,7 +1596,10 @@ namespace Ers.Engine
         public static extern int ERS_Camera3DController_GetCameraMode(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Camera3DController_HeadBobbingIntensity(IntPtr instance);
+        public static extern float ERS_Camera3DController_GetHeadBobbingIntensity(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Camera3DController_SetHeadBobbingIntensity(IntPtr instance, float intensity);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe IntPtr ERS_InputHandler_GetAction(/* ASCII String */ byte* name);
@@ -1353,20 +1614,31 @@ namespace Ers.Engine
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_InputHandler_UpdateMousePos(int x, int y);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InputAction_Triggered(IntPtr instance);
+        public static extern bool ERS_InputAction_GetTriggered(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InputAction_Released(IntPtr instance);
+        public static extern void ERS_InputAction_SetTriggered(IntPtr instance, [MarshalAs(UnmanagedType.I1)] bool triggered);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_InputAction_GetReleased(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_InputAction_Strength(IntPtr instance);
+        public static extern void ERS_InputAction_SetReleased(IntPtr instance, [MarshalAs(UnmanagedType.I1)] bool released);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float ERS_InputAction_GetStrength(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_InputAction_SetStrength(IntPtr instance, float strength);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_InstancedModel_Create();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_InstancedModel_Release(IntPtr instance);
+        public static extern void ERS_InstancedModel_Destroy(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_InstancedModel_PushInstance(IntPtr instance, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scaleX, float scaleY, float scaleZ);
@@ -1381,13 +1653,10 @@ namespace Ers.Engine
         public static extern IntPtr ERS_Material_Copy_Shallow(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Material_Color_X(IntPtr instance);
+        public static extern UInt32 ERS_Material_GetDiffuseColor(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Material_Color_Y(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Material_Color_Z(IntPtr instance);
+        public static extern void ERS_Material_SetDiffuseColor(IntPtr instance, UInt32 color);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_Mesh_Create();
@@ -1399,7 +1668,10 @@ namespace Ers.Engine
         public static extern void ERS_Mesh_Increase(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Mesh_Dispose(IntPtr instance);
+        public static extern void ERS_Mesh_Destroy(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_Mesh_Material(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Mesh_SetDefaultMaterial(IntPtr instance);
@@ -1414,10 +1686,19 @@ namespace Ers.Engine
         public static extern void ERS_Mesh_PushIndex(IntPtr instance, UInt32 index);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Mesh_PushTriangle(IntPtr instance, float pos0X, float pos0Y, float pos0Z, float uv0X, float uv0Y, float pos1X, float pos1Y, float pos1Z, float uv1X, float uv1Y, float pos2X, float pos2Y, float pos2Z, float uv2X, float uv2Y, UInt32 color);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Mesh_PushQuad(IntPtr instance, float pos0X, float pos0Y, float pos0Z, float uv0X, float uv0Y, float pos1X, float pos1Y, float pos1Z, float uv1X, float uv1Y, float pos2X, float pos2Y, float pos2Z, float uv2X, float uv2Y, float pos3X, float pos3Y, float pos3Z, float uv3X, float uv3Y, UInt32 color, float normX, float normY, float normZ);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Mesh_PushCube(IntPtr instance, float posX, float posY, float posZ, float dimsX, float dimsY, float dimsZ, UInt32 color);
+        public static extern void ERS_Mesh_PushCube(IntPtr instance, float posX, float posY, float posZ, float sizeX, float sizeY, float sizeZ, UInt32 color);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Mesh_PushSphere(IntPtr instance, float centerX, float centerY, float centerZ, byte subdivisions, float radius, UInt32 color);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Mesh_PushPyramid(IntPtr instance, float centerX, float centerY, float centerZ, float dimsX, float dimsY, float dimsZ, UInt32 color);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Mesh_PushBeam(IntPtr instance, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float upX, float upY, float upZ, float width, float height, UInt32 color);
@@ -1522,7 +1803,7 @@ namespace Ers.Engine
         public static extern unsafe bool ERS_Model3D_Load(IntPtr modelHandle, /* ASCII String */ byte* path);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int ERS_Model3D_GetMeshCount(IntPtr modelHandle);
+        public static extern UInt32 ERS_Model3D_GetMeshCount(IntPtr modelHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Model3D_SetTransform(IntPtr modelHandle, float x, float y, float z, float xRotAxis, float yRotAxis, float zRotAxis, float turns, float xScale, float yScale, float zScale);
@@ -1537,7 +1818,7 @@ namespace Ers.Engine
         public static extern IntPtr ERS_RenderContext_Create(int screenWidth, int screenHeight);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_Dispose(IntPtr instance);
+        public static extern void ERS_RenderContext_Destroy(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_RenderContext_GetCamera2D(IntPtr instance);
@@ -1545,8 +1826,24 @@ namespace Ers.Engine
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_SetViewport(IntPtr instance, int width, int height);
 
+        [return: MarshalAs(UnmanagedType.I1)]
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_SetBackgroundColor(IntPtr instance, UInt32 color);
+        public static extern bool ERS_RenderContext_Get_DrawBackgroundGrid(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderContext_Set_DrawBackgroundGrid(IntPtr instance, [MarshalAs(UnmanagedType.I1)] bool value);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_RenderContext_Get_BackgroundColor(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderContext_Set_BackgroundColor(IntPtr instance, UInt32 color);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 ERS_RenderContext_Get_BackgroundGridColor(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderContext_Set_BackgroundGridColor(IntPtr instance, UInt32 color);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_RenderContext_GetCamera3D(IntPtr instance);
@@ -1567,10 +1864,13 @@ namespace Ers.Engine
         public static extern void ERS_RenderContext_End3D(IntPtr instance);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawQuad2D(IntPtr instance, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, UInt32 color);
+        public static extern void ERS_RenderContext_DrawQuad2D(IntPtr instance, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawRect2D(IntPtr instance, float x, float y, float sizeX, float sizeY, float angle, UInt32 color, Int64 zIndex);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderContext_DrawCircle2D(IntPtr instance, float centerX, float centerY, float sizeX, float sizeY, int segments, float angle, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawScreenLine2D(IntPtr instance, float x0, float y0, float x1, float y1, float thickness, UInt32 color, Int64 zIndex);
@@ -1582,19 +1882,13 @@ namespace Ers.Engine
         public static extern unsafe void ERS_RenderContext_DrawTextBillboard(IntPtr instance, /* ASCII String */ byte* text, float centerX, float centerY, float centerZ, float scale, UInt32 color);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_RenderContext_DrawText2D(IntPtr instance, /* ASCII String */ byte* text, float x, float y, float scale, UInt32 color);
+        public static extern unsafe void ERS_RenderContext_DrawText2D(IntPtr instance, /* ASCII String */ byte* text, float x, float y, float scale, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawTexture2D(IntPtr instance, IntPtr textureHandle, float x, float y, float width, float height, float uvMinX, float uvMinY, float uvMaxX, float uvMaxY, float angle, UInt32 color);
+        public static extern void ERS_RenderContext_DrawTexture2D(IntPtr instance, IntPtr textureHandle, float x, float y, float width, float height, float uvMinX, float uvMinY, float uvMaxX, float uvMaxY, float angle, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawCube3D(IntPtr instance, float x, float y, float z, float xRotation, float yRotation, float zRotation, float xScale, float yScale, float zScale, UInt32 color);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawInfiniteGrid2D(IntPtr instance, UInt32 color, float lineThickness, float armLength, float targetPixelSize);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawInfiniteGrid3D(IntPtr instance, UInt32 color, float lineThickness, float targetPixelSize);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe void ERS_RenderContext_DrawText3D(IntPtr instance, /* ASCII String */ byte* text, float centerX, float centerY, float centerZ, float normalX, float normalY, float normalZ, float worldUpX, float worldUpY, float worldUpZ, float scale, UInt32 color);
@@ -1603,25 +1897,22 @@ namespace Ers.Engine
         public static extern void ERS_RenderContext_SetLightDirection(IntPtr instance, float x, float y, float z);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawLine2D(IntPtr instance, float x0, float y0, float x1, float y1, float thickness, UInt32 color);
+        public static extern void ERS_RenderContext_DrawLine2D(IntPtr instance, float x0, float y0, float x1, float y1, float thickness, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawTriangle2D(IntPtr instance, float x0, float y0, float x1, float y1, float x2, float y2, UInt32 color);
+        public static extern void ERS_RenderContext_DrawTriangle2D(IntPtr instance, float x0, float y0, float x1, float y1, float x2, float y2, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawTriangle2D_Box(IntPtr instance, float centerX, float centerY, float sizeX, float sizeY, float angle, UInt32 color);
+        public static extern void ERS_RenderContext_DrawTriangle2D_Box(IntPtr instance, float centerX, float centerY, float sizeX, float sizeY, float angle, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawInstancedModel3DWithMesh(IntPtr renderContextHandle, IntPtr meshHandle, IntPtr instancedModelHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_Present(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawInstancedModel3D(IntPtr renderContextHandle, IntPtr instancedModelHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_RenderContext_DrawArc2D(IntPtr renderContextHandle, float x, float y, float radius, float width, float beginAngle, float endAngle, int segments, UInt32 color);
+        public static extern void ERS_RenderContext_DrawArc2D(IntPtr renderContextHandle, float centerX, float centerY, float radius, float width, float beginAngle, float endAngle, int segments, UInt32 color, Int64 zIndex);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_RenderContext_DrawModel3D(IntPtr instanceHandle, IntPtr modelHandle);
@@ -1641,6 +1932,18 @@ namespace Ers.Engine
         public static extern bool ERS_RenderContext_InitializeOpenGL(IntPtr windowHandle, IntPtr displayHandle);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_RenderFramework_Create(IntPtr windowHandle, IntPtr displayHandle, int screenWidth, int screenHeight);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderFramework_Present(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderFramework_DrawRenderContext(IntPtr instance, IntPtr renderContextHandle);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_RenderFramework_Destroy(IntPtr instance);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_Texture_Create();
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
@@ -1648,18 +1951,6 @@ namespace Ers.Engine
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ERS_Texture_Release(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_Window_Create(IntPtr windowHandle, IntPtr displayHandle, int screenWidth, int screenHeight);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Window_Present(IntPtr instance);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Window_DrawRenderContext(IntPtr instance, IntPtr renderContextHandle);
-
-        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ERS_Window_Destroy(IntPtr instance);
 
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

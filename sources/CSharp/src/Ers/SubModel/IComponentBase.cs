@@ -1,4 +1,4 @@
-﻿namespace Ers
+namespace Ers
 {
     /// <summary>
     /// The base for all components.

@@ -23,7 +23,7 @@ namespace Ers
     class ModelContainer
     {
       public:
-        ModelContainer(void* coreInstance); // Shallow copy
+        ModelContainer(void* corePtr); // Shallow copy
 
         ~ModelContainer();
 
@@ -58,8 +58,8 @@ namespace Ers
         [[nodiscard]] Ers::Simulator GetSimulator(const int32_t simulatorId);
         [[nodiscard]] Ers::Simulator GetSimulatorByIndex(int index);
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
         size_t GetSeed() const;
         void SetSeed(size_t newSeed);
@@ -77,11 +77,14 @@ namespace Ers
         /// @return The speedup factor (simulation time / real time)
         double GetSpeedUp() const;
 
+        std::string GetWorkingDir() const;
+        void SetWorkingDir(const std::string_view& path);
+
         bool Valid() const;
 
-        static ModelContainer CreateModelContainer();
+        static ModelContainer Create();
 
       private:
-        void* coreModelContainerInstance{nullptr};
+        void* corePtr{nullptr};
     };
 } // namespace Ers

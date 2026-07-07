@@ -17,7 +17,7 @@ namespace Ers
         /// @brief Construct a new ray.
         /// @param position The origin position
         /// @param direction The direction vector
-        Ray(const Vector3& position, const Vector3& direction) :
+        Ray(Vector3 position, Vector3 direction) :
             position(position),
             direction(direction)
         {

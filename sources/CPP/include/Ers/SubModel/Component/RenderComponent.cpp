@@ -1,32 +1,57 @@
 #include "RenderComponent.h"
+
 #include "Ers/Api.h"
-#include "Ers/Visualization/InstancedModel.h"
 
 namespace Ers
 {
     uint32_t RenderComponent::CoreTypeId()
     {
-        return ersAPIFunctionPointers.ERS_BasicRenderComponent_TypeId();
+        return Ers::Engine::ERS_RenderComponent_TypeId();
     }
 
-    Ers::Color RenderComponent::GetColor() const
+    RenderComponentShape RenderComponent::GetShape()
     {
-        return Ers::Color::FromInt(ersAPIFunctionPointers.ERS_BasicRenderComponent_GetColor(const_cast<RenderComponent*>(this)));
+        return static_cast<RenderComponentShape>(Ers::Engine::ERS_RenderComponent_GetShape(this));
+    }
+
+    void RenderComponent::SetShape(RenderComponentShape shape)
+    {
+        Ers::Engine::ERS_RenderComponent_SetShape(this, static_cast<uint8_t>(shape));
+    }
+
+    Color RenderComponent::GetColor() const
+    {
+        return Color::FromInt(Ers::Engine::ERS_RenderComponent_GetColor(const_cast<RenderComponent*>(this)));
     }
 
     void RenderComponent::SetColor(Ers::Color color)
     {
-        ersAPIFunctionPointers.ERS_BasicRenderComponent_SetColor(this, color.Value);
+        Ers::Engine::ERS_RenderComponent_SetColor(this, color.Value);
+    }
+
+    Ers::Texture* RenderComponent::GetTexture2D()
+    {
+        return static_cast<Ers::Texture*>(Ers::Engine::ERS_RenderComponent_GetTexture2D(this));
+    }
+
+    void RenderComponent::SetTexture2D(const Ers::Texture& texture)
+    {
+        Ers::Engine::ERS_RenderComponent_SetTexture2D(this, const_cast<void*>(texture.CorePtr()));
+    }
+
+    void RenderComponent::RemoveTexture2D()
+    {
+        Ers::Engine::ERS_RenderComponent_RemoveTexture2D(this);
     }
 
     Ers::InstancedModel* RenderComponent::GetInstancedModel()
     {
-        void* ptr = ersAPIFunctionPointers.ERS_BasicRenderComponent_GetInstancedModel(this);
+        void* ptr = Ers::Engine::ERS_RenderComponent_GetInstancedModel(this);
         return static_cast<Ers::InstancedModel*>(ptr);
     }
 
-    void RenderComponent::SetInstancedModel(Ers::InstancedModel* model)
+    void RenderComponent::SetInstancedModel(const Ers::InstancedModel& model)
     {
-        ersAPIFunctionPointers.ERS_BasicRenderComponent_SetInstancedModel(this, model);
+        Ers::Engine::ERS_RenderComponent_SetInstancedModel(this, const_cast<void*>(model.CorePtr()));
     }
 } // namespace Ers

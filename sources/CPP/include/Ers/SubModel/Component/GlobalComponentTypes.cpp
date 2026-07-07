@@ -62,6 +62,24 @@ namespace Ers
         script->OnExited(child);
     }
 
+    void CoreScriptBehaviorOnInputChannelReady(void* scriptBehaviorInstance, EntityID inputChannel)
+    {
+        auto* script = static_cast<ScriptBehaviorComponent*>(scriptBehaviorInstance);
+        script->OnInputChannelReady(inputChannel);
+    }
+
+    void CoreScriptBehaviorOnOutputChannelReady(void* scriptBehaviorInstance, EntityID outputChannel)
+    {
+        auto* script = static_cast<ScriptBehaviorComponent*>(scriptBehaviorInstance);
+        script->OnOutputChannelReady(outputChannel);
+    }
+
+    void CoreScriptBehaviorOnReceive(void* scriptBehaviorInstance, EntityID inputChannel, EntityID child)
+    {
+        auto* script = static_cast<ScriptBehaviorComponent*>(scriptBehaviorInstance);
+        script->OnReceive(inputChannel, child);
+    }
+
     void CoreScriptBehaviorSerialization(void* scriptBehaviorInstance, void* serializationNode)
     {
         auto* script = static_cast<ScriptBehaviorComponent*>(scriptBehaviorInstance);

@@ -1,11 +1,8 @@
+using Ers.Engine;
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Ers.Engine;
 
-// Ensure that the JIT does not patch functions for optimizations, can be removed after this is fixed
-// https://github.com/dotnet/runtime/issues/102767
 [assembly:Debuggable(DebuggableAttribute.DebuggingModes.DisableOptimizations)]
 namespace Ers
 {
@@ -15,90 +12,45 @@ namespace Ers
     public static class EventScheduler
     {
         /// <summary>
-        /// Local event type signature.
+        /// Register a local event type explicitly before simulation creation.
+        /// ensures all types are known before simulation model creation.
+        /// Registration is idempotent - calling this multiple times for the same type is safe and results in a no-op.
         /// </summary>
-        public delegate void LocalEventCallback();
-
-#if true // This enabled delegate object based routing (much slower, but doesn't suffer from runtime crashes)
-
-        // Debug Mode: Use marshaled delegate for compatibility. Remove this when patch skipping is solved.
-        // TODO: Remove when the C# runtime is fixed and the patch skipping bug is solved.
-        // https://github.com/dotnet/runtime/issues/102767
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate void UnmanagedCallback(nint handlePtr);
-
-        private static readonly UnmanagedCallback _callbackDelegate       = ScheduleLocalEvent_EventCallbackFunction;
-        private static readonly UnmanagedCallback _cancelCallbackDelegate = ScheduleLocalEvent_CancelEventCallbackFunction;
-
-        // Get function pointer for delegate (Debug Mode)
-        private static readonly IntPtr _eventCallbackPtr           = Marshal.GetFunctionPointerForDelegate(_callbackDelegate);
-        private static readonly IntPtr _eventDestructorCallbackPtr = Marshal.GetFunctionPointerForDelegate(_cancelCallbackDelegate);
-
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        static void ScheduleLocalEvent_EventCallbackFunction(nint handlePtr)
+        public static void RegisterLocalEvent<TContext>()
+            where TContext : struct, ILocalEvent<TContext>
         {
-            GCHandle handle = GCHandle.FromIntPtr(handlePtr);
-            var callback    = (LocalEventCallback)handle.Target!;
-            callback();
-            handle.Free();
+            // Delegate to the registry class which handles the actual registration
+            LocalEventRegistry<TContext>.Register();
         }
 
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        static void ScheduleLocalEvent_CancelEventCallbackFunction(nint handlePtr)
+        /// <summary>
+        /// Register a sync event type explicitly before simulation creation.
+        /// ensures all types are known before simulation model creation.
+        /// Registration is idempotent - calling this multiple times for the same type is safe and results in a no-op.
+        /// </summary>
+        public static void RegisterSyncEvent<T>()
+            where T : unmanaged, ISyncEvent<T>
         {
-            GCHandle handle = GCHandle.FromIntPtr(handlePtr);
-            handle.Free();
+            // Delegate to the registry class which handles the actual registration
+            SyncEventRegistry<T>.Register();
         }
 
-        public static ErsLocalEvent ScheduleLocalEvent(int priority, SimulationTime delayTime, LocalEventCallback eventCallback)
+        /// <summary>
+        /// Schedule a local event with the specified closure type.
+        /// Direct static field access provides zero-cost registration lookup.
+        /// Use this overload when you know the closure type at compile time for maximum performance.
+        /// </summary>
+        /// <typeparam name="TContext">The closure type for lambda captures, or NoClosureContext for static methods</typeparam>
+        /// <param name="priority">Event priority</param>
+        /// <param name="delayTime">Delay before event fires</param>
+        /// <param name="eventCallback">The callback to invoke</param>
+        /// <returns>Event handle</returns>
+        public static ErsLocalEvent ScheduleLocalEvent<TContext>(int priority, SimulationTime delayTime, TContext eventCallback)
+            where TContext : struct, ILocalEvent<TContext>
         {
-            GCHandle handle  = GCHandle.Alloc(eventCallback, GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-
-            unsafe
-            {
-                return ErsEngine.ERS_EventScheduler_ScheduleLocalEvent(
-                    priority, delayTime, handlePtr, (delegate * unmanaged[Cdecl]<nint, void>)_eventCallbackPtr,
-                    (delegate * unmanaged[Cdecl]<nint, void>)_eventDestructorCallbackPtr);
-            }
+            return ErsEngine.ERS_EventScheduler_ScheduleLocalEvent(
+                priority, delayTime, LocalEventRegistry<TContext>.AllocateEventData(eventCallback), LocalEventRegistry<TContext>.Handle);
         }
-
-#else
-        // Release Mode: Use UnmanagedCallersOnly for direct interop
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        static void ScheduleLocalEvent_EventCallbackFunction(nint handlePtr)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(handlePtr);
-            var callback    = (LocalEventCallback)handle.Target!;
-            callback();
-            handle.Free();
-        }
-
-        // Release Mode: Use UnmanagedCallersOnly for direct interop
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-        [MethodImpl(MethodImplOptions.NoOptimization)]
-        static void ScheduleLocalEvent_CancelEventCallbackFunction(nint handlePtr)
-        {
-            GCHandle handle = GCHandle.FromIntPtr(handlePtr);
-            handle.Free();
-        }
-
-        public static UInt32 ScheduleLocalEvent(int priority, SimulationTime delayTime, LocalEventCallback eventCallback)
-        {
-            GCHandle handle  = GCHandle.Alloc(eventCallback, GCHandleType.Normal);
-            IntPtr handlePtr = GCHandle.ToIntPtr(handle);
-
-            unsafe
-            {
-                delegate* unmanaged[Cdecl]<nint, void> callbackPtr   = &ScheduleLocalEvent_EventCallbackFunction;
-                delegate* unmanaged[Cdecl]<nint, void> destructorPtr = &ScheduleLocalEvent_CancelEventCallbackFunction;
-
-                return ErsEngine.ERS_EventScheduler_ScheduleLocalEvent(priority, delayTime, handlePtr, callbackPtr, destructorPtr);
-            }
-        }
-#endif
 
         /// <summary>
         /// Cancel a Local or Sync event in the current SubModel.
@@ -106,64 +58,16 @@ namespace Ers
         /// <param name="eventKey">The ID of the event.</param>
         public static void CancelEvent(ErsLocalEvent eventKey) { ErsEngine.ERS_EventScheduler_CancelEvent(eventKey); }
 
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        static void ScheduleSyncEvent_CoreOnSenderSideEvent()
-        {
-            unsafe
-            {
-                ((delegate *
-                  managed<void>*)ErsEngine.ERS_SyncEvent_GetSyncEventMetaData(ErsEngine.ERS_ThreadLocal_GetCurrentSyncEvent()))[0]();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-        static void ScheduleSyncEvent_CoreOnTargetSideEvent()
-        {
-            unsafe
-            {
-                ((delegate *
-                  managed<void>*)ErsEngine.ERS_SyncEvent_GetSyncEventMetaData(ErsEngine.ERS_ThreadLocal_GetCurrentSyncEvent()))[1]();
-            }
-        }
-
         /// <summary>
         /// (Base) Schedule a sync event between the current SubModel's simulator and another.
         /// </summary>
         /// <param name="delayTime">The time from now until the event is triggered.</param>
-        /// <param name="eventName">Name to identify this event by: Note this must be an interned string</param>
         /// <param name="targetSimulatorId">The ID of the simulator to which data is sent.</param>
-        /// <param name="eventTypeIdentifier"></param>
-        /// <param name="senderSide">The function that is called in this SubModel's simulator when the sync event is triggered.</param>
-        /// <param name="targetSide">The function that is called in target SubModel's simulator when the sync event is triggered</param>
-        private static unsafe nint CoreScheduleSyncEvent(
-            byte* eventName,
-            SimulationTime delayTime,
-            int targetSimulatorId,
-            ulong eventTypeIdentifier,
-            delegate* managed<void> senderSide,
-            delegate* managed<void> targetSide)
+        /// <param name="syncEventTypeHandle">Direct pointer to the registered event type (from SyncEventTypeCache)</param>
+        private static unsafe nint CoreScheduleSyncEvent<T>(SimulationTime delayTime, int targetSimulatorId, nint syncEventTypeHandle)
+            where T : unmanaged, ISyncEvent<T>
         {
-            nint syncEventHandle = ErsEngine.ERS_EventScheduler_ScheduleSyncEvent(
-                delayTime, targetSimulatorId, eventTypeIdentifier, &ScheduleSyncEvent_CoreOnSenderSideEvent,
-                &ScheduleSyncEvent_CoreOnTargetSideEvent);
-
-            nint* metaData = (nint*)ErsEngine.ERS_SyncEvent_GetSyncEventMetaData(syncEventHandle);
-#if DEBUG
-            // Ensure that senderside and targetside are never different for every type of sync event
-            nint previousSenderSide = metaData[0];
-            Debug.Assert(previousSenderSide == (nint)senderSide || previousSenderSide == 0);
-
-            nint previousTargetSide = metaData[1];
-            Debug.Assert(previousTargetSide == (nint)targetSide || previousTargetSide == 0);
-#endif
-            // Set name on the identifier
-            ErsEngine.ERS_SyncEvent_SetSyncEventName(syncEventHandle, eventName);
-
-            // Set managed callbacks
-            metaData[0] = (nint)senderSide;
-            metaData[1] = (nint)targetSide;
+            nint syncEventHandle = ErsEngine.ERS_EventScheduler_ScheduleSyncEvent(delayTime, targetSimulatorId, syncEventTypeHandle);
 
             return syncEventHandle;
         }
@@ -172,23 +76,13 @@ namespace Ers
         /// Schedule a sync event between the current SubModel's simulator and another.
         /// </summary>
         /// <param name="delayTime">The time from now until the event is triggered.</param>
-        /// <param name="eventName">Name to identify this event by: Note this must be an interned string</param>
         /// <param name="targetSimulatorId">The ID of the simulator to which data is sent.</param>
-        /// <param name="eventTypeIdentifier"></param>
-        /// <param name="senderSide">The function that is called in this SubModel's simulator when the sync event is triggered.</param>
-        /// <param name="targetSide">The function that is called in target SubModel's simulator when the sync event is triggered</param>
-        private static unsafe nint InternalScheduleSyncEvent(
-            ReadOnlySpan<byte> eventName,
-            SimulationTime delayTime,
-            int targetSimulatorId,
-            ulong eventTypeIdentifier,
-            delegate* managed<void> senderSide,
-            delegate* managed<void> targetSide)
+        private static unsafe nint InternalScheduleSyncEvent<T>(SimulationTime delayTime, int targetSimulatorId)
+            where T : unmanaged, ISyncEvent<T>
         {
-            fixed(byte* firstCharacter = eventName)
-            {
-                return CoreScheduleSyncEvent(firstCharacter, delayTime, targetSimulatorId, eventTypeIdentifier, senderSide, targetSide);
-            }
+            // Direct static field access - ZERO COST! No dictionary, no hash lookup!
+            // Use pre-created unmanaged function pointers from SyncEventRegistry<T>
+            return CoreScheduleSyncEvent<T>(delayTime, targetSimulatorId, SyncEventRegistry<T>.Handle);
         }
 
         /// <summary>
@@ -197,42 +91,23 @@ namespace Ers
         /// <param name="delayTime">The time from now until the event is triggered.</param>
         /// <param name="targetSimulatorId">The ID of the simulator to which data is sent.</param>
         /// <param name="data">An additional datafield, this will be directly send to along with the sync event</param>
-        public static uint ScheduleSyncEvent<SyncEventType>(SimulationTime delayTime, int targetSimulatorId, ref SyncEventType data)
+        /// <returns>The event ID of the scheduled sync-event. The value is 0 if the sync event failed to schedule.</returns>
+        public static uint ScheduleSyncEvent<SyncEventType>(SimulationTime delayTime, int targetSimulatorId, in SyncEventType data)
             where SyncEventType : unmanaged, ISyncEvent<SyncEventType>
         {
             unsafe
             {
-                nint syncEvent = InternalScheduleSyncEvent(
-                    NameUtf8Helper<SyncEventType>.NameUtf8Bytes, delayTime, targetSimulatorId, SyncEvent.TypeIdentifier<SyncEventType>(),
-                    &ISyncEvent<SyncEventType>.OnSenderSidePlain, &ISyncEvent<SyncEventType>.OnTargetSidePlain);
+                nint syncEvent = InternalScheduleSyncEvent<SyncEventType>(delayTime, targetSimulatorId);
+                if (syncEvent == IntPtr.Zero)
+                    return 0; // Invalid sync-event (failed to schedule)
 
-                Ref<SyncEventType> syncEventData = SetData<SyncEventType>();
+                Ref<SyncEventType> syncEventData = GetLastScheduledEventData<SyncEventType>();
                 fixed(SyncEventType* syncEventDataPtr = &syncEventData.Value)
                 {
                     Unsafe.Write(syncEventDataPtr, data);
                 }
 
                 return ErsEngine.ERS_EventScheduler_ExchangeSyncEventForEventID(syncEvent);
-            }
-        }
-
-        /// <summary>
-        /// (Zero Copy) Schedule a sync event between the current SubModel's simulator and another.
-        /// T is allocated directly in the core, for fast lazy initialization
-        /// </summary>
-        /// <param name="delayTime">The time from now until the event is triggered.</param>
-        /// <param name="targetSimulatorId">The ID of the simulator to which data is sent.</param>
-        public static Ref<SyncEventType> ScheduleSyncEvent<SyncEventType>(SimulationTime delayTime, int targetSimulatorId)
-            where SyncEventType : unmanaged, ISyncEvent<SyncEventType>
-        {
-            unsafe
-            {
-                nint syncEvent = InternalScheduleSyncEvent(
-                    NameUtf8Helper<SyncEventType>.NameUtf8Bytes, delayTime, targetSimulatorId, SyncEvent.TypeIdentifier<SyncEventType>(),
-                    &ISyncEvent<SyncEventType>.OnSenderSidePlain, &ISyncEvent<SyncEventType>.OnTargetSidePlain);
-
-                var data = SetData<SyncEventType>();
-                return data;
             }
         }
 
@@ -278,7 +153,7 @@ namespace Ers
             return ErsEngine.ERS_SyncEvent_GetSyncEventUID(ErsEngine.ERS_EventScheduler_LastScheduledSyncEvent());
         }
 
-        private static Ref<T> SetData<T>()
+        private static Ref<T> GetLastScheduledEventData<T>()
             where T : unmanaged { return SyncEvent.GetData<T>(ErsEngine.ERS_EventScheduler_LastScheduledSyncEvent()); }
 
         public static UInt32 GetLastSyncEventEventCode()

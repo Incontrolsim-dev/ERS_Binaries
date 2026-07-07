@@ -30,7 +30,7 @@ namespace Ers
                     IntPtr ptr     = ErsEngine.ERS_Settings_GetSetting(sectionByte, settingByte, defaultByte);
                     string? result = Marshal.PtrToStringAnsi(ptr);
                     Debug.Assert(result != null);
-                    ErsEngine.ERS_STRING_DISPOSE(ptr);
+                    ErsEngine.ERS_String_Destroy(ptr);
                     return result;
                 }
             }

@@ -5,55 +5,50 @@
 
 namespace Ers
 {
-    void* SubModel::Data()
+    void* SubModel::CorePtr()
     {
         return this;
     }
 
-    const void* const SubModel::Data() const
+    const void* const SubModel::CorePtr() const
     {
         return this;
-    }
-
-    SubModelSignals& SubModel::Events()
-    {
-        return *static_cast<SubModelSignals*>(Data());
     }
 
     Entity SubModel::CreateEntity()
     {
-        return ersAPIFunctionPointers.ERS_SubModel_Entity_Create(Data());
+        return Ers::Engine::ERS_SubModel_Entity_Create(CorePtr());
     }
 
     Entity SubModel::CreateEntity(std::string_view name)
     {
-        return ersAPIFunctionPointers.ERS_SubModel_Entity_Create_Name(Data(), name.data());
+        return Ers::Engine::ERS_SubModel_Entity_Create_Name(CorePtr(), name.data());
     }
 
     Entity SubModel::CreateEntity(EntityID parentEntity)
     {
-        return ersAPIFunctionPointers.ERS_SubModel_Entity_Create_Name_Parent(Data(), nullptr, parentEntity);
+        return Ers::Engine::ERS_SubModel_Entity_Create_Name_Parent(CorePtr(), nullptr, parentEntity);
     }
 
     Entity SubModel::CreateEntity(EntityID parentEntity, std::string_view name)
     {
         const char* nameData = name.empty() ? nullptr : name.data();
-        return ersAPIFunctionPointers.ERS_SubModel_Entity_Create_Name_Parent(Data(), nameData, parentEntity);
+        return Ers::Engine::ERS_SubModel_Entity_Create_Name_Parent(CorePtr(), nameData, parentEntity);
     }
 
     bool SubModel::EntityExists(Entity entity) const
     {
-        return ersAPIFunctionPointers.ERS_SubModel_Entity_Exists(Data(), entity);
+        return Ers::Engine::ERS_SubModel_Entity_Exists(CorePtr(), entity);
     }
 
     void SubModel::DestroyEntity(Entity entity)
     {
-        ersAPIFunctionPointers.ERS_SubModel_Entity_Destroy(Data(), entity);
+        Ers::Engine::ERS_SubModel_Entity_Destroy(CorePtr(), entity);
     }
 
     void SubModel::UpdateParentOnEntity(Entity entity, Entity parent)
     {
-        ersAPIFunctionPointers.ERS_SubModel_Entity_Relation_Update_Parent(Data(), entity, parent.Id);
+        Ers::Engine::ERS_SubModel_Entity_Relation_Update_Parent(CorePtr(), entity, parent.Id);
     }
 
     /// @brief Finds the entity with given entity name among the entities associated with the given submodel instance and return its
@@ -63,109 +58,49 @@ namespace Ers
     /// @return Returns the EntityID of the found entity.
     Entity SubModel::FindEntity(const std::string_view& entityName)
     {
-        return ersAPIFunctionPointers.ERS_SubModel_FindEntity(Data(), entityName.data());
+        return Ers::Engine::ERS_SubModel_FindEntity(CorePtr(), entityName.data());
     }
 
     Entity SubModel::FindEntity(const std::string_view& entityName, Entity parentEntity)
     {
-        return ersAPIFunctionPointers.ERS_SubModel_FindEntity_Parent(Data(), entityName.data(), parentEntity);
+        return Ers::Engine::ERS_SubModel_FindEntity_Parent(CorePtr(), entityName.data(), parentEntity);
     }
 
-    SubModel& GetSubModel()
+    SubModel& SubModel::Get()
     {
-        return *static_cast<SubModel*>(ersAPIFunctionPointers.ERS_ThreadLocal_GetSubModel());
+        return *static_cast<SubModel*>(Ers::Engine::ERS_ThreadLocal_GetSubModel());
     }
 
     SubModel* GetSubModelOrNull()
     {
-        return static_cast<SubModel*>(ersAPIFunctionPointers.ERS_ThreadLocal_GetSubModelOrNull());
+        return static_cast<SubModel*>(Ers::Engine::ERS_ThreadLocal_GetSubModelOrNull());
     }
 
     Ers::Simulator SubModel::GetSimulator()
     {
-        return Ers::Simulator(ersAPIFunctionPointers.ERS_SubModel_GetSimulator(Data()));
+        return Ers::Simulator(Ers::Engine::ERS_SubModel_GetSimulator(CorePtr()));
     }
 
     SentEntity SubModel::SendEntity(uint32_t simulatorId, Entity entity)
     {
-        SentEntity sent = {ersAPIFunctionPointers.ERS_SubModel_SendEntityTo(Data(), simulatorId, entity)};
+        SentEntity sent = {Ers::Engine::ERS_SubModel_SendEntityTo(CorePtr(), simulatorId, entity)};
         return sent;
     }
 
     Entity SubModel::ReceiveEntity(uint32_t simulatorId, SentEntity sent)
     {
-        Entity received = ersAPIFunctionPointers.ERS_SubModel_ReceiveEntityFrom(Data(), simulatorId, sent.id);
+        Entity received = Ers::Engine::ERS_SubModel_ReceiveEntityFrom(CorePtr(), simulatorId, sent.id);
         return received;
     }
 
     SubModelRandomProperties& SubModel::GetRandomProperties()
     {
-        return *static_cast<SubModelRandomProperties*>(Data());
+        return *static_cast<SubModelRandomProperties*>(CorePtr());
     }
 
     EntityID SubModel::RootEntityID() const
     {
-        return ersAPIFunctionPointers.ERS_SubModel_RootEntityID(Data());
-    }
-
-    void SubModel::CreateInterpreter()
-    {
-        ersAPIFunctionPointers.ERS_SubModel_CreateInterpreter(Data());
-    }
-
-    void SubModel::RunSimpleString(const std::string& code)
-    {
-        ersAPIFunctionPointers.ERS_SubModel_RunSimpleString(Data(), code.c_str());
-    }
-
-    void SubModel::LoadPythonModuleFromFile(const std::string& filePath)
-    {
-        ersAPIFunctionPointers.ERS_SubModel_LoadPythonModuleFromFile(Data(), filePath.c_str());
-    }
-
-    void SubModel::LoadPythonPackage(const std::string& packageFolderPath)
-    {
-        ersAPIFunctionPointers.ERS_SubModel_LoadPythonPackage(Data(), packageFolderPath.c_str());
-    }
-
-    void SubModel::AddInterpreterScriptComponentType()
-    {
-        ersAPIFunctionPointers.ERS_SubModel_AddInterpreterScriptComponentType(Data());
-    }
-
-    void* SubModel::AddInterpreterScriptComponent(Entity entity)
-    {
-        return ersAPIFunctionPointers.ERS_SubModel_AddInterpreterScriptComponent(Data(), entity);
-    }
-
-    void* SubModel::GetInterpreterScriptComponent(Entity entity)
-    {
-        return ersAPIFunctionPointers.ERS_SubModel_GetInterpreterScriptComponent(Data(), entity);
-    }
-
-    bool SubModel::HasInterpreterScriptComponent(Entity entity)
-    {
-        return ersAPIFunctionPointers.ERS_SubModel_HasInterpreterScriptComponent(Data(), entity);
-    }
-
-    void SubModel::PrintGCStats()
-    {
-        ersAPIFunctionPointers.ERS_SubModel_PrintInterpreterGCStats(Data());
-    }
-
-    void SubModel::BeginInterpreterRenderContext(Ers::RenderContext& renderContext)
-    {
-        ersAPIFunctionPointers.ERS_SubModel_BeginInterpreterRenderContext(Data(), renderContext.Data());
-    }
-
-    void SubModel::EndInterpreterRenderContext()
-    {
-        ersAPIFunctionPointers.ERS_SubModel_EndInterpreterRenderContext(Data());
-    }
-
-    Ers::RenderContext SubModel::GetInterpreterRenderContext()
-    {
-        return Ers::RenderContext(ersAPIFunctionPointers.ERS_SubModel_GetInterpreterRenderContext(Data()));
+        return Ers::Engine::ERS_SubModel_RootEntityID(CorePtr());
     }
 
     void SubModel::ResetRandomGenerator()
@@ -185,11 +120,11 @@ namespace Ers
 
     uint64_t SubModel::GetModelPrecision()
     {
-        return ersAPIFunctionPointers.ERS_SubModel_GetModelPrecision(Data());
+        return Ers::Engine::ERS_SubModel_GetModelPrecision(CorePtr());
     }
 
     SimulationTime SubModel::ApplyModelPrecision(SimulationTime simTime)
     {
-        return simTime * ersAPIFunctionPointers.ERS_SubModel_GetModelPrecision(Data());
+        return simTime * Ers::Engine::ERS_SubModel_GetModelPrecision(CorePtr());
     }
 } // namespace Ers

@@ -6,27 +6,27 @@ namespace Ers
 {
     Texture::Texture()
     {
-        coreInstance = ersAPIFunctionPointers.ERS_Texture_Create();
+        corePtr = Ers::Engine::ERS_Texture_Create();
     }
 
     Texture::Texture(const std::string& path)
     {
-        coreInstance = ersAPIFunctionPointers.ERS_Texture_Create();
-        ersAPIFunctionPointers.ERS_Texture_Load(coreInstance, path.c_str());
+        corePtr = Ers::Engine::ERS_Texture_Create();
+        Ers::Engine::ERS_Texture_Load(corePtr, path.c_str());
     }
 
     void Texture::Destroy()
     {
-        ersAPIFunctionPointers.ERS_Texture_Release(Data());
+        Ers::Engine::ERS_Texture_Release(CorePtr());
     }
 
-    void* Texture::Data()
+    void* Texture::CorePtr()
     {
-        return coreInstance;
+        return corePtr;
     }
 
-    const void* const Texture::Data() const
+    const void* const Texture::CorePtr() const
     {
-        return coreInstance;
+        return corePtr;
     }
 } // namespace Ers

@@ -12,38 +12,38 @@ namespace Ers
         uint32_t* excludedTypeIdArray,
         uint32_t excludedTypeArraySize)
     {
-        instance = ersAPIFunctionPointers.ERS_Submodel_View_Create(
+        corePtr = Ers::Engine::ERS_Submodel_View_Create(
             submodel, includedTypeIdArray, includedTypeArraySize, excludedTypeIdArray, excludedTypeArraySize);
     }
 
     BaseView& BaseView::operator=(BaseView&& other) noexcept
     {
         // Transfer ownership of allocated view in core
-        instance       = other.instance;
-        other.instance = nullptr;
+        corePtr       = other.corePtr;
+        other.corePtr = nullptr;
         return *this;
     }
 
     BaseView::~BaseView()
     {
-        if (instance)
+        if (corePtr)
         {
-            ersAPIFunctionPointers.ERS_Submodel_View_Dispose(instance);
+            Ers::Engine::ERS_Submodel_View_Destroy(corePtr);
         }
     }
 
     bool BaseView::Next()
     {
-        return ersAPIFunctionPointers.ERS_Submodel_View_Next(instance);
+        return Ers::Engine::ERS_Submodel_View_Next(corePtr);
     }
 
     Entity BaseView::GetEntity()
     {
-        return ersAPIFunctionPointers.ERS_Submodel_View_GetEntity(instance);
+        return Ers::Engine::ERS_Submodel_View_GetEntity(corePtr);
     }
 
     void* BaseView::GetComponent(uint32_t typeIndex)
     {
-        return ersAPIFunctionPointers.ERS_Submodel_View_GetComponent(instance, typeIndex);
+        return Ers::Engine::ERS_Submodel_View_GetComponent(corePtr, typeIndex);
     }
 } // namespace Ers

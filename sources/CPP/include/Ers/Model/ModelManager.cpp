@@ -17,7 +17,7 @@ namespace Ers
     {
         assert(modelContainer.Valid());
         assert(!HasModelContainer(modelContainer));
-        ersAPIFunctionPointers.ERS_ModelManager_AddModelContainer(this, modelContainer.Data(), releaseTime);
+        Ers::Engine::ERS_ModelManager_AddModelContainer(this, modelContainer.CorePtr(), releaseTime);
     }
 
     /// @brief Remove the given ModelContainer from this ModelManager.
@@ -32,13 +32,12 @@ namespace Ers
             return;
         }
 
-        ersAPIFunctionPointers.ERS_ModelManager_RemoveModelContainer(this, modelContainer.Data());
+        Ers::Engine::ERS_ModelManager_RemoveModelContainer(this, modelContainer.CorePtr());
     }
 
-    /// @brief Return the number of model containers in the vector of ModelContainers associated with this ModelManager.
-    size_t ModelManager::CountModelContainers()
+    size_t ModelManager::Count()
     {
-        return ersAPIFunctionPointers.ERS_ModelManager_CountModelContainers(this);
+        return Ers::Engine::ERS_ModelManager_CountModelContainers(this);
     }
 
     /// @brief Returns a shared pointer to the ModelContainer at the given position in the vector of ModelContainers.
@@ -47,35 +46,35 @@ namespace Ers
     /// @throws If no ModelContainer is found at given index, e.g. if index is out of bound.
     ModelContainer ModelManager::GetModelContainerAt(const std::size_t& index)
     {
-        void* coreModelContainerPtr = ersAPIFunctionPointers.ERS_ModelManager_GetModelContainerAt(this, index);
+        void* coreModelContainerPtr = Ers::Engine::ERS_ModelManager_GetModelContainerAt(this, index);
         return ModelContainer(coreModelContainerPtr);
     }
 
-    /// @brief Checks whether the given ModelContiner is present in the collection of the ModelContainers of this ModelManager.
-    /// @param modelContainer The given ModelContiner to check.
-    /// @return Returns true if the given ModelContiner is present in the vector of ModelContainers associated with this ModelManager,
+    /// @brief Checks whether the given ModelContainer is present in the collection of the ModelContainers of this ModelManager.
+    /// @param modelContainer The given ModelContainer to check.
+    /// @return Returns true if the given ModelContainer is present in the vector of ModelContainers associated with this ModelManager,
     /// otherwise returns false
     bool ModelManager::HasModelContainer(const ModelContainer& modelContainer) const
     {
-        return ersAPIFunctionPointers.ERS_ModelManager_HasModelContainer(this, modelContainer.Data());
+        return Ers::Engine::ERS_ModelManager_HasModelContainer(this, modelContainer.CorePtr());
     }
 
     //============== Protected functions ====================
 
-    /// @brief Performs Update for the ModelContianers of this ModelManager by invoking the corresponding function of the core.
+    /// @brief Performs Update for the ModelContainers of this ModelManager by invoking the corresponding function of the core.
     void ModelManager::Update()
     {
-        ersAPIFunctionPointers.ERS_ModelManager_Update(this);
+        Ers::Engine::ERS_ModelManager_Update(this);
     }
 
     void ModelManager::RunWithProgressBar()
     {
-        ersAPIFunctionPointers.ERS_RunWithProgressBar();
+        Ers::Engine::ERS_RunWithProgressBar();
     }
 
-    ModelManager& GetModelManager()
+    ModelManager& ModelManager::Get()
     {
-        return *static_cast<ModelManager*>(Ers::ersAPIFunctionPointers.ERS_ModelManager_GetModelManager());
+        return *static_cast<ModelManager*>(Ers::Engine::ERS_ModelManager_GetModelManager());
     }
 
 } // namespace Ers

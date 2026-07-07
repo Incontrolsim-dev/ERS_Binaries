@@ -214,7 +214,7 @@ namespace Ers
         {
             size_t size = vec.size();
             // Always push array element when in nested context (even if empty) to maintain structure
-            ersAPIFunctionPointers.ERS_Serializer_PushArrayElement(coreHandle, index, reinterpret_cast<int*>(&size));
+            Ers::Engine::ERS_Serializer_PushArrayElement(corePtr, index, reinterpret_cast<int*>(&size));
 
             if (!IsWriting())
             {
@@ -239,7 +239,7 @@ namespace Ers
         {
             size_t size = queue.size();
             // Always push array element when in nested context (even if empty) to maintain structure
-            ersAPIFunctionPointers.ERS_Serializer_PushArrayElement(coreHandle, index, reinterpret_cast<int*>(&size));
+            Ers::Engine::ERS_Serializer_PushArrayElement(corePtr, index, reinterpret_cast<int*>(&size));
 
             if (IsWriting())
             {
@@ -273,14 +273,14 @@ namespace Ers
         {
             size_t size = map.size();
             // Always push array element when in nested context (even if empty) to maintain structure
-            ersAPIFunctionPointers.ERS_Serializer_PushArrayElement(coreHandle, index, reinterpret_cast<int*>(&size));
+            Ers::Engine::ERS_Serializer_PushArrayElement(corePtr, index, reinterpret_cast<int*>(&size));
 
             if (IsWriting())
             {
                 size_t i = 0;
                 for (auto& kvp : map)
                 {
-                    ersAPIFunctionPointers.ERS_Serializer_PushObjectElement(coreHandle, i);
+                    Ers::Engine::ERS_Serializer_PushObjectElement(corePtr, i);
                     TKey k   = kvp.first;
                     TValue v = kvp.second;
                     Serialize("key", k);
@@ -294,7 +294,7 @@ namespace Ers
                 map.clear();
                 for (size_t i = 0; i < size; i++)
                 {
-                    ersAPIFunctionPointers.ERS_Serializer_PushObjectElement(coreHandle, i);
+                    Ers::Engine::ERS_Serializer_PushObjectElement(corePtr, i);
                     TKey k{};
                     TValue v{};
                     Serialize("key", k);
@@ -311,14 +311,14 @@ namespace Ers
         {
             size_t size = map.size();
             // Always push array element when in nested context (even if empty) to maintain structure
-            ersAPIFunctionPointers.ERS_Serializer_PushArrayElement(coreHandle, index, reinterpret_cast<int*>(&size));
+            Ers::Engine::ERS_Serializer_PushArrayElement(corePtr, index, reinterpret_cast<int*>(&size));
 
             if (IsWriting())
             {
                 size_t i = 0;
                 for (auto& kvp : map)
                 {
-                    ersAPIFunctionPointers.ERS_Serializer_PushObjectElement(coreHandle, i);
+                    Ers::Engine::ERS_Serializer_PushObjectElement(corePtr, i);
                     TKey k   = kvp.first;
                     TValue v = kvp.second;
                     Serialize("key", k);
@@ -332,7 +332,7 @@ namespace Ers
                 map.clear();
                 for (size_t i = 0; i < size; i++)
                 {
-                    ersAPIFunctionPointers.ERS_Serializer_PushObjectElement(coreHandle, i);
+                    Ers::Engine::ERS_Serializer_PushObjectElement(corePtr, i);
                     TKey k{};
                     TValue v{};
                     Serialize("key", k);
@@ -497,6 +497,6 @@ namespace Ers
         }
 
       private:
-        void* coreHandle;
+        void* corePtr;
     };
 } // namespace Ers

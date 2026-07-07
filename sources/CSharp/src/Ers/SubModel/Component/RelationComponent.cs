@@ -14,51 +14,74 @@ namespace Ers
         /// Get the ID of the parent.
         /// </summary>
         /// <returns></returns>
-        public Entity Parent() { return ErsEngine.ERS_RelationComponent_GetParent(CorePointer()); }
+        public Entity Parent
+        {
+            get => ErsEngine.ERS_RelationComponent_GetParent(CorePtr);
+        }
 
         /// <summary>
         /// Get the ID of the first child.
         /// </summary>
         /// <returns></returns>
-        public Entity First() { return ErsEngine.ERS_RelationComponent_GetFirst(CorePointer()); }
+        public Entity First
+        {
+            get => ErsEngine.ERS_RelationComponent_GetFirst(CorePtr);
+        }
 
         /// <summary>
         /// Get the ID of the last child.
         /// </summary>
         /// <returns></returns>
-        public Entity Last() { return ErsEngine.ERS_RelationComponent_GetLast(CorePointer()); }
+        public Entity Last
+        {
+            get => ErsEngine.ERS_RelationComponent_GetLast(CorePtr);
+        }
 
         /// <summary>
         /// Get the ID of the previous sibling. Moves the sibling iterator.
         /// </summary>
         /// <returns></returns>
-        public Entity Previous() { return ErsEngine.ERS_RelationComponent_GetPrevious(CorePointer()); }
+        public Entity Previous
+        {
+            get => ErsEngine.ERS_RelationComponent_GetPrevious(CorePtr);
+        }
 
         /// <summary>
         /// Get the ID of the next sibling. Moves the sibling iterator.
         /// </summary>
         /// <returns></returns>
-        public Entity Next() { return ErsEngine.ERS_RelationComponent_GetNext(CorePointer()); }
+        public Entity Next
+        {
+            get => ErsEngine.ERS_RelationComponent_GetNext(CorePtr);
+        }
 
         /// <summary>
         /// Get the number of children.
         /// </summary>
         /// <returns></returns>
-        public UInt64 ChildCount() { return ErsEngine.ERS_RelationComponent_GetChildCount(CorePointer()); }
+        public UInt64 ChildCount
+        {
+            get => ErsEngine.ERS_RelationComponent_GetChildCount(CorePtr);
+        }
 
         /// <summary>
         /// The type ID of the component in the ERS core.
         /// </summary>
         /// <returns></returns>
-        public static nuint CoreTypeId() { return ErsEngine.ERS_RelationComponent_TypeId(); }
+        public static nuint CoreTypeId() => ErsEngine.ERS_RelationComponent_TypeId();
 
-        private IntPtr CorePointer()
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr
         {
-            unsafe
-            {
-                fixed(RelationComponent* ptr = &this)
+            get {
+                unsafe
                 {
-                    return (IntPtr)ptr;
+                    fixed(RelationComponent* ptr = &this)
+                    {
+                        return (IntPtr)ptr;
+                    }
                 }
             }
         }
@@ -73,16 +96,20 @@ namespace Ers
         {
             get
             {
-                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ChildCount());
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, ChildCount);
 
-                Entity child = First();
+                Entity child = First;
                 for (ulong i = 0; i < index; i++)
-                    child = child.GetComponent<RelationComponent>().Value.Next();
+                    child = child.GetComponent<RelationComponent>().Value.Next;
                 return child;
             }
         }
 
-        public IEnumerator<Entity> GetEnumerator() => new ChildEnumerator(First());
+        /// <summary>
+        /// Get the enumerator to enumerate over the child entities.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<Entity> GetEnumerator() => new ChildEnumerator(First);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -108,6 +135,10 @@ namespace Ers
             /// </summary>
             private bool reset = true;
 
+            /// <summary>
+            /// Move to the next item in the enumerator.
+            /// </summary>
+            /// <returns></returns>
             public bool MoveNext()
             {
                 if (reset)
@@ -117,11 +148,14 @@ namespace Ers
                 }
                 else
                 {
-                    current = current.GetComponent<RelationComponent>().Value.Next();
+                    current = current.GetComponent<RelationComponent>().Value.Next;
                 }
                 return current != CEntity.InvalidEntity();
             }
 
+            /// <summary>
+            /// Reset the enumerator.
+            /// </summary>
             public void Reset()
             {
                 reset   = true;
@@ -130,8 +164,14 @@ namespace Ers
 
             object IEnumerator.Current => current;
 
+            /// <summary>
+            /// The currently enumerated entity.
+            /// </summary>
             public Entity Current => current != CEntity.InvalidEntity() ? current : throw new InvalidOperationException();
 
+            /// <summary>
+            /// Dispose the enumerator.
+            /// </summary>
             public void Dispose() {}
         }
     }

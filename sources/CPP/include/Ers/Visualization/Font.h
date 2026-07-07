@@ -5,7 +5,7 @@ namespace Ers
     struct Font
     {
       public:
-        Font(void* coreInstance);
+        Font(void* corePtr);
         Font()                       = delete;
         Font(const Font&)            = delete;
         Font(Font&&)                 = delete;
@@ -13,10 +13,10 @@ namespace Ers
         Font& operator=(Font&&)      = delete;
         ~Font()                      = default;
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

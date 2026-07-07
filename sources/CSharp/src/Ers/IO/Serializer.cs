@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -14,15 +12,18 @@ namespace Ers
     /// </summary>
     public class Serializer
     {
-        private readonly nint coreHandle;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal Serializer(nint coreHandle) { this.coreHandle = coreHandle; }
+        internal Serializer(IntPtr coreHandle) { this.CorePtr = coreHandle; }
 
         /// <summary>
         /// Check if this node is being used for writing (saving) or reading (loading).
         /// </summary>
         /// <returns>True if writing, false if reading.</returns>
-        public bool IsWriting() { return Engine.ErsEngine.ERS_Serializer_IsWriting(coreHandle); }
+        public bool IsWriting() { return Engine.ErsEngine.ERS_Serializer_IsWriting(CorePtr); }
 
         /// <summary>
         /// Serialize a UInt64 value.
@@ -34,7 +35,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(UInt64* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeUInt64(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeUInt64(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -49,7 +50,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(Int64* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeInt64(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeInt64(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -64,7 +65,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(UInt32* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeUInt32(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeUInt32(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -79,7 +80,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(Int32* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeInt32(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeInt32(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -94,7 +95,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(double* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeDouble(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeDouble(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -107,9 +108,9 @@ namespace Ers
             var keyUtf8 = key.ToUtf8NullTerminated();
             unsafe
             {
-                fixed(byte* keyByte = keyUtf8) fixed(bool* valuePtr = &value)
+                fixed(bool* valuePtr = &value) fixed(byte* keyByte = keyUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeBool(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeBool(CorePtr, keyByte, valuePtr);
                 }
             }
         }
@@ -124,7 +125,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8) fixed(float* valuePtr = &value)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeFloat(coreHandle, keyByte, (nint)valuePtr);
+                    Engine.ErsEngine.ERS_Serializer_SerializeFloat(CorePtr, keyByte, (nint)valuePtr);
                 }
             }
         }
@@ -149,21 +150,21 @@ namespace Ers
                         int length    = value.Length;
                         fixed(byte* valueByte = valueUtf8)
                         {
-                            Engine.ErsEngine.ERS_Serializer_SerializeString(coreHandle, keyByte, (byte*)&valueByte, (nint)(&length));
+                            Engine.ErsEngine.ERS_Serializer_SerializeString(CorePtr, keyByte, (byte*)&valueByte, ref length);
                         }
                     }
                     else
                     {
                         // Reading: API will allocate and return string
                         byte* valuePtr = null;
-                        IntPtr length  = IntPtr.Zero;
-                        Engine.ErsEngine.ERS_Serializer_SerializeString(coreHandle, keyByte, (byte*)&valuePtr, (IntPtr)(&length));
+                        int length     = 0;
+                        Engine.ErsEngine.ERS_Serializer_SerializeString(CorePtr, keyByte, (byte*)&valuePtr, ref length);
 
-                        if (valuePtr != null && length.ToInt32() > 0)
+                        if (valuePtr != null && length > 0)
                         {
-                            value = System.Text.Encoding.UTF8.GetString(valuePtr, length.ToInt32());
+                            value = System.Text.Encoding.UTF8.GetString(valuePtr, length);
                             // Free the memory allocated by the API using the matching API function
-                            Engine.ErsEngine.ERS_STRING_DISPOSE((nint)valuePtr);
+                            Engine.ErsEngine.ERS_String_Destroy((nint)valuePtr);
                         }
                         else
                         {
@@ -177,7 +178,7 @@ namespace Ers
         /// <summary>
         /// Get the size of the current array in the serialization context.
         /// </summary>
-        public int GetArraySize() { return Engine.ErsEngine.ERS_Serializer_GetArraySize(coreHandle); }
+        public int GetArraySize() { return Engine.ErsEngine.ERS_Serializer_GetArraySize(CorePtr); }
 
         /// <summary>
         /// Push a named object onto the serialization stack.
@@ -189,7 +190,7 @@ namespace Ers
             {
                 fixed(byte* keyByte = keyUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_PushObject(coreHandle, keyByte);
+                    Engine.ErsEngine.ERS_Serializer_PushObject(CorePtr, keyByte);
                 }
             }
         }
@@ -197,7 +198,7 @@ namespace Ers
         /// <summary>
         /// Pop an object from the serialization stack.
         /// </summary>
-        public void PopObject() { Engine.ErsEngine.ERS_Serializer_PopObject(coreHandle); }
+        public void PopObject() { Engine.ErsEngine.ERS_Serializer_PopObject(CorePtr); }
 
         /// <summary>
         /// Push a named array onto the serialization stack.
@@ -209,9 +210,9 @@ namespace Ers
             var keyUtf8 = key.ToUtf8NullTerminated();
             unsafe
             {
-                fixed(byte* keyByte = keyUtf8) fixed(int* sizePtr = &size)
+                fixed(byte* keyByte = keyUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_PushArray(coreHandle, keyByte, (nint)sizePtr);
+                    Engine.ErsEngine.ERS_Serializer_PushArray(CorePtr, keyByte, ref size);
                 }
             }
         }
@@ -219,12 +220,12 @@ namespace Ers
         /// <summary>
         /// Pop an array from the serialization stack.
         /// </summary>
-        public void PopArray() { Engine.ErsEngine.ERS_Serializer_PopArray(coreHandle); }
+        public void PopArray() { Engine.ErsEngine.ERS_Serializer_PopArray(CorePtr); }
 
         /// <summary>
         /// Set the current array element by index.
         /// </summary>
-        public void SetObject(int index) { Engine.ErsEngine.ERS_Serializer_SetObject(coreHandle, index); }
+        public void SetObject(int index) { Engine.ErsEngine.ERS_Serializer_SetObject(CorePtr, index); }
 
         // ----------------- Per-type thunks (uniform signature) -----------------
         private static unsafe void Thunk_UInt64(Serializer @this, string key, IntPtr p) =>
@@ -306,7 +307,7 @@ namespace Ers
             SerializeCustomTypeKey(key, ref value);
         }
 
-        private T DefaultOrDefaultConstruct<T>()
+        public static T DefaultOrDefaultConstruct<T>()
         {
             T value;
             Type tType = typeof(T);
@@ -395,6 +396,8 @@ namespace Ers
             Delegate del = GetCustomSerializationMethod<T>();
             if (del == null)
             {
+                string notsupportedMessage = "Serialization function not found on type " + typeof(T).FullName;
+                Serialize("support", ref notsupportedMessage);
                 return; // Custom type is not supported
             }
 
@@ -435,25 +438,28 @@ namespace Ers
 
         // ----------------- Per-type thunks for keyless array serialization -----------------
         private static unsafe void ThunkValue_UInt64(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueUInt64(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueUInt64(@this.CorePtr, (nuint)index, p);
 
         private static unsafe void ThunkValue_Int64(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueInt64(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueInt64(@this.CorePtr, (nuint)index, p);
 
         private static unsafe void ThunkValue_UInt32(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueUInt32(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueUInt32(@this.CorePtr, (nuint)index, p);
 
         private static unsafe void ThunkValue_Int32(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueInt32(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueInt32(@this.CorePtr, (nuint)index, p);
 
         private static unsafe void ThunkValue_Double(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueDouble(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueDouble(@this.CorePtr, (nuint)index, p);
 
         private static unsafe void ThunkValue_Float(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueFloat(@this.coreHandle, (nuint)index, p);
+            Engine.ErsEngine.ERS_Serializer_SerializeValueFloat(@this.CorePtr, (nuint)index, p);
 
-        private static unsafe void ThunkValue_Bool(Serializer @this, int index, IntPtr p) =>
-            Engine.ErsEngine.ERS_Serializer_SerializeValueBool(@this.coreHandle, (nuint)index, p);
+        private static unsafe void ThunkValue_Bool(Serializer @this, int index, IntPtr p)
+        {
+            bool* boolP = (bool*)p.ToPointer();
+            Engine.ErsEngine.ERS_Serializer_SerializeValueBool(@this.CorePtr, (nuint)index, boolP);
+        }
 
         private static unsafe void ThunkValue_String(Serializer @this, int index, IntPtr p)
         {
@@ -461,21 +467,22 @@ namespace Ers
             if (@this.IsWriting())
             {
                 var valueUtf8 = strRef.ToUtf8NullTerminated();
+                int length    = 0;
                 fixed(byte* valueByte = valueUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SerializeValueString(@this.coreHandle, (nuint)index, valueByte, IntPtr.Zero);
+                    Engine.ErsEngine.ERS_Serializer_SerializeValueString(@this.CorePtr, (nuint)index, valueByte, ref length);
                 }
             }
             else
             {
                 byte* valuePtr = null;
-                IntPtr length  = IntPtr.Zero;
-                Engine.ErsEngine.ERS_Serializer_SerializeValueString(@this.coreHandle, (nuint)index, (byte*)&valuePtr, (IntPtr)(&length));
+                int length     = 0;
+                Engine.ErsEngine.ERS_Serializer_SerializeValueString(@this.CorePtr, (nuint)index, (byte*)&valuePtr, ref length);
 
-                if (valuePtr != null && length.ToInt32() > 0)
+                if (valuePtr != null && length > 0)
                 {
-                    strRef = System.Text.Encoding.UTF8.GetString(valuePtr, length.ToInt32());
-                    Engine.ErsEngine.ERS_STRING_DISPOSE((nint)valuePtr);
+                    strRef = System.Text.Encoding.UTF8.GetString(valuePtr, length);
+                    Engine.ErsEngine.ERS_String_Destroy((nint)valuePtr);
                 }
                 else
                 {
@@ -665,11 +672,15 @@ namespace Ers
             Serialize(key, ref Unsafe.As<T, Queue<TElem>>(ref value));
 
         // This method runs with T == Dictionary<TElem, Elem2>, so the ref cast is identity.
-        private void DispatchSerializeDictionaryIndex<T, TElem, Elem2>(int index, ref T value) =>
+        private void DispatchSerializeDictionaryIndex<T, TElem, Elem2>(int index, ref T value)
+            where TElem : notnull
+            where Elem2 : notnull =>
             Serialize(index, ref Unsafe.As<T, Dictionary<TElem, Elem2>>(ref value));
 
         // This method runs with T == Dictionary<TElem, Elem2>, so the ref cast is identity.
-        private void DispatchSerializeDictionaryKey<T, TElem, Elem2>(string key, ref T value) =>
+        private void DispatchSerializeDictionaryKey<T, TElem, Elem2>(string key, ref T value)
+            where TElem : notnull
+            where Elem2 : notnull =>
             Serialize(key, ref Unsafe.As<T, Dictionary<TElem, Elem2>>(ref value));
 
         // Private helper method for serializing array elements without keys
@@ -710,7 +721,7 @@ namespace Ers
             // Always push array element when in nested context (even if empty) to maintain structure
             unsafe
             {
-                Engine.ErsEngine.ERS_Serializer_PushArrayElement(coreHandle, (nuint)index, (nint)(void*)&size);
+                Engine.ErsEngine.ERS_Serializer_PushArrayElement(CorePtr, (nuint)index, ref size);
             }
 
             if (!IsWriting())
@@ -744,7 +755,7 @@ namespace Ers
             // Always push array element when in nested context (even if empty) to maintain structure
             unsafe
             {
-                Engine.ErsEngine.ERS_Serializer_PushArrayElement(coreHandle, (nuint)index, (nint)(void*)&size);
+                Engine.ErsEngine.ERS_Serializer_PushArrayElement(CorePtr, (nuint)index, ref size);
             }
 
             if (IsWriting())
@@ -776,12 +787,14 @@ namespace Ers
         }
 
         private void Serialize<TKey, TValue>(int index, ref Dictionary<TKey, TValue> dictionary)
+            where TKey : notnull
+            where TValue : notnull
         {
             int size = IsWriting() ? dictionary?.Count ?? 0 : 0;
             // Always push array element when in nested context (even if empty) to maintain structure
             unsafe
             {
-                Engine.ErsEngine.ERS_Serializer_PushArrayElement(coreHandle, (nuint)index, (nint)(void*)&size);
+                Engine.ErsEngine.ERS_Serializer_PushArrayElement(CorePtr, (nuint)index, ref size);
             }
 
             if (IsWriting())
@@ -789,7 +802,7 @@ namespace Ers
                 int i = 0;
                 foreach (var kvp in dictionary)
                 {
-                    Engine.ErsEngine.ERS_Serializer_PushObjectElement(coreHandle, (nuint)i);
+                    Engine.ErsEngine.ERS_Serializer_PushObjectElement(CorePtr, (nuint)i);
                     TKey dictKey     = kvp.Key;
                     TValue dictValue = kvp.Value;
                     Serialize("key", ref dictKey);
@@ -805,7 +818,7 @@ namespace Ers
                 dictionary.Clear();
                 for (int i = 0; i < size; i++)
                 {
-                    Engine.ErsEngine.ERS_Serializer_PushObjectElement(coreHandle, (nuint)i);
+                    Engine.ErsEngine.ERS_Serializer_PushObjectElement(CorePtr, (nuint)i);
 
                     // For reference types (including arrays), start with null - Serialize will create proper instance
                     // For value types, need default instance
@@ -919,6 +932,8 @@ namespace Ers
         /// If the dictionary is null or empty during writing, nothing is written.
         /// </summary>
         public void Serialize<TKey, TValue>(string key, ref Dictionary<TKey, TValue> dictionary)
+            where TKey : notnull
+            where TValue : notnull
         {
             if (IsWriting() && (dictionary == null || dictionary.Count == 0))
             {
@@ -984,7 +999,7 @@ namespace Ers
             {
                 fixed(byte* folderPathByte = folderPathUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SaveToFolder(modelContainer.Data, folderPathByte);
+                    Engine.ErsEngine.ERS_Serializer_SaveToFolder(modelContainer.CorePtr, folderPathByte);
                 }
             }
         }
@@ -1024,7 +1039,7 @@ namespace Ers
             {
                 fixed(byte* archivePathByte = archivePathUtf8)
                 {
-                    Engine.ErsEngine.ERS_Serializer_SaveToArchive(modelContainer.Data, archivePathByte, compressionLevel);
+                    Engine.ErsEngine.ERS_Serializer_SaveToArchive(modelContainer.CorePtr, archivePathByte, compressionLevel);
                 }
             }
         }

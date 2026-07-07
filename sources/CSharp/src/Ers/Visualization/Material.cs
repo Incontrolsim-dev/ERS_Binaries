@@ -1,4 +1,3 @@
-﻿using System.Numerics;
 using Ers.Engine;
 
 namespace Ers
@@ -8,34 +7,20 @@ namespace Ers
     /// </summary>
     public class Material
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal Material(IntPtr corePointer) { Data = corePointer; }
+        internal Material(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
-        /// The base color of the material.
+        /// The diffuse color of the material.
         /// </summary>
-        public Vector3 Color
+        public Color Color
         {
-            get {
-                unsafe
-                {
-                    // clang-format off
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_Material_Color_X(Data),
-                        *(float*)ErsEngine.ERS_Material_Color_Y(Data),
-                        *(float*)ErsEngine.ERS_Material_Color_Z(Data));
-                    // clang-format on
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Material_Color_X(Data) = value.X;
-                    *(float*)ErsEngine.ERS_Material_Color_Y(Data) = value.Y;
-                    *(float*)ErsEngine.ERS_Material_Color_Z(Data) = value.Z;
-                }
-            }
+            get => Color.FromInt(ErsEngine.ERS_Material_GetDiffuseColor(CorePtr));
+            set => ErsEngine.ERS_Material_SetDiffuseColor(CorePtr, value.Value);
         }
     }
 }

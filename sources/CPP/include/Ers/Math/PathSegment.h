@@ -72,9 +72,6 @@ namespace Ers
 
         [[nodiscard]] Vector3 GetP3() const;
 
-        void* Data();
-        const void* const Data() const;
-
       private:
     };
 } // namespace Ers

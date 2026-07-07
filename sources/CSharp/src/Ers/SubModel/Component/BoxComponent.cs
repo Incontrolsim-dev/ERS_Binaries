@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Ers.Engine;
@@ -21,13 +21,12 @@ namespace Ers
         public Vector3 Min
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_BoxComponent_Min_X(CorePointer()), *(float*)ErsEngine.ERS_BoxComponent_Min_Y(CorePointer()),
-                        *(float*)ErsEngine.ERS_BoxComponent_Min_Z(CorePointer()));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_BoxComponent_Get_Min_X(CorePtr),
+                    ErsEngine.ERS_BoxComponent_Get_Min_Y(CorePtr),
+                    ErsEngine.ERS_BoxComponent_Get_Min_Z(CorePtr));
             }
+            set => ErsEngine.ERS_BoxComponent_Set_Min(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -38,13 +37,12 @@ namespace Ers
         public Vector3 Max
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_BoxComponent_Max_X(CorePointer()), *(float*)ErsEngine.ERS_BoxComponent_Max_Y(CorePointer()),
-                        *(float*)ErsEngine.ERS_BoxComponent_Max_Z(CorePointer()));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_BoxComponent_Get_Max_X(CorePtr),
+                    ErsEngine.ERS_BoxComponent_Get_Max_Y(CorePtr),
+                    ErsEngine.ERS_BoxComponent_Get_Max_Z(CorePtr));
             }
+            set => ErsEngine.ERS_BoxComponent_Set_Max(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -55,23 +53,13 @@ namespace Ers
         public Vector3 Dimensions
         {
             get {
-                unsafe
-                {
-                    Vector3 result = new Vector3();
-                    result.X       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_X(CorePointer());
-                    result.Y       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Y(CorePointer());
-                    result.Z       = *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Z(CorePointer());
-                    return result;
-                }
+                Vector3 result = new Vector3();
+                result.X       = ErsEngine.ERS_BoxComponent_Get_Dimensions_X(CorePtr);
+                result.Y       = ErsEngine.ERS_BoxComponent_Get_Dimensions_Y(CorePtr);
+                result.Z       = ErsEngine.ERS_BoxComponent_Get_Dimensions_Z(CorePtr);
+                return result;
             }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_X(CorePointer()) = value.X;
-                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Y(CorePointer()) = value.Y;
-                    *(float*)ErsEngine.ERS_BoxComponent_Dimensions_Z(CorePointer()) = value.Z;
-                }
-            }
+            set => ErsEngine.ERS_BoxComponent_Set_Dimensions(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -79,7 +67,7 @@ namespace Ers
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool InCollision(Vector2 point) => ErsEngine.ERS_BoxComponent_InCollision_Point2D(CorePointer(), point.X, point.Y);
+        public bool InCollision(Vector2 point) => ErsEngine.ERS_BoxComponent_InCollision_Point2D(CorePtr, point.X, point.Y);
 
         /// <summary>
         /// Check whether a ray intersects the bounding box.
@@ -87,7 +75,7 @@ namespace Ers
         /// <param name="ray"></param>
         /// <returns></returns>
         public bool InCollision(Ray ray) => ErsEngine.ERS_BoxComponent_InCollision_Ray(
-            CorePointer(), ray.Position.X, ray.Position.Y, ray.Position.Z, ray.Direction.X, ray.Direction.Y, ray.Direction.Z);
+            CorePtr, ray.Position.X, ray.Position.Y, ray.Position.Z, ray.Direction.X, ray.Direction.Y, ray.Direction.Z);
 
         /// <summary>
         /// The type ID of the component in the ERS core.
@@ -95,13 +83,18 @@ namespace Ers
         /// <returns></returns>
         public static nuint CoreTypeId() => ErsEngine.ERS_BoxComponent_TypeId();
 
-        private IntPtr CorePointer()
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr
         {
-            unsafe
-            {
-                fixed(BoxComponent* ptr = &this)
+            get {
+                unsafe
                 {
-                    return (IntPtr)ptr;
+                    fixed(BoxComponent* ptr = &this)
+                    {
+                        return (IntPtr)ptr;
+                    }
                 }
             }
         }

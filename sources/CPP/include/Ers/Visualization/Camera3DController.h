@@ -23,12 +23,12 @@ namespace Ers
 
         void SwitchCameraMode(int mode);
 
-        void HeadBobbingIntensity(float intensity);
         /// @brief The intensity of the head (camera height) moving up and down when walking in first person mode.
         /// @return
         float HeadBobbingIntensity();
+        void HeadBobbingIntensity(float intensity);
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

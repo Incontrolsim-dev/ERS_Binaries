@@ -113,5 +113,32 @@ namespace Ers
             scriptBehavior.ConnectedEntity = newConnectedEntity;
             scriptBehavior.OnSubModelMove(newConnectedEntity);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+        public static void OnInputChannelReady(IntPtr scriptInstancePtr, Entity inputChannel)
+        {
+            var handle         = GCHandle.FromIntPtr(scriptInstancePtr);
+            var scriptBehavior = (ScriptBehaviorComponent)handle.Target!;
+            scriptBehavior.OnInputChannelReady(inputChannel);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+        public static void OnOutputChannelReady(IntPtr scriptInstancePtr, Entity outputChannel)
+        {
+            var handle         = GCHandle.FromIntPtr(scriptInstancePtr);
+            var scriptBehavior = (ScriptBehaviorComponent)handle.Target!;
+            scriptBehavior.OnOutputChannelReady(outputChannel);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+        public static void OnReceive(IntPtr scriptInstancePtr, Entity inputChannel, Entity child)
+        {
+            var handle         = GCHandle.FromIntPtr(scriptInstancePtr);
+            var scriptBehavior = (ScriptBehaviorComponent)handle.Target!;
+            scriptBehavior.OnReceive(inputChannel, child);
+        }
     }
 }

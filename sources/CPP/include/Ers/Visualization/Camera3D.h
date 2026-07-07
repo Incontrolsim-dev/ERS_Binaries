@@ -5,7 +5,7 @@ namespace Ers
     class Camera3D
     {
       public:
-        Camera3D(void* coreInstance);
+        Camera3D(void* corePtr);
         Camera3D()                           = delete;
         Camera3D(const Camera3D&)            = default;
         Camera3D(Camera3D&&)                 = delete;
@@ -24,10 +24,10 @@ namespace Ers
 
         void SetLookAt(float x, float y, float z);
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

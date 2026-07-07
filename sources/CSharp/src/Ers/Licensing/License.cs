@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 
 namespace Ers
 {
@@ -16,15 +16,16 @@ namespace Ers
             }
         }
 
-        public static string EditionName()
+        public static string EditionName
         {
-            unsafe
-            {
-                char* heapAllocatedName = (char*)ErsEngine.ERS_License_EditionName();
-                string edition          = new string(heapAllocatedName);
-                ErsEngine.ERS_STRING_DISPOSE((nint)heapAllocatedName);
-
-                return edition;
+            get {
+                unsafe
+                {
+                    char* heapAllocatedName = (char*)ErsEngine.ERS_License_EditionName();
+                    string edition          = new string(heapAllocatedName);
+                    ErsEngine.ERS_String_Destroy((nint)heapAllocatedName);
+                    return edition;
+                }
             }
         }
 

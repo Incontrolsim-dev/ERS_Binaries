@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Ers
 {
@@ -65,11 +65,27 @@ namespace Ers
         /// </summary>
         /// <param name="oldChild">The previously present child.</param>
         public virtual void OnExited(Entity oldChild) {}
+        /// <summary>
+        /// Called after an input channel is ready, given that this script's entity has a <see cref="ResourceComponent"/>.
+        /// </summary>
+        /// <param name="inputChannel">The entity with the input channel that is ready.</param>
+        public virtual void OnInputChannelReady(Entity inputChannel) {}
+        /// <summary>
+        /// Called after an output channel is ready, given that this script's entity has a <see cref="ResourceComponent"/>.
+        /// </summary>
+        /// <param name="outputChannel">The entity with the output channel that is ready.</param>
+        public virtual void OnOutputChannelReady(Entity outputChannel) {}
+        /// <summary>
+        /// Called after an entity is passed by a <see cref="ResourceComponent"/>. It will be added as a child.
+        /// </summary>
+        /// <param name="inputChannel">The entity with the input channel that received the child.</param>
+        /// <param name="child">The child that has been passed.</param>
+        public virtual void OnReceive(Entity inputChannel, Entity child) {}
 
         /// <summary>
         /// Called during Serialization, during load and save operation.
         /// Use this function to save all state of the script behavior into a string, it is then included in the ERS Save file.
-        /// Likewise you can read entries in the saved string to fill a newly created scriptbehavior during the load operation
+        /// Likewise you can read entries in the saved string to fill a newly created script behavior during the load operation
         /// </summary>
         /// <param name="node"></param>
         public virtual void Serialization(Serializer node) {}
@@ -77,7 +93,7 @@ namespace Ers
         /// <summary>
         /// Called when an entity is moved between submodels.
         /// Use this function to rebuild information that is invalid after the move, for example child entity ID's referenced by this
-        /// scriptbehavior
+        /// script behavior
         /// </summary>
         /// <param name="node"></param>
         public virtual void OnSubModelMove(Entity newEntityId) {}

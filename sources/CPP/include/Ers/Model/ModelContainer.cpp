@@ -1,8 +1,9 @@
+#include "ModelContainer.h"
+
+#include <cassert>
 #include <stdexcept>
 
 #include "Ers/Api.h"
-#include "ModelContainer.h"
-
 #include "Ers/Logger.h"
 #include "Ers/Model/Simulator/Simulator.h"
 #include "Ers/SubModel/SubModel.h"
@@ -24,8 +25,7 @@ namespace Ers
             std::abort();
         }
 
-        void* coreSimulator =
-            ersAPIFunctionPointers.ERS_ModelContainer_AddSimulator(coreModelContainerInstance, tag.data(), static_cast<uint8_t>(type));
+        void* coreSimulator = Ers::Engine::ERS_ModelContainer_AddSimulator(corePtr, tag.data(), static_cast<uint8_t>(type));
 
         return Ers::Simulator(coreSimulator);
     }
@@ -37,7 +37,7 @@ namespace Ers
     {
         assert(simulator.Valid());
         assert(FindSimulator(simulator.GetID()).Valid());
-        ersAPIFunctionPointers.ERS_ModelContainer_RemoveSimulator(coreModelContainerInstance, simulator.Data());
+        Ers::Engine::ERS_ModelContainer_RemoveSimulator(corePtr, simulator.CorePtr());
     }
 
     /// @brief Find the simulator with the given tag/name.
@@ -45,8 +45,7 @@ namespace Ers
     /// @return Shared pointer to the simulator with given tag or nullptr if no such simulator is found.
     Ers::Simulator ModelContainer::FindSimulator(const std::string_view& simulatorTag)
     {
-        void* foundCoreSimulator =
-            ersAPIFunctionPointers.ERS_ModelContainer_FindSimulatorByTag(coreModelContainerInstance, simulatorTag.data());
+        void* foundCoreSimulator = Ers::Engine::ERS_ModelContainer_FindSimulatorByTag(corePtr, simulatorTag.data());
 
         return Ers::Simulator(foundCoreSimulator);
     }
@@ -56,7 +55,7 @@ namespace Ers
     /// @return Shared pointer to the simulator with given ID or nullptr if no such simulator is found.
     Ers::Simulator ModelContainer::FindSimulator(const std::int32_t& simulatorId)
     {
-        void* foundCoreSimulator = ersAPIFunctionPointers.ERS_ModelContainer_FindSimulatorById(coreModelContainerInstance, simulatorId);
+        void* foundCoreSimulator = Ers::Engine::ERS_ModelContainer_FindSimulatorById(corePtr, simulatorId);
 
         return Ers::Simulator(foundCoreSimulator);
     }
@@ -64,7 +63,7 @@ namespace Ers
     /// @brief Return the number of simulators in the ModelContainer.
     std::size_t ModelContainer::SimulatorCount()
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_GetSimulatorsCount(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_GetSimulatorsCount(corePtr);
     }
 
     /// @brief Add a dependency between simulators.
@@ -74,35 +73,35 @@ namespace Ers
     {
         assert(from.Valid());
         assert(to.Valid());
-        ersAPIFunctionPointers.ERS_ModelContainer_AddSimulatorDependency(coreModelContainerInstance, from.Data(), to.Data());
+        Ers::Engine::ERS_ModelContainer_AddSimulatorDependency(corePtr, from.CorePtr(), to.CorePtr());
     }
 
     void ModelContainer::RemoveSimulatorDependency(Ers::Simulator from, Ers::Simulator to)
     {
         assert(from.Valid());
         assert(to.Valid());
-        ersAPIFunctionPointers.ERS_ModelContainer_RemoveSimulatorDependency(coreModelContainerInstance, from.Data(), to.Data());
+        Ers::Engine::ERS_ModelContainer_RemoveSimulatorDependency(corePtr, from.CorePtr(), to.CorePtr());
     }
 
     SimulationTime ModelContainer::CurrentTime() const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_CurrentTime(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_CurrentTime(corePtr);
     }
 
     void ModelContainer::Update(SimulationTime timeStep) const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_Update_Blocking(coreModelContainerInstance, timeStep);
+        return Ers::Engine::ERS_ModelContainer_Update_Blocking(corePtr, timeStep);
     }
 
     void ModelContainer::Start()
     {
-        ersAPIFunctionPointers.ERS_ModelContainer_Start(coreModelContainerInstance);
+        Ers::Engine::ERS_ModelContainer_Start(corePtr);
     }
 
     // TODO
     bool ModelContainer::IsStarted() const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_IsStarted(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_IsStarted(corePtr);
     }
 
     /// @brief Return the collection of the simulators in the ModelContainer.
@@ -115,8 +114,7 @@ namespace Ers
         vecSimulators.reserve(SimulatorCount());
         for (int i = 0; i < vecSimulators.capacity(); i++)
         {
-            vecSimulators.emplace_back(
-                Ers::Simulator(ersAPIFunctionPointers.ERS_ModelContainer_GetSimulator(coreModelContainerInstance, i)));
+            vecSimulators.emplace_back(Ers::Simulator(Ers::Engine::ERS_ModelContainer_GetSimulator(corePtr, i)));
         }
         return vecSimulators;
     }
@@ -127,105 +125,115 @@ namespace Ers
     /// @throws If the simulator with the given ID was not found.
     Ers::Simulator ModelContainer::GetSimulator(const std::int32_t simulatorId)
     {
-        void* coreSimulator = ersAPIFunctionPointers.ERS_ModelContainer_GetSimulatorById(coreModelContainerInstance, simulatorId);
+        void* coreSimulator = Ers::Engine::ERS_ModelContainer_GetSimulatorById(corePtr, simulatorId);
         return Ers::Simulator(coreSimulator);
     }
 
     Ers::Simulator ModelContainer::GetSimulatorByIndex(int index)
     {
-        return Ers::Simulator(ersAPIFunctionPointers.ERS_ModelContainer_GetSimulator(coreModelContainerInstance, index));
+        return Ers::Simulator(Ers::Engine::ERS_ModelContainer_GetSimulator(corePtr, index));
     }
 
-    void* ModelContainer::Data()
+    void* ModelContainer::CorePtr()
     {
-        return coreModelContainerInstance;
+        return corePtr;
     }
 
-    const void* const ModelContainer::Data() const
+    const void* const ModelContainer::CorePtr() const
     {
-        return coreModelContainerInstance;
+        return corePtr;
     }
 
     void ModelContainer::SetPrecision(SimulationTime precision)
     {
-        ersAPIFunctionPointers.ERS_ModelContainer_SetModelPrecision(coreModelContainerInstance, precision);
+        Ers::Engine::ERS_ModelContainer_SetModelPrecision(corePtr, precision);
     }
 
     SimulationTime ModelContainer::GetPrecision() const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_GetModelPrecision(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_GetModelPrecision(corePtr);
     }
 
     double ModelContainer::GetSpeedUp() const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_SimulationSpeedOverRealtime(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_SimulationSpeedOverRealtime(corePtr);
+    }
+
+    std::string ModelContainer::GetWorkingDir() const
+    {
+        return Ers::Engine::ERS_ModelContainer_GetWorkingDir(corePtr);
+    }
+
+    void ModelContainer::SetWorkingDir(const std::string_view& path)
+    {
+        Ers::Engine::ERS_ModelContainer_SetWorkingDir(corePtr, path.data());
     }
 
     bool ModelContainer::Valid() const
     {
-        return coreModelContainerInstance != nullptr;
+        return corePtr != nullptr;
     }
 
     size_t Ers::ModelContainer::GetSeed() const
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_Seed(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_Seed(corePtr);
     }
 
     void ModelContainer::SetSeed(size_t newSeed)
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_SetSeed(coreModelContainerInstance, newSeed);
+        return Ers::Engine::ERS_ModelContainer_SetSeed(corePtr, newSeed);
     }
 
     void ModelContainer::GenerateRandomSeed()
     {
-        return ersAPIFunctionPointers.ERS_ModelContainer_GenerateRandomSeed(coreModelContainerInstance);
+        return Ers::Engine::ERS_ModelContainer_GenerateRandomSeed(corePtr);
     }
 
     /// @brief Creates a model container
-    ModelContainer ModelContainer::CreateModelContainer()
+    ModelContainer ModelContainer::Create()
     {
-        void* modelContainerInstancePtr = ersAPIFunctionPointers.ERS_ModelContainer_CreateModelContainer();
+        void* modelContainerInstancePtr = Ers::Engine::ERS_ModelContainer_Create();
         ModelContainer output(modelContainerInstancePtr);
-        ersAPIFunctionPointers.ERS_ModelContainer_Release(modelContainerInstancePtr);
+        Ers::Engine::ERS_ModelContainer_Release(modelContainerInstancePtr);
         return output;
     }
 
     /// @brief Creates a model container with the given pointer to the ModelContainer in the core.
-    /// @param coreInstance The pointer to the instance of an existing ModelContainer in the core.
+    /// @param corePtr The pointer to the instance of an existing ModelContainer in the core.
     /// @param type The type of the ownership of this instance of ModelContainer with regard to the instance in the core.
     /// I.e. if the API ModelContainer is responsible for the creation and deletion: type = ObjectType::OWNER,
     ///		 if the API ModelContainer acts as an accessor for the ModelContainer in the core: type = ObjectType::ACCESSOR.
-    ModelContainer::ModelContainer(void* coreInstance) :
-        coreModelContainerInstance(coreInstance)
+    ModelContainer::ModelContainer(void* corePtr) :
+        corePtr(corePtr)
     {
-        if (coreInstance != nullptr)
+        if (corePtr != nullptr)
         {
-            ersAPIFunctionPointers.ERS_ModelContainer_Increase(coreInstance); // Increase reference count
+            Ers::Engine::ERS_ModelContainer_Increase(corePtr); // Increase reference count
         }
     }
 
     ModelContainer::ModelContainer(ModelContainer&& other) noexcept :
-        coreModelContainerInstance(other.coreModelContainerInstance)
+        corePtr(other.corePtr)
     {
-        other.coreModelContainerInstance = nullptr;
+        other.corePtr = nullptr;
     }
 
     ModelContainer::~ModelContainer()
     {
-        if (coreModelContainerInstance == nullptr)
+        if (corePtr == nullptr)
         {
             return;
         }
 
         // Decrease reference count
-        ersAPIFunctionPointers.ERS_ModelContainer_Release(coreModelContainerInstance);
-        coreModelContainerInstance = nullptr;
+        Ers::Engine::ERS_ModelContainer_Release(corePtr);
+        corePtr = nullptr;
     }
 
     ModelContainer& ModelContainer::operator=(ModelContainer&& other) noexcept
     {
-        coreModelContainerInstance       = other.coreModelContainerInstance;
-        other.coreModelContainerInstance = nullptr;
+        corePtr       = other.corePtr;
+        other.corePtr = nullptr;
 
         return *this;
     }

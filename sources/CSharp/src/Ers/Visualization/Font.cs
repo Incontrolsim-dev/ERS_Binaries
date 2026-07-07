@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 
 namespace Ers
 {
     public class Font
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal Font(IntPtr corePointer) { Data = corePointer; }
+        internal Font(IntPtr corePtr) { CorePtr = corePtr; }
     }
 }

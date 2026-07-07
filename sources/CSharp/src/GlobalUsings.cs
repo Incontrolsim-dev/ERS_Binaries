@@ -1,4 +1,4 @@
-﻿
+
 global using ERSComponentType          = nuint;
 global using ExternalSDKComponentType  = nuint;
 global using ExternalCoreComponentType = nuint;

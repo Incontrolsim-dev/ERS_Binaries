@@ -22,7 +22,7 @@ namespace Ers
 
         Ers::RandomGeneratorType GetRandomGeneratorType();
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
     };
 } // namespace Ers

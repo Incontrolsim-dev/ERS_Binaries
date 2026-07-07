@@ -1,4 +1,4 @@
-﻿namespace Ers
+namespace Ers
 {
     /// <summary>
     /// A component meant to hold purely data.

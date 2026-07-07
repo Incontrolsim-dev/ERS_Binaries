@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Runtime.InteropServices;
 
 namespace Ers
@@ -6,7 +6,10 @@ namespace Ers
     [StructLayout(LayoutKind.Sequential)]
     internal ref struct BaseView
     {
-        public readonly IntPtr Instance;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
         public readonly UInt32[] IncludedTypeIdArray;
         public readonly UInt32[] ExcludedTypeIdArray;
 
@@ -18,23 +21,20 @@ namespace Ers
             {
                 fixed(UInt32* includedTypePtr = IncludedTypeIdArray) fixed(UInt32* excludedTypePtr = ExcludedTypeIdArray)
                 {
-                    Instance = ErsEngine.ERS_Submodel_View_Create(
+                    CorePtr = ErsEngine.ERS_Submodel_View_Create(
                         subModel, (IntPtr)includedTypePtr, (UInt32)IncludedTypeIdArray.Length, (IntPtr)excludedTypePtr,
                         (UInt32)ExcludedTypeIdArray.Length);
                 }
             }
         }
 
-        public void Dispose()
-        {
-            ErsEngine.ERS_Submodel_View_Dispose(Instance);
-        }
+        public void Dispose() => ErsEngine.ERS_Submodel_View_Destroy(CorePtr);
 
-        public bool Next() => ErsEngine.ERS_Submodel_View_Next(Instance);
+        public bool Next() => ErsEngine.ERS_Submodel_View_Next(CorePtr);
 
-        public readonly Entity GetEntity() => ErsEngine.ERS_Submodel_View_GetEntity(Instance);
+        public readonly Entity GetEntity() => ErsEngine.ERS_Submodel_View_GetEntity(CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(CorePtr, (nuint)typeIndex);
 
         public readonly int FindTypeIdx(UInt32 findType)
         {

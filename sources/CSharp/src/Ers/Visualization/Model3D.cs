@@ -1,6 +1,5 @@
-﻿using Ers.Engine;
 using System.Numerics;
-using System.Runtime.CompilerServices;
+using Ers.Engine;
 
 namespace Ers
 {
@@ -14,23 +13,31 @@ namespace Ers
     /// </summary>
     public class Model3D : IDisposable
     {
-        internal IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr;
 
-        internal Model3D(IntPtr corePointer) { Data = corePointer; }
+        internal Model3D(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Create an empty 3D model.
         /// </summary>
-        public Model3D() { Data = ErsEngine.ERS_Model3D_Create(); }
-        public Model3D(string modelDataPath)
+        public Model3D() { CorePtr = ErsEngine.ERS_Model3D_Create(); }
+
+        /// <summary>
+        /// Construct a Model3D from a path to a 3D model file.
+        /// </summary>
+        /// <param name="path"></param>
+        public Model3D(string path)
         {
-            Data         = ErsEngine.ERS_Model3D_Create();
-            var textUtf8 = modelDataPath.ToUtf8NullTerminated();
+            CorePtr      = ErsEngine.ERS_Model3D_Create();
+            var textUtf8 = path.ToUtf8NullTerminated();
             unsafe
             {
                 fixed(byte* textByte = textUtf8)
                 {
-                    ErsEngine.ERS_Model3D_Load(Data, textByte);
+                    ErsEngine.ERS_Model3D_Load(CorePtr, textByte);
                 }
             }
         }
@@ -51,10 +58,10 @@ namespace Ers
 
         private void DisposeInner()
         {
-            if (Data != IntPtr.Zero)
+            if (CorePtr != IntPtr.Zero)
             {
-                ErsEngine.ERS_Model3D_Destroy(Data);
-                Data = IntPtr.Zero;
+                ErsEngine.ERS_Model3D_Destroy(CorePtr);
+                CorePtr = IntPtr.Zero;
             }
         }
 
@@ -63,7 +70,7 @@ namespace Ers
         /// </summary>
         /// <param name="index">The index of the mesh to get.</param>
         /// <returns></returns>
-        public Mesh GetMesh(int index) { return new Mesh(ErsEngine.ERS_Model3D_GetMesh(Data, index)); }
+        public Mesh GetMesh(int index) => new Mesh(ErsEngine.ERS_Model3D_GetMesh(CorePtr, index));
 
         /// <summary>
         /// Set the transform of this model.
@@ -79,13 +86,16 @@ namespace Ers
             if (scale == default)
                 scale = Vector3.One;
 
-            ErsEngine.ERS_Model3D_SetTransform(Data, pos.X, pos.Y, pos.Z, axis.X, axis.Y, axis.Z, turns, scale.X, scale.Y, scale.Z);
+            ErsEngine.ERS_Model3D_SetTransform(CorePtr, pos.X, pos.Y, pos.Z, axis.X, axis.Y, axis.Z, turns, scale.X, scale.Y, scale.Z);
         }
 
         /// <summary>
         /// Get the number of meshes in this model.
         /// </summary>
         /// <returns></returns>
-        public nuint NumMeshes() { return (nuint)ErsEngine.ERS_Model3D_GetMeshCount(Data); }
+        public UInt32 MeshCount
+        {
+            get => ErsEngine.ERS_Model3D_GetMeshCount(CorePtr);
+        }
     }
 }

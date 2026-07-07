@@ -14,26 +14,30 @@ namespace Ers
         Float32 = 0,
         /// @brief A boolean.
         Bool = 1,
+        /// @brief An 8-bit unsigned integer.
+        UInt8 = 2,
         /// @brief A 32-bit signed integer.
-        Int32 = 2,
+        Int32 = 3,
         /// @brief A 32-bit unsigned integer.
-        UInt32 = 3,
+        UInt32 = 4,
         /// @brief A 64-bit signed integer.
-        Int64 = 4,
+        Int64 = 5,
         /// @brief A 64-bit unsigned integer.
-        UInt64 = 5,
+        UInt64 = 6,
         /// @brief An ERS Entity.
-        Entity = 6,
+        Entity = 7,
         /// @brief A list of any known registered type.
-        List = 7,
+        List = 8,
         /// @brief A string.
-        String = 8,
+        String = 9,
         /// @brief A 2D vector.
-        Vector2 = 9,
+        Vector2 = 10,
         /// @brief A 3D vector.
-        Vector3 = 10,
+        Vector3 = 11,
         /// @brief A 4D vector.
-        Vector4 = 11,
+        Vector4 = 12,
+        /// @brief An RGBA color (Ers::Color).
+        Color = 13,
     };
 
     /// @brief Type information for a component.

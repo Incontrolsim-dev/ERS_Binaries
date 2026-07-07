@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 
 namespace Ers
 {
@@ -7,12 +7,15 @@ namespace Ers
     /// </summary>
     public class Texture : IDisposable
     {
-        internal IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr;
 
         /// <summary>
         /// Create an empty texture.
         /// </summary>
-        public Texture() { Data = ErsEngine.ERS_Texture_Create(); }
+        public Texture() { CorePtr = ErsEngine.ERS_Texture_Create(); }
 
         /// <summary>
         /// Create a texture from an image file.
@@ -20,16 +23,18 @@ namespace Ers
         /// <param name="path">The path to the image file.</param>
         public Texture(string path)
         {
-            Data         = ErsEngine.ERS_Texture_Create();
+            CorePtr      = ErsEngine.ERS_Texture_Create();
             var pathUtf8 = path.ToUtf8NullTerminated();
             unsafe
             {
                 fixed(byte* pathByte = pathUtf8)
                 {
-                    ErsEngine.ERS_Texture_Load(Data, pathByte);
+                    ErsEngine.ERS_Texture_Load(CorePtr, pathByte);
                 }
             }
         }
+
+        internal Texture(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Finalizer.
@@ -47,10 +52,10 @@ namespace Ers
 
         private void DisposeInner()
         {
-            if (Data != IntPtr.Zero)
+            if (CorePtr != IntPtr.Zero)
             {
-                ErsEngine.ERS_Texture_Release(Data);
-                Data = IntPtr.Zero;
+                ErsEngine.ERS_Texture_Release(CorePtr);
+                CorePtr = IntPtr.Zero;
             }
         }
     }

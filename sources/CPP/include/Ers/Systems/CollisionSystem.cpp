@@ -6,6 +6,6 @@ namespace Ers
 {
     void CollisionSystem::UpdateBounds(Ers::SubModel& subModel)
     {
-        ersAPIFunctionPointers.ERS_CollisionSystem_UpdateBoundingBoxes(subModel.Data());
+        Ers::Engine::ERS_CollisionSystem_UpdateBoundingBoxes(subModel.CorePtr());
     }
 } // namespace Ers

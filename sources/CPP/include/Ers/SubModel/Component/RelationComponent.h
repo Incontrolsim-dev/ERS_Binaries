@@ -32,7 +32,7 @@ namespace Ers
         /// @brief
         /// @return
         [[nodiscard]] EntityID Previous() const;
-        /// @brief get next sibbling entity
+        /// @brief get next sibling entity
         /// @return
         [[nodiscard]] EntityID Next() const;
 

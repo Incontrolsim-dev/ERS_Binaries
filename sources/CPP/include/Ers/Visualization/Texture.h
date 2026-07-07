@@ -17,10 +17,10 @@ namespace Ers
 
         void Destroy();
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

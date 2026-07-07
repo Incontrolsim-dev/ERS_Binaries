@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Numerics;
 
 namespace Ers
@@ -8,22 +8,33 @@ namespace Ers
     /// </summary>
     public class InstancedModel : IDisposable
     {
-        internal IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr;
 
         /// <summary>
-        /// A model of which multiple instances are drawn in one draw call.
+        /// Construct a new empty <see cref="InstancedModel"/>.
         /// </summary>
-        public InstancedModel() { Data = ErsEngine.ERS_InstancedModel_Create(); }
+        public InstancedModel() { CorePtr = ErsEngine.ERS_InstancedModel_Create(); }
 
+        /// <summary>
+        /// Construct a new <see cref="InstancedModel"/> with a given mesh.
+        /// </summary>
+        /// <param name="mesh"></param>
         public InstancedModel(Mesh mesh)
         {
-            Data = ErsEngine.ERS_InstancedModel_Create();
-            ErsEngine.ERS_InstancedModel_SetMesh(Data, mesh.Data);
+            CorePtr = ErsEngine.ERS_InstancedModel_Create();
+            ErsEngine.ERS_InstancedModel_SetMesh(CorePtr, mesh.CorePtr);
         }
 
-        internal InstancedModel(IntPtr corePtr) { Data = corePtr; }
+        internal InstancedModel(IntPtr corePtr) { CorePtr = corePtr; }
 
-        public void SetMesh(Mesh mesh) { ErsEngine.ERS_InstancedModel_SetMesh(Data, mesh.Data); }
+        /// <summary>
+        /// Set the mesh used for instancing.
+        /// </summary>
+        /// <param name="mesh"></param>
+        public void SetMesh(Mesh mesh) => ErsEngine.ERS_InstancedModel_SetMesh(CorePtr, mesh.CorePtr);
 
         /// <summary>
         /// Finalizer.
@@ -41,17 +52,19 @@ namespace Ers
 
         private void DisposeInner()
         {
-            if (Data != IntPtr.Zero)
+            if (CorePtr != IntPtr.Zero)
             {
-                ErsEngine.ERS_InstancedModel_Release(Data);
-                Data = IntPtr.Zero;
+                ErsEngine.ERS_InstancedModel_Destroy(CorePtr);
+                CorePtr = IntPtr.Zero;
             }
         }
 
         /// <summary>
-        /// Clear all instances from the instanced model.
+        /// Clear all instanced.
+        ///
+        /// <para>Call this every frame so instances don't spill over.</para>
         /// </summary>
-        public void Clear() => ErsEngine.ERS_InstancedModel_Clear(Data);
+        public void Clear() => ErsEngine.ERS_InstancedModel_Clear(CorePtr);
 
         /// <summary>
         /// Push a new instance of the instanced model to be rendered.
@@ -67,7 +80,7 @@ namespace Ers
                 scale = Vector3.One;
 
             ErsEngine.ERS_InstancedModel_PushInstance(
-                Data, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
+                CorePtr, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z);
         }
     }
 }

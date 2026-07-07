@@ -8,27 +8,22 @@ namespace Ers
     {
     }
 
-    Ers::Vector3 Material::Color() const
+    Ers::Color Material::GetColor() const
     {
-        return Ers::Vec3(
-            *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_X(data)),
-            *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_Y(data)),
-            *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_Z(data)));
+        return Ers::Color::FromInt(Ers::Engine::ERS_Material_GetDiffuseColor(data));
     }
 
-    void Material::Color(const Ers::Vector3& color)
+    void Material::SetColor(Ers::Color color)
     {
-        *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_X(data)) = color.X;
-        *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_Y(data)) = color.Y;
-        *static_cast<float*>(ersAPIFunctionPointers.ERS_Material_Color_Z(data)) = color.Z;
+        Ers::Engine::ERS_Material_SetDiffuseColor(data, color.Value);
     }
 
-    void* Material::Data()
+    void* Material::CorePtr()
     {
         return data;
     }
 
-    const void* const Material::Data() const
+    const void* const Material::CorePtr() const
     {
         return data;
     }

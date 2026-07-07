@@ -1,13 +1,18 @@
-﻿using Ers.Engine;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Ers.Engine;
 
 namespace Ers
 {
+    /// <summary>
+    /// An action that can be performed by user input.
+    /// </summary>
     public class InputAction
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal InputAction(IntPtr coreInstance) { Data = coreInstance; }
+        internal InputAction(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Get the InputAction with a given name. If it does not exist, it will be created.
@@ -20,7 +25,7 @@ namespace Ers
             {
                 fixed(byte* nameByte = nameUtf8)
                 {
-                    Data = ErsEngine.ERS_InputHandler_GetAction(nameByte);
+                    CorePtr = ErsEngine.ERS_InputHandler_GetAction(nameByte);
                 }
             }
         }
@@ -29,24 +34,18 @@ namespace Ers
         /// Whether the action is currently triggered.
         /// </summary>
         /// <returns></returns>
-        public bool IsTriggered()
+        public bool IsTriggered
         {
-            unsafe
-            {
-                return *(bool*)ErsEngine.ERS_InputAction_Triggered(Data);
-            }
+            get => ErsEngine.ERS_InputAction_GetTriggered(CorePtr);
         }
 
         /// <summary>
         /// Whether the action was previously triggered.
         /// </summary>
         /// <returns></returns>
-        public bool IsReleased()
+        public bool IsReleased
         {
-            unsafe
-            {
-                return *(bool*)ErsEngine.ERS_InputAction_Released(Data);
-            }
+            get => ErsEngine.ERS_InputAction_GetReleased(CorePtr);
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace Ers
         /// </summary>
         public float Strength
         {
-            get => ErsEngine.ERS_InputAction_Strength(Data);
+            get => ErsEngine.ERS_InputAction_GetStrength(CorePtr);
         }
 
         /// <summary>
@@ -64,11 +63,8 @@ namespace Ers
         /// <param name="strength">The strength of the trigger.</param>
         public void SetTriggered(bool triggered, float strength = 1.0f)
         {
-            unsafe
-            {
-                *(bool*)ErsEngine.ERS_InputAction_Triggered(Data) = triggered;
-                *(float*)ErsEngine.ERS_InputAction_Strength(Data) = strength;
-            }
+            ErsEngine.ERS_InputAction_SetTriggered(CorePtr, triggered);
+            ErsEngine.ERS_InputAction_SetStrength(CorePtr, strength);
         }
     }
 

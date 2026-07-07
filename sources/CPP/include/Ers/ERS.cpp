@@ -3,20 +3,20 @@
 
 uint32_t Ers::MajorVersion()
 {
-    return ersAPIFunctionPointers.ERS_GetMajorVersion();
+    return Ers::Engine::ERS_GetMajorVersion();
 }
 
 uint32_t Ers::MinorVersion()
 {
-    return ersAPIFunctionPointers.ERS_GetMinorVersion();
+    return Ers::Engine::ERS_GetMinorVersion();
 }
 
 uint32_t Ers::PatchVersion()
 {
-    return ersAPIFunctionPointers.ERS_GetPatchVersion();
+    return Ers::Engine::ERS_GetPatchVersion();
 }
 
 bool Ers::IsDebugBuild()
 {
-    return ersAPIFunctionPointers.ERS_IsDebugBuild();
+    return Ers::Engine::ERS_IsDebugBuild();
 }

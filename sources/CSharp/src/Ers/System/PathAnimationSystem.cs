@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using Ers.Engine;
 
@@ -12,7 +12,7 @@ namespace Ers
         public static void Animate(
             Entity toAnimate, SimulationTime duration, float fromValue, float toValue, Entity entityContainingPath, int pathIndex)
         {
-            SimulationTime currentTime = SubModel.GetSubModel().GetSimulator().GetCurrentTime();
+            SimulationTime currentTime = SubModel.Get().GetSimulator().CurrentTime;
             ErsEngine.ERS_PathAnimationSystem_Animate(
                 toAnimate, currentTime, currentTime + duration, fromValue, toValue, entityContainingPath, pathIndex);
         }
@@ -26,7 +26,7 @@ namespace Ers
         /// <param name="to">The position where the animation ends.</param>
         public static void AnimateStraightPath(Entity toAnimate, SimulationTime duration, Vector3 from, Vector3 to)
         {
-            SimulationTime currentTime = SubModel.GetSubModel().GetSimulator().GetCurrentTime();
+            SimulationTime currentTime = SubModel.Get().GetSimulator().CurrentTime;
             ErsEngine.ERS_PathAnimationSystem_AnimateStraightPath(
                 toAnimate, currentTime, currentTime + duration, from.X, from.Y, from.Z, to.X, to.Y, to.Z);
         }

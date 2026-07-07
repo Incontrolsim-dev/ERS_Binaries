@@ -1,4 +1,4 @@
-﻿namespace Ers
+namespace Ers
 {
     /// <summary>
     /// Components that are built-in to ERS.

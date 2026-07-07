@@ -6,36 +6,35 @@ namespace Ers
 {
     Camera3DController::Camera3DController(Camera3D camera)
     {
-        coreInstance = ersAPIFunctionPointers.ERS_Camera3DController_Create(camera.Data());
+        corePtr = Ers::Engine::ERS_Camera3DController_Create(camera.CorePtr());
     }
 
     Camera3DController::~Camera3DController()
     {
-        ersAPIFunctionPointers.ERS_Camera3DController_Destroy(coreInstance);
+        Ers::Engine::ERS_Camera3DController_Destroy(corePtr);
     }
 
     void Camera3DController::ControlCamera(int screenWidth, int screenHeight, float deltaTime, float lookAtZ)
     {
-        ersAPIFunctionPointers.ERS_Camera3DController_ControlCamera(coreInstance, screenWidth, screenHeight, deltaTime, lookAtZ);
+        Ers::Engine::ERS_Camera3DController_ControlCamera(corePtr, screenWidth, screenHeight, deltaTime, lookAtZ);
     }
 
     void Camera3DController::Update(float deltaTime)
     {
-        ersAPIFunctionPointers.ERS_Camera3DController_Update(coreInstance, deltaTime);
+        Ers::Engine::ERS_Camera3DController_Update(corePtr, deltaTime);
     }
 
     void Camera3DController::SwitchCameraMode(int mode)
     {
-        ersAPIFunctionPointers.ERS_Camera3DController_SwitchCameraMode(coreInstance, mode);
+        Ers::Engine::ERS_Camera3DController_SwitchCameraMode(corePtr, mode);
+    }
+    float Camera3DController::HeadBobbingIntensity()
+    {
+        return Ers::Engine::ERS_Camera3DController_GetHeadBobbingIntensity(corePtr);
     }
 
     void Camera3DController::HeadBobbingIntensity(float intensity)
     {
-        *ersAPIFunctionPointers.ERS_Camera3DController_HeadBobbingIntensity(coreInstance) = intensity;
-    }
-
-    float Camera3DController::HeadBobbingIntensity()
-    {
-        return *ersAPIFunctionPointers.ERS_Camera3DController_HeadBobbingIntensity(coreInstance);
+        Ers::Engine::ERS_Camera3DController_SetHeadBobbingIntensity(corePtr, intensity);
     }
 } // namespace Ers

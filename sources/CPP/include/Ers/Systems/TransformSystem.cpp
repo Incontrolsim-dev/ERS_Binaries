@@ -6,6 +6,6 @@ namespace Ers
 {
     void TransformSystem::UpdateGlobals(Ers::SubModel& subModel)
     {
-        ersAPIFunctionPointers.ERS_TransformSystem_UpdateGlobals(subModel.Data());
+        Ers::Engine::ERS_TransformSystem_UpdateGlobals(subModel.CorePtr());
     }
 } // namespace Ers

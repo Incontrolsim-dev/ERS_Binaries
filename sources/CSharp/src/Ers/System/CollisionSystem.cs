@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using Ers;
 
 namespace Ers
@@ -12,6 +12,6 @@ namespace Ers
         /// Update the <see cref="BoundingBoxComponent"/> on all eligable entities in a given submodel.
         /// </summary>
         /// <param name="subModel">The SubModel in which the bounding boxes are updated.</param>
-        public static void UpdateBoundingBoxes(in SubModel subModel) => ErsEngine.ERS_CollisionSystem_UpdateBoundingBoxes(subModel.Data);
+        public static void UpdateBoundingBoxes(in SubModel subModel) => ErsEngine.ERS_CollisionSystem_UpdateBoundingBoxes(subModel.CorePtr);
     }
 }

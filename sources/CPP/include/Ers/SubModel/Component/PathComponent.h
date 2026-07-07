@@ -36,7 +36,7 @@ namespace Ers
         /// @brief Add a straight path segment.
         /// @param from Starting point
         /// @param to Ending point
-        void AddStraight(const Vector3& from, const Vector3& to);
+        void AddStraight(Vector3 from, Vector3 to);
 
         /// @brief Add a helical path segment.
         /// @param center Center point
@@ -44,10 +44,9 @@ namespace Ers
         /// @param beginAngle Starting angle in radians
         /// @param endAngle Ending angle in radians
         /// @param endZ Ending Z coordinate
-        void AddHelical(const Vector3& center, float radius, float beginAngle, float endAngle, float endZ);
+        void AddHelical(Vector3 center, float radius, float beginAngle, float endAngle, float endZ);
 
-        void AddCubicBezier(Ers::Vector3 p0, Ers::Vector3 p1, Ers::Vector3 p2, Ers::Vector3 p3);
-        void
-        AddCubicBezierFromDirections(Ers::Vector3 start, Ers::Vector3 startDir, Ers::Vector3 end, Ers::Vector3 endDir, float curvature);
+        void AddCubicBezier(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3);
+        void AddCubicBezierFromDirections(Vector3 start, Vector3 startDir, Vector3 end, Vector3 endDir, float curvature);
     };
 } // namespace Ers

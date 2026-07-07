@@ -33,6 +33,6 @@ namespace Ers
         [[nodiscard]] void* GetLibraryHandle(const std::string& libraryPath) const;
 
       private:
-        void* libraryCoreInstance;
+        void* corePtr;
     };
 } // namespace Ers

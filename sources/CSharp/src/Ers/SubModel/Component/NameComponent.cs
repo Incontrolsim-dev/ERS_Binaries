@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -19,7 +19,7 @@ namespace Ers
         public string Name
         {
             get {
-                string? result = Marshal.PtrToStringAnsi(ErsEngine.ERS_NameComponent_GetName(CorePointer()));
+                string? result = Marshal.PtrToStringAnsi(ErsEngine.ERS_NameComponent_GetName(CorePtr));
                 Debug.Assert(result != null);
                 return result;
             }
@@ -29,7 +29,7 @@ namespace Ers
                 {
                     fixed(byte* valueByte = valueUtf8)
                     {
-                        ErsEngine.ERS_NameComponent_SetName(CorePointer(), valueByte, value.Length);
+                        ErsEngine.ERS_NameComponent_SetName(CorePtr, valueByte, value.Length);
                     }
                 }
             }
@@ -41,13 +41,18 @@ namespace Ers
         /// <returns></returns>
         public static nuint CoreTypeId() => ErsEngine.ERS_NameComponent_TypeId();
 
-        private IntPtr CorePointer()
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr
         {
-            unsafe
-            {
-                fixed(NameComponent* ptr = &this)
+            get {
+                unsafe
                 {
-                    return (IntPtr)ptr;
+                    fixed(NameComponent* ptr = &this)
+                    {
+                        return (IntPtr)ptr;
+                    }
                 }
             }
         }

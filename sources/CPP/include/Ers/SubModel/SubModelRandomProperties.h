@@ -31,7 +31,7 @@ namespace Ers
 
         [[nodiscard]] Ers::RandomGenerator& GetRandomNumberGenerator();
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
     };
 } // namespace Ers

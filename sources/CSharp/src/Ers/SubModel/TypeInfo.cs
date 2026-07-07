@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -11,8 +11,7 @@ namespace Ers
     /// </summary>
     /// <param name="name">The name to give to the component.</param>
     [AttributeUsage(AttributeTargets.Struct, Inherited = false)]
-    public sealed class TypeInfoAttribute
-    (string name) : Attribute
+    public sealed class TypeInfoAttribute(string name) : Attribute
     {
         /// <summary>
         /// The name of the component.
@@ -132,45 +131,53 @@ namespace Ers
         /// </summary>
         Bool = 1,
         /// <summary>
+        /// An 8-bit unsigned integer (<see cref="byte"/>).
+        /// </summary>
+        UInt8 = 2,
+        /// <summary>
         /// A 32-bit signed integer (<see cref="int"/>).
         /// </summary>
-        Int32 = 2,
+        Int32 = 3,
         /// <summary>
         /// A 32-bit unsigned integer (<see cref="System.UInt32"/>).
         /// </summary>
-        UInt32 = 3,
+        UInt32 = 4,
         /// <summary>
         /// A 64-bit signed integer (<see cref="System.Int64"/>).
         /// </summary>
-        Int64 = 4,
+        Int64 = 5,
         /// <summary>
         /// A 64-bit unsigned integer (<see cref="System.UInt64"/>).
         /// </summary>
-        UInt64 = 5,
+        UInt64 = 6,
         /// <summary>
         /// An ERS Entity.
         /// </summary>
-        Entity = 6,
+        Entity = 7,
         /// <summary>
         /// A list of any known registered type.
         /// </summary>
-        List = 7,
+        List = 8,
         /// <summary>
         /// A string.
         /// </summary>
-        String = 8,
+        String = 9,
         /// <summary>
         /// A 2D vector.
         /// </summary>
-        Vector2 = 9,
+        Vector2 = 10,
         /// <summary>
         /// A 3D vector.
         /// </summary>
-        Vector3 = 10,
+        Vector3 = 11,
         /// <summary>
         /// A 4D vector.
         /// </summary>
-        Vector4 = 11,
+        Vector4 = 12,
+        /// <summary>
+        /// An RGBA color (<see cref="Ers.Color"/>).
+        /// </summary>
+        Color = 13,
     }
 
     internal static class TypeInfoRegister

@@ -1,4 +1,4 @@
-﻿using System.Text.Unicode;
+using System.Text.Unicode;
 using Ers.Engine;
 
 namespace Ers
@@ -30,6 +30,8 @@ namespace Ers
                 // clang-format on
             }
             ErsEngine.ERS_Initialize();
+
+            Ers.EventScheduler.RegisterSyncEvent<Ers.MoveEntitySyncEvent>();
         }
 
         /// <summary>

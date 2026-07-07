@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Ers/Math/HMM/VectorMath.h"
 #include "Ers/Visualization/Font.h"
 #include "Ers/Visualization/Mesh.h"
 
@@ -16,13 +17,16 @@ namespace Ers
         Model3D& operator=(Model3D&&)      = default;
         ~Model3D();
 
-        void* Data() { return coreInstance; }
-        const void* const Data() const { return coreInstance; }
+        uint32_t MeshCount() const;
 
-        int GetMeshCount() const;
         Mesh GetMesh(int index);
 
+        void SetTransform(Vector3 pos, Vector3 axis = Vec3(0, 0, 1), float turns = 0.0f, Vector3 scale = Vec3(1, 1, 1));
+
+        void* CorePtr() { return corePtr; }
+        const void* const CorePtr() const { return corePtr; }
+
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

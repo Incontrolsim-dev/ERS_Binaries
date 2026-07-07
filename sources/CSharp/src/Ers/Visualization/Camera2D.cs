@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Ers.Engine;
 
 namespace Ers
@@ -8,9 +8,12 @@ namespace Ers
     /// </summary>
     public class Camera2D
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal Camera2D(IntPtr coreInstance) { Data = coreInstance; }
+        internal Camera2D(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Update the camera's projection and view matrices.
@@ -19,7 +22,7 @@ namespace Ers
         /// <param name="screenHeight"></param>
         public void UpdateTransform(int screenWidth, int screenHeight)
         {
-            ErsEngine.ERS_Camera2D_UpdateTransform(Data, screenWidth, screenHeight);
+            ErsEngine.ERS_Camera2D_UpdateTransform(CorePtr, screenWidth, screenHeight);
         }
 
         /// <summary>
@@ -27,18 +30,10 @@ namespace Ers
         /// </summary>
         public Vector2 Position
         {
-            get {
-                unsafe
-                {
-                    return new Vector2(*(float*)ErsEngine.ERS_Camera2D_PositionX(Data), *(float*)ErsEngine.ERS_Camera2D_PositionY(Data));
-                }
-            }
+            get => new Vector2(ErsEngine.ERS_Camera2D_GetPositionX(CorePtr), ErsEngine.ERS_Camera2D_GetPositionY(CorePtr));
             set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera2D_PositionX(Data) = value.X;
-                    *(float*)ErsEngine.ERS_Camera2D_PositionY(Data) = value.Y;
-                }
+                ErsEngine.ERS_Camera2D_SetPositionX(CorePtr, value.X);
+                ErsEngine.ERS_Camera2D_SetPositionY(CorePtr, value.Y);
             }
         }
 
@@ -47,18 +42,8 @@ namespace Ers
         /// </summary>
         public float Zoom
         {
-            get {
-                unsafe
-                {
-                    return *(float*)ErsEngine.ERS_Camera2D_Zoom(Data);
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera2D_Zoom(Data) = value;
-                }
-            }
+            get => ErsEngine.ERS_Camera2D_GetZoom(CorePtr);
+            set => ErsEngine.ERS_Camera2D_SetZoom(CorePtr, value);
         }
 
         /// <summary>
@@ -66,7 +51,7 @@ namespace Ers
         /// Multiply the number of pixels (N) by the returned value to get the size of something that is N pixels in size.
         /// </summary>
         /// <returns></returns>
-        public float SizePerPixel() => ErsEngine.ERS_Camera2D_SizePerPixel(Data);
+        public float SizePerPixel() => ErsEngine.ERS_Camera2D_SizePerPixel(CorePtr);
 
         /// <summary>
         /// Get the world position of a point on the screen.
@@ -81,7 +66,8 @@ namespace Ers
             {
                 float x = 0.0f;
                 float y = 0.0f;
-                ErsEngine.ERS_Camera2D_GetWorldPos(Data, screenWidth, screenHeight, screenPos.X, screenPos.Y, (IntPtr)(&x), (IntPtr)(&y));
+                ErsEngine.ERS_Camera2D_GetWorldPos(
+                    CorePtr, screenWidth, screenHeight, screenPos.X, screenPos.Y, (IntPtr)(&x), (IntPtr)(&y));
                 return new Vector2(x, y);
             }
         }

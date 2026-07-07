@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using Ers.Engine;
 
 namespace Ers
@@ -8,9 +8,12 @@ namespace Ers
     /// </summary>
     public class Camera3D
     {
-        internal readonly IntPtr Data;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
-        internal Camera3D(IntPtr coreInstance) { Data = coreInstance; }
+        internal Camera3D(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// The 3D position of the camera.
@@ -18,20 +21,15 @@ namespace Ers
         public Vector3 Position
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_Camera3D_PositionX(Data), *(float*)ErsEngine.ERS_Camera3D_PositionY(Data),
-                        *(float*)ErsEngine.ERS_Camera3D_PositionZ(Data));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_Camera3D_GetPositionX(CorePtr),
+                    ErsEngine.ERS_Camera3D_GetPositionY(CorePtr),
+                    ErsEngine.ERS_Camera3D_GetPositionZ(CorePtr));
             }
             set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3D_PositionX(Data) = value.X;
-                    *(float*)ErsEngine.ERS_Camera3D_PositionY(Data) = value.Y;
-                    *(float*)ErsEngine.ERS_Camera3D_PositionZ(Data) = value.Z;
-                }
+                ErsEngine.ERS_Camera3D_SetPositionX(CorePtr, value.X);
+                ErsEngine.ERS_Camera3D_SetPositionY(CorePtr, value.Y);
+                ErsEngine.ERS_Camera3D_SetPositionZ(CorePtr, value.Z);
             }
         }
 
@@ -41,20 +39,15 @@ namespace Ers
         public Vector3 LookAt
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_Camera3D_LookAtX(Data), *(float*)ErsEngine.ERS_Camera3D_LookAtY(Data),
-                        *(float*)ErsEngine.ERS_Camera3D_LookAtZ(Data));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_Camera3D_GetLookAtX(CorePtr),
+                    ErsEngine.ERS_Camera3D_GetLookAtY(CorePtr),
+                    ErsEngine.ERS_Camera3D_GetLookAtZ(CorePtr));
             }
             set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3D_LookAtX(Data) = value.X;
-                    *(float*)ErsEngine.ERS_Camera3D_LookAtY(Data) = value.Y;
-                    *(float*)ErsEngine.ERS_Camera3D_LookAtZ(Data) = value.Z;
-                }
+                ErsEngine.ERS_Camera3D_SetLookAtX(CorePtr, value.X);
+                ErsEngine.ERS_Camera3D_SetLookAtY(CorePtr, value.Y);
+                ErsEngine.ERS_Camera3D_SetLookAtZ(CorePtr, value.Z);
             }
         }
 
@@ -65,18 +58,8 @@ namespace Ers
         /// </summary>
         public float FovInTurns
         {
-            get {
-                unsafe
-                {
-                    return *(float*)ErsEngine.ERS_Camera3D_FovInTurns(Data);
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3D_FovInTurns(Data) = value;
-                }
-            }
+            get => ErsEngine.ERS_Camera3D_GetFovInTurns(CorePtr);
+            set => ErsEngine.ERS_Camera3D_SetFovInTurns(CorePtr, value);
         }
 
         /// <summary>
@@ -84,18 +67,8 @@ namespace Ers
         /// </summary>
         public float ZNear
         {
-            get {
-                unsafe
-                {
-                    return *(float*)ErsEngine.ERS_Camera3D_ZNear(Data);
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3D_ZNear(Data) = value;
-                }
-            }
+            get => ErsEngine.ERS_Camera3D_GetZNear(CorePtr);
+            set => ErsEngine.ERS_Camera3D_SetZNear(CorePtr, value);
         }
 
         /// <summary>
@@ -103,18 +76,8 @@ namespace Ers
         /// </summary>
         public float ZFar
         {
-            get {
-                unsafe
-                {
-                    return *(float*)ErsEngine.ERS_Camera3D_ZFar(Data);
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3D_ZFar(Data) = value;
-                }
-            }
+            get => ErsEngine.ERS_Camera3D_GetZFar(CorePtr);
+            set => ErsEngine.ERS_Camera3D_SetZFar(CorePtr, value);
         }
 
         /// <summary>
@@ -124,7 +87,7 @@ namespace Ers
         /// <param name="screenHeight">The current height of the screen in pixels.</param>
         public void UpdateTransform(int screenWidth, int screenHeight)
         {
-            ErsEngine.ERS_Camera3D_UpdateTransform(Data, screenWidth, screenHeight);
+            ErsEngine.ERS_Camera3D_UpdateTransform(CorePtr, screenWidth, screenHeight);
         }
 
         /// <summary>
@@ -141,8 +104,8 @@ namespace Ers
                 float posX, posY, posZ;
                 float dirX, dirY, dirZ;
                 ErsEngine.ERS_Camera3D_GetPickRay(
-                    Data, screenWidth, screenHeight, (int)screenPos.X, (int)screenPos.Y, (IntPtr)(&posX), (IntPtr)(&posY), (IntPtr)(&posZ),
-                    (IntPtr)(&dirX), (IntPtr)(&dirY), (IntPtr)(&dirZ));
+                    CorePtr, screenWidth, screenHeight, (int)screenPos.X, (int)screenPos.Y, (IntPtr)(&posX), (IntPtr)(&posY),
+                    (IntPtr)(&posZ), (IntPtr)(&dirX), (IntPtr)(&dirY), (IntPtr)(&dirZ));
                 return new Ray(new Vector3(posX, posY, posZ), new Vector3(dirX, dirY, dirZ));
             }
         }

@@ -30,7 +30,7 @@ namespace Ers
     {
         // Cant be done at compile time so instead one array is generated at
         // runtime, but only once for each combination of types.
-        static auto arr = []() -> std::array<ComponentID, sizeof...(Types)>
+        static auto arr = []()->std::array<ComponentID, sizeof...(Types)>
         {
             int index = 0;
             std::array<ComponentID, sizeof...(Types)> array;
@@ -46,7 +46,7 @@ namespace Ers
     {
     };
 
-    /// @brief This class is the way users interact with views of the core, it allows specialization of the Included components aswell as
+    /// @brief This class is the way users interact with views of the core, it allows specialization of the Included components as well as
     /// the /// excluded components. It takes care of type identification and passing to the core, conversions handle at compile-time.
     /// Please note
     template <typename... Types> class View : public BaseView
@@ -74,8 +74,8 @@ namespace Ers
       private:
         template <std::size_t... Is> inline std::tuple<EntityID, Types&...> GetHelper(std::index_sequence<Is...>)
         {
-            void** components = ersAPIFunctionPointers.ERS_Submodel_View_GetComponents(instance);
-            Entity entity     = ersAPIFunctionPointers.ERS_Submodel_View_GetEntity(instance);
+            void** components = Ers::Engine::ERS_Submodel_View_GetComponents(corePtr);
+            Entity entity     = Ers::Engine::ERS_Submodel_View_GetEntity(corePtr);
             return std::forward_as_tuple(entity, (*reinterpret_cast<Types*>(components[Is]))...);
         }
     };

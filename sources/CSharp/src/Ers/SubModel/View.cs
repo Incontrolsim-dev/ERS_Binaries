@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Runtime.InteropServices;
 
 namespace Ers
@@ -17,9 +17,9 @@ namespace Ers
         /// Move to the next entity in the view.
         /// </summary>
         /// <returns>Whether there was a next entity.</returns>
-        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.Instance);
+        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.CorePtr, (nuint)typeIndex);
 
         internal readonly int FindTypeIdx(UInt32 findType)
         {
@@ -98,9 +98,9 @@ namespace Ers
         /// Move to the next entity in the view.
         /// </summary>
         /// <returns>Whether there was a next entity.</returns>
-        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.Instance);
+        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.CorePtr, (nuint)typeIndex);
 
         internal readonly int FindTypeIdx(UInt32 findType)
         {
@@ -180,9 +180,9 @@ namespace Ers
         /// Move to the next entity in the view.
         /// </summary>
         /// <returns>Whether there was a next entity.</returns>
-        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.Instance);
+        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.CorePtr, (nuint)typeIndex);
 
         internal readonly int FindTypeIdx(UInt32 findType)
         {
@@ -265,9 +265,9 @@ namespace Ers
         /// Move to the next entity in the view.
         /// </summary>
         /// <returns>Whether there was a next entity.</returns>
-        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.Instance);
+        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.CorePtr, (nuint)typeIndex);
 
         internal readonly int FindTypeIdx(UInt32 findType)
         {
@@ -351,9 +351,9 @@ namespace Ers
         /// Move to the next entity in the view.
         /// </summary>
         /// <returns>Whether there was a next entity.</returns>
-        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.Instance);
+        public readonly bool Next() => ErsEngine.ERS_Submodel_View_Next(Base.CorePtr);
 
-        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.Instance, (nuint)typeIndex);
+        internal IntPtr GetComponent(int typeIndex) => ErsEngine.ERS_Submodel_View_GetComponent(Base.CorePtr, (nuint)typeIndex);
 
         internal readonly int FindTypeIdx(UInt32 findType)
         {

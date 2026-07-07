@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 
 namespace Ers
 {

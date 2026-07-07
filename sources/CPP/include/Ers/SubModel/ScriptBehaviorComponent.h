@@ -57,9 +57,22 @@ namespace Ers
         /// @param oldChild The previously present child.
         virtual void OnExited(EntityID oldChild) {};
 
+        /// @brief Called after an input channel is ready, given that this script's entity has a ResourceComponent.
+        /// @param inputChannel The entity with the input channel that is ready.
+        virtual void OnInputChannelReady(EntityID inputChannel) {};
+
+        /// @brief Called after an output channel is ready, given that this script's entity has a ResourceComponent.
+        /// @param outputChannel The entity with the output channel that is ready.
+        virtual void OnOutputChannelReady(EntityID outputChannel) {};
+
+        /// @brief Called after an entity is passed by a ResourceComponent. It will be added as a child.
+        /// @param outputChannel The entity with the input channel that received the child.
+        /// @param child The child that has been passed.
+        virtual void OnReceive(EntityID inputChannel, EntityID child) {};
+
         virtual void OnSubModelMove(EntityID entity) { ConnectedEntity = entity; }
 
-        virtual void Serialization(Ers::Serializer fileNodeHandle) {};
+        virtual void Serialization(Ers::Serializer serializer) {};
     };
 
 } // namespace Ers

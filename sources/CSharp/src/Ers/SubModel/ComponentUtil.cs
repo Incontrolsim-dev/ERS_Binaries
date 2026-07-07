@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 

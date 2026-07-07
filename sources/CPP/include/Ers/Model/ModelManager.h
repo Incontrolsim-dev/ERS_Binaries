@@ -1,14 +1,12 @@
 #pragma once
-#include "Ers/Utility/Util.h"
 
 #include <memory>
+
+#include "Ers/Utility/Util.h"
 
 namespace Ers
 {
     class ModelContainer; // Forward declaration
-    struct ModelManager;  // Forward declaration
-
-    ModelManager& GetModelManager();
 
     /// @brief ModelManager is a wrapper class to provide access to the functionality of the ModelManager class in ers-core.
     /// This class is responsible for the creation and the management of ModelContainers.
@@ -27,11 +25,15 @@ namespace Ers
         bool HasModelContainer(const ModelContainer& modelContainer) const;
         ModelContainer GetModelContainerAt(const std::size_t& index);
 
-        std::size_t CountModelContainers();
+        /// @brief The number of ModelContainers in this ModelManager.
+        /// @return
+        std::size_t Count();
         void Update();
 
         /// @brief Run all models that are currently in the ModelManager until completion and print a combined progress bar while running.
         void RunWithProgressBar();
+
+        static ModelManager& Get();
     };
 
 } // namespace Ers

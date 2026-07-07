@@ -4,6 +4,9 @@
 #include "Ers/SubModel/Component/GlobalComponentTypes.h"
 #include "Ers/Utility/HelperMacros.h"
 
+#include "Ers/SubModel/EventScheduler.h"
+#include "Ers/SubModel/SyncEvents/MoveEntity.h"
+
 // This macro is used to enable the definition of API function names in ErsApiFunctions.h
 #define ERS_API_FUNCTIONS_IMPLEMENTATION
 #include "ErsApiFunctions.h"
@@ -11,62 +14,16 @@
 #include <iostream>
 #include <string>
 
-/// @brief Default name of the shared library wrapping the ers-core for external users.
-constexpr static const std::string_view coreModuleName{"ers-engine"};
-
 namespace Ers
 {
-    ErsAPIFunctionPointers ersAPIFunctionPointers = {0};
-
-    constexpr std::string_view GetErsEngineModuleName(void)
-    {
-        return coreModuleName;
-    }
-
-    /// @brief Loads all exposed functions of ERS core and initializes the global ersAPIFunctionPointers struct array elements.
-    /// @return True on success, false on error.
-    bool LoadApiFunctions()
-    {
-        // Load library and never unload
-        Ers::Utility::SharedLibrary library = Ers::Utility::SharedLibrary::Load(std::string(coreModuleName));
-        if (!library.IsLoaded())
-        {
-            // TODO Log when logging is available independent from the ers-engine DLL,
-            // logging is not available at this point yet
-            // Ers::Logger::Error("Error loading ERS shared object: " + ERSCore.GetLastError());
-            auto error = library.GetLastError();
-            std::cout << error << "\n";
-            return false;
-        }
-
-        for (int i = 0; i < ERS_N_FUNCTIONS; i++)
-        {
-            const char* functionName = ersFunctionNames[i];
-            void* functionPointer    = library.GetFunctionRaw(functionName);
-
-            if (!functionPointer)
-            {
-                // TODO Log when logging is available independent from the ers-engine DLL,
-                // logging might not be available at this point yet
-                // Ers::Logger::Error("Could not load function " + std::string(functionName));
-                return false;
-            }
-            ersAPIFunctionPointers.functions[i] = functionPointer;
-        }
-
-        ersAPIFunctionPointers.ERS_SetBindingType("C++");
-        ersAPIFunctionPointers.ERS_Initialize();
-        return true;
-    }
-
     /// @brief Checks if the major and minor version of the loaded ers-engine library match the expected version in ErsApiFunctions.h.
     /// @return True, if the API major and minor version do not exceed the major and minor version number
     /// of the loaded library, otherwise returns false.
     bool ValidateAPIVersion()
     {
         // Check major version and warn for minor version
-        uint32_t majorVersion = ersAPIFunctionPointers.ERS_GetMajorVersion();
-        uint32_t minorVersion = ersAPIFunctionPointers.ERS_GetMinorVersion();
+        uint32_t majorVersion = Ers::Engine::ERS_GetMajorVersion();
+        uint32_t minorVersion = Ers::Engine::ERS_GetMinorVersion();
         if (majorVersion != ERS_API_FUNCTION_HEADER_MAJOR_VERSION)
         {
             Ers::Logger::Error(
@@ -88,17 +45,16 @@ namespace Ers
     /// @return True, if the functions are successfully loaded and the API version is valid, otherwise returns false.
     bool Initialize()
     {
-        bool result = LoadApiFunctions();
-        if (!result)
-            return false;
-        result = ValidateAPIVersion();
+        Ers::Engine::ERS_SetBindingType("C++");
+        Ers::Engine::ERS_Initialize();
 
-        return result;
+        Ers::EventScheduler::RegisterSyncEvent<Ers::MoveEntitySyncEvent>();
+        return ValidateAPIVersion();
     }
 
     /// @brief Uninitialize ERS.
     void Uninitialize()
     {
-        ersAPIFunctionPointers.ERS_Uninitialize();
+        Ers::Engine::ERS_Uninitialize();
     }
 } // namespace Ers

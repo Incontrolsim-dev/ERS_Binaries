@@ -4,54 +4,54 @@
 
 namespace Ers
 {
-    InputAction::InputAction(void* coreInstance) :
-        coreInstance(coreInstance)
+    InputAction::InputAction(void* corePtr) :
+        corePtr(corePtr)
     {
     }
 
     InputAction::InputAction(const char* name)
     {
-        coreInstance = ersAPIFunctionPointers.ERS_InputHandler_GetAction(name);
+        corePtr = Ers::Engine::ERS_InputHandler_GetAction(name);
     }
 
     bool InputAction::IsTriggered() const
     {
-        return *ersAPIFunctionPointers.ERS_InputAction_Triggered(coreInstance);
+        return Ers::Engine::ERS_InputAction_GetTriggered(corePtr);
     }
 
     bool InputAction::IsReleased() const
     {
-        return *ersAPIFunctionPointers.ERS_InputAction_Released(coreInstance);
+        return Ers::Engine::ERS_InputAction_GetReleased(corePtr);
     }
 
     float InputAction::GetStrength() const
     {
-        return *ersAPIFunctionPointers.ERS_InputAction_Strength(coreInstance);
+        return Ers::Engine::ERS_InputAction_GetStrength(corePtr);
     }
 
     void InputAction::SetTriggered(bool triggered, float strength)
     {
-        *ersAPIFunctionPointers.ERS_InputAction_Triggered(coreInstance) = triggered;
-        *ersAPIFunctionPointers.ERS_InputAction_Strength(coreInstance)  = strength;
+        Ers::Engine::ERS_InputAction_SetTriggered(corePtr, triggered);
+        Ers::Engine::ERS_InputAction_SetStrength(corePtr, strength);
     }
 
     InputAction InputHandler::GetAction(const char* name)
     {
-        return InputAction(ersAPIFunctionPointers.ERS_InputHandler_GetAction(name));
+        return InputAction(Ers::Engine::ERS_InputHandler_GetAction(name));
     }
 
     bool InputHandler::ExistsAction(const char* name)
     {
-        return ersAPIFunctionPointers.ERS_InputHandler_ExistsAction(name);
+        return Ers::Engine::ERS_InputHandler_ExistsAction(name);
     }
 
     void InputHandler::Cycle()
     {
-        ersAPIFunctionPointers.ERS_InputHandler_Cycle();
+        Ers::Engine::ERS_InputHandler_Cycle();
     }
 
     void InputHandler::UpdateMousePos(int x, int y)
     {
-        ersAPIFunctionPointers.ERS_InputHandler_UpdateMousePos(x, y);
+        Ers::Engine::ERS_InputHandler_UpdateMousePos(x, y);
     }
 } // namespace Ers

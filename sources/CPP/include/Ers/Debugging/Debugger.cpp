@@ -3,113 +3,145 @@
 #include "Ers/Api.h"
 #include "Ers/Model/Simulator/Simulator.h"
 #include "Ers/SubModel/SubModel.h"
-#include "Ers/Systems/BasicRenderSystem.h"
 #include "Ers/Systems/PathAnimationSystem.h"
+#include "Ers/Systems/RenderSystem.h"
 #include "Ers/Systems/TransformSystem.h"
 
 namespace Ers
 {
-    Platform* Debugger::platform = nullptr;
+    constexpr const char* windowTitle = "ERS Debugger";
 
     Debugger::Debugger(Ers::ModelContainer& modelContainer)
     {
-        coreInstance = ersAPIFunctionPointers.ERS_Debugger_Create(modelContainer.Data());
+        corePtr = Ers::Engine::ERS_Debugger_Create(modelContainer.CorePtr());
+    }
+
+    Debugger::Debugger(ModelContainer& modelContainer, Window& window)
+    {
+        corePtr = Ers::Engine::ERS_Debugger_Create_Window(modelContainer.CorePtr(), window.CorePtr());
     }
 
     Debugger::~Debugger()
     {
-        ersAPIFunctionPointers.ERS_Debugger_Destroy(coreInstance);
+        Ers::Engine::ERS_Debugger_Destroy(corePtr);
+    }
+
+    Window Debugger::GetWindow()
+    {
+        return Window(Ers::Engine::ERS_Debugger_GetWindow(corePtr));
     }
 
     Ers::RenderContext Debugger::GetRenderContext()
     {
-        return Ers::RenderContext(ersAPIFunctionPointers.ERS_Debugger_GetRenderContext(coreInstance));
+        return Ers::RenderContext(Ers::Engine::ERS_Debugger_GetRenderContext(corePtr));
+    }
+
+    bool Debugger::IsRunning() const
+    {
+        return Ers::Engine::ERS_Debugger_Get_IsRunning(corePtr);
+    }
+
+    void Debugger::IsRunning(bool value)
+    {
+        Ers::Engine::ERS_Debugger_Set_IsRunning(corePtr, value);
     }
 
     bool Debugger::Is3DMode() const
     {
-        return ersAPIFunctionPointers.ERS_Debugger_Is3DMode(coreInstance);
+        return Ers::Engine::ERS_Debugger_Is3DMode(corePtr);
     }
 
-    bool Debugger::ShowBackgroundGrid() const
+    void Debugger::BeginUpdate()
     {
-        return ersAPIFunctionPointers.ERS_Debugger_ShowBackgroundGrid(coreInstance);
+        Ers::Engine::ERS_Debugger_BeginUpdate(corePtr);
     }
 
-    void Debugger::Update()
+    void Debugger::EndUpdate()
     {
-        ersAPIFunctionPointers.ERS_Debugger_Update(coreInstance);
+        Ers::Engine::ERS_Debugger_EndUpdate(corePtr);
     }
 
     void Debugger::Open()
     {
-        platform = new Platform();
+        if (!runWindow)
+            runWindow = new Window(windowTitle);
     }
 
     void Debugger::Run(
         ModelContainer& modelContainer,
-        const std::function<void(Ers::RenderContext&)>& render2D,
-        const std::function<void(Ers::RenderContext&)>& render3D)
+        const std::function<void(Ers::Debugger&, Ers::Simulator&)>& render2D,
+        const std::function<void(Ers::Debugger&, Ers::Simulator&)>& render3D,
+        const std::function<void(Ers::Debugger&)>& renderUI)
     {
-        if (platform == nullptr)
-            platform = new Platform();
+        if (runWindow == nullptr)
+            runWindow = new Window(windowTitle);
 
-        Debugger debugger(modelContainer);
+        Debugger debugger(modelContainer, *runWindow);
+        Window window = debugger.GetWindow();
 
-        Simulator simulator = modelContainer.GetSimulatorByIndex(0);
-
-        Color gridColor = Ers::Color::FromFloats(0.8f, 0.8f, 0.8f);
-        while (!platform->WantsClose())
+        while (!window.WantsClose())
         {
-            platform->BeginFrame();
-
-            simulator.EnterSubModel();
-            PathAnimationSystem::Update(simulator.CurrentTime());
-            TransformSystem::UpdateGlobals(GetSubModel());
-            simulator.ExitSubModel();
+            window.BeginFrame();
+            debugger.BeginUpdate();
 
             Ers::RenderContext renderContext = debugger.GetRenderContext();
+
             if (debugger.Is3DMode())
             {
-                // 3D rendering
-                simulator.EnterSubModel();
-                SubModel& subModel3D = GetSubModel();
                 renderContext.Begin3D();
-
-                if (debugger.ShowBackgroundGrid())
-                {
-                    renderContext.DrawInfiniteGrid3D(gridColor);
-                }
-                if (render3D != nullptr)
-                    render3D(renderContext);
-                else
-                    BasicRenderSystem::Render3D(subModel3D, renderContext);
-
-                renderContext.End3D();
-                simulator.ExitSubModel();
             }
             else
             {
-                // 2D rendering
-                simulator.EnterSubModel();
-                SubModel& subModel2D = GetSubModel();
                 renderContext.Begin2D();
-
-                if (debugger.ShowBackgroundGrid())
-                {
-                    renderContext.DrawInfiniteGrid2D(gridColor);
-                }
-                if (render2D != nullptr)
-                    render2D(renderContext);
-                else
-                    BasicRenderSystem::Render2D(subModel2D, renderContext);
-
-                renderContext.End2D();
-                simulator.ExitSubModel();
             }
 
-            debugger.Update();
-            platform->EndFrame();
+            for (size_t i = 0; i < modelContainer.SimulatorCount(); i++)
+            {
+                Simulator simulator = modelContainer.GetSimulatorByIndex(i);
+
+                simulator.EnterSubModel();
+                PathAnimationSystem::Update(simulator.CurrentTime());
+                TransformSystem::UpdateGlobals(SubModel::Get());
+                simulator.ExitSubModel();
+
+                if (debugger.Is3DMode())
+                {
+                    // 3D rendering
+                    simulator.EnterSubModel();
+                    SubModel& subModel3D = SubModel::Get();
+
+                    if (render3D != nullptr)
+                        render3D(debugger, simulator);
+                    else
+                        RenderSystem::Render3D(subModel3D, renderContext);
+
+                    simulator.ExitSubModel();
+                }
+                else
+                {
+                    // 2D rendering
+                    simulator.EnterSubModel();
+                    SubModel& subModel2D = SubModel::Get();
+
+                    if (render2D != nullptr)
+                        render2D(debugger, simulator);
+                    else
+                        RenderSystem::Render2D(subModel2D, renderContext);
+
+                    simulator.ExitSubModel();
+                }
+            }
+
+            if (debugger.Is3DMode())
+                renderContext.End3D();
+            else
+                renderContext.End2D();
+
+            if (renderUI)
+                renderUI(debugger);
+
+            debugger.EndUpdate();
+            window.EndFrame();
         }
     }
 } // namespace Ers

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Ers/Math/HMM/VectorMath.h"
+#include "Ers/Visualization/Color.h"
 
 namespace Ers
 {
@@ -16,16 +16,16 @@ namespace Ers
         Material& operator=(Material&&)      = default;
         ~Material()                          = default;
 
-        /// @brief Get the base color of the material (RGB).
-        /// @return The color as Vector3 (RGB, 0.0-1.0)
-        [[nodiscard]] Ers::Vector3 Color() const;
+        /// @brief Get the base color of the material.
+        /// @return The color.
+        [[nodiscard]] Ers::Color GetColor() const;
 
-        /// @brief Set the base color of the material (RGB).
-        /// @param color The color as Vector3 (RGB, 0.0-1.0)
-        void Color(const Ers::Vector3& color);
+        /// @brief Set the base color of the material.
+        /// @param color The color
+        void SetColor(Ers::Color color);
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
       private:
         void* data;

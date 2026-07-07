@@ -1,4 +1,4 @@
-﻿namespace Ers
+namespace Ers
 {
     /// <summary>
     /// Data- and Core component.

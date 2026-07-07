@@ -39,5 +39,74 @@ namespace Ers
         /// @param index The index of the output channel
         /// @return The entity representing the output channel
         [[nodiscard]] Entity GetOutputChannel(int index) const;
+
+        /// @brief Close all input channels.
+        void CloseAllInput() const;
+
+        /// @brief Open all input channels.
+        void OpenAllInput() const;
+
+        /// @brief Close all output channels.
+        void CloseAllOuput() const;
+
+        /// @brief Open all output channels.
+        void OpenAllOutput() const;
+
+        class ChannelEnumerator;
+        class ChannelRange;
+
+        /// @brief Get an iterable range for input channels.
+        /// @param resourceEntity Resource entity with a ResourceComponent
+        /// @return Iterable input channel range
+        [[nodiscard]] static ChannelRange InputChannels(EntityID resourceEntity);
+
+        /// @brief Get an iterable range for output channels.
+        /// @param resourceEntity Resource entity with a ResourceComponent
+        /// @return Iterable output channel range
+        [[nodiscard]] static ChannelRange OutputChannels(EntityID resourceEntity);
+    };
+
+    class ResourceComponent::ChannelEnumerator
+    {
+      public:
+        ChannelEnumerator(EntityID resourceEntity, int index, bool isOutputChannel) :
+            resourceEntity(resourceEntity),
+            index(index),
+            isOutputChannel(isOutputChannel)
+        {
+        }
+
+        EntityID operator*() const;
+
+        ChannelEnumerator& operator++();
+
+        bool operator==(const ChannelEnumerator& other) const;
+
+        bool operator!=(const ChannelEnumerator& other) const;
+
+      private:
+        EntityID resourceEntity;
+        int index;
+        bool isOutputChannel;
+    };
+
+    class ResourceComponent::ChannelRange
+    {
+      public:
+        ChannelRange(EntityID resourceEntity, bool isOutputChannel, int channelCount) :
+            resourceEntity(resourceEntity),
+            channelCount(channelCount),
+            isOutputChannel(isOutputChannel)
+        {
+        }
+
+        ChannelEnumerator begin() const;
+
+        ChannelEnumerator end() const;
+
+      private:
+        EntityID resourceEntity;
+        int channelCount;
+        bool isOutputChannel;
     };
 } // namespace Ers

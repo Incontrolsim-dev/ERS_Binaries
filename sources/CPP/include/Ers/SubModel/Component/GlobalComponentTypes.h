@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cassert>
+#include <type_traits>
+#include <typeinfo>
+
 #include "NameComponent.h"
 #include "PathComponent.h"
 #include "RelationComponent.h"
@@ -10,8 +14,6 @@
 #include "Ers/SubModel/DataComponent.h"
 #include "Ers/SubModel/ScriptBehaviorComponent.h"
 #include "Ers/SubModel/TypeInfo.h"
-
-#include <type_traits>
 
 // Forward declaration for Serializer
 namespace Ers
@@ -77,6 +79,9 @@ namespace Ers
     void CoreScriptBehaviorOnEntered(void* scriptBehaviorInstance, EntityID child);
     void CoreScriptBehaviorOnExiting(void* scriptBehaviorInstance, EntityID parent);
     void CoreScriptBehaviorOnExited(void* scriptBehaviorInstance, EntityID child);
+    void CoreScriptBehaviorOnInputChannelReady(void* scriptBehaviorInstance, EntityID inputChannel);
+    void CoreScriptBehaviorOnOutputChannelReady(void* scriptBehaviorInstance, EntityID outputChannel);
+    void CoreScriptBehaviorOnReceive(void* scriptBehaviorInstance, EntityID inputChannel, EntityID child);
     void CoreScriptBehaviorSerialization(void* scriptBehaviorInstance, void* serializationNode);
     void CoreScriptBehaviorOnSubModelMove(void* scriptBehaviorInstance, EntityID newEntityId);
 
@@ -84,7 +89,7 @@ namespace Ers
     {
         // clang-format off
         const char* name = typeid(T).name();
-        ComponentID id   = ersAPIFunctionPointers.ERS_GlobalComponentRegistry_RegisterScriptBehavior(
+        ComponentID id   = Ers::Engine::ERS_GlobalComponentRegistry_RegisterScriptBehavior(
             name, [](void* handle) -> void* { return new /*TODO use allocator for better memory placement*/ T(); }, nullptr,
             CoreScriptBehaviorOnCreation, 
             CoreScriptBehaviorOnAwake, 
@@ -96,6 +101,9 @@ namespace Ers
             CoreScriptBehaviorOnEntered, 
             CoreScriptBehaviorOnExiting, 
             CoreScriptBehaviorOnExited, 
+            CoreScriptBehaviorOnInputChannelReady, 
+            CoreScriptBehaviorOnOutputChannelReady, 
+            CoreScriptBehaviorOnReceive, 
             CoreScriptBehaviorSerialization,
             CoreScriptBehaviorOnSubModelMove);
         TypeToComponentID<T>::ComponentTypeID = id;
@@ -135,8 +143,30 @@ namespace Ers
         // When custom serialization is present, pass nullptr for typeInfo to ensure it takes precedence
         TypeInfo* finalTypeInfo = customSerialize ? nullptr : typeInfo;
 
-        ComponentID id = ersAPIFunctionPointers.ERS_GlobalComponentRegistry_RegisterComponent(name, size, finalTypeInfo, customSerialize);
+        ComponentID id = Ers::Engine::ERS_GlobalComponentRegistry_RegisterComponent(name, size, finalTypeInfo, customSerialize);
         TypeToComponentID<T>::ComponentTypeID = id;
     }
+
+    /// @brief Static registration of component type - templated per component type
+    /// Each unique component type gets its own registration.
+    /// Similar to LocalEventRegistry for event types.
+    template <typename ComponentType> class ComponentRegistry
+    {
+      public:
+        /// @brief Register a component type globally.
+        /// Registration is idempotent - calling multiple times is safe and results in a no-op.
+        static void Register()
+        {
+            if (IsComponentTypeGloballyRegistered<ComponentType>())
+                return;
+
+            TypeInfo* typeInfo = nullptr;
+            if constexpr (std::is_base_of<DataComponent, ComponentType>::value)
+            {
+                typeInfo = ComponentType::GetTypeInfo();
+            }
+            RegisterGlobalComponentType<ComponentType>(typeInfo);
+        }
+    };
 
 } // namespace Ers

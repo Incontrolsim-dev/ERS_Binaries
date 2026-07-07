@@ -1,20 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Ers.Engine;
 using static Ers.SyncEvent;
 
 namespace Ers
 {
     /// <summary>
-    /// A simple interface that can be scheduled easily with a sync event
+    /// A simple interface that can be scheduled easily with a sync event.
     /// </summary>
-    public interface ISyncEvent<T> : IHasName<T>
+    public interface ISyncEvent<T>
         where T : unmanaged, ISyncEvent<T> {
+
+        static abstract string Name { get; }
 
         public abstract void OnSenderSide();
 
@@ -35,56 +31,72 @@ namespace Ers
     }
 
     /// <summary>
-    /// Utility functions when inside of a sync event
+    /// Utility functions when inside of a sync event.
     /// </summary>
     public static class SyncEvent
     {
         /// <summary>
-        /// Get data from the current sync event that matches T
+        /// Get data from a specific sync event.
+        /// Data is automatically allocated when the sync event is scheduled.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The data type</typeparam>
+        /// <param name="syncEventHandle">Pointer to the sync event</param>
+        /// <returns>Reference to the data</returns>
         internal static Ref<T> GetData<T>(nint syncEventHandle)
             where T : unmanaged
         {
             unsafe
             {
-                ushort globalidx = ErsEngine.ERS_SyncEvent_GetOrRegisterDataContext(syncEventHandle, TypeIdentifier<T>(), (uint)sizeof(T));
-                return new Ref<T>((T*)ErsEngine.ERS_SyncEvent_GetData(syncEventHandle, globalidx));
+                return new Ref<T>((T*)ErsEngine.ERS_SyncEvent_GetData(syncEventHandle));
             }
         }
 
         /// <summary>
-        /// Get data from the current sync event that matches T
+        /// Get data from the current sync event (for use in callbacks).
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The data type</typeparam>
+        /// <returns>Reference to the data</returns>
         internal static Ref<T> GetData<T>()
-            where T : unmanaged { return GetData<T>(ErsEngine.ERS_ThreadLocal_GetCurrentSyncEvent()); }
+            where T : unmanaged
+        {
+            unsafe
+            {
+                return new Ref<T>((T*)ErsEngine.ERS_SyncEvent_GetData(ErsEngine.ERS_ThreadLocal_GetCurrentSyncEvent()));
+            }
+        }
 
         /// <summary>
-        /// Get a process stable value tied to type T, that won't change while the process is running
+        /// Get a process stable value tied to type T, that won't change while the process is running.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         internal static ulong TypeIdentifier<T>() { return (ulong) typeof(T).TypeHandle.Value; }
 
         /// <summary>
-        /// Checks if the current thread is executing a sync event
+        /// Whether the current thread is executing a sync event.
         /// </summary>
         /// <returns></returns>
-        public static bool IsInsideSyncEvent() { return ErsEngine.ERS_ThreadLocal_IsInsideSyncEvent(); }
+        public static bool IsInsideSyncEvent
+        {
+            get => ErsEngine.ERS_ThreadLocal_IsInsideSyncEvent();
+        }
 
         /// <summary>
-        /// If inside a sync event, get the target simulator id of the sync event
+        /// If inside a sync event, get the target simulator id of the sync event.
         /// </summary>
         /// <returns></returns>
-        public static Int32 GetTargetSimulatorId() { return ErsEngine.ERS_ThreadLocal_GetSyncEventTarget(); }
+        public static Int32 TargetSimulatorId
+        {
+            get => ErsEngine.ERS_ThreadLocal_GetSyncEventTarget();
+        }
 
         /// <summary>
-        /// If inside a sync event get the sender simulator id of the sync event
+        /// If inside a sync event, get the sender simulator id of the sync event.
         /// </summary>
         /// <returns></returns>
-        public static Int32 GetSenderSimulatorId() { return ErsEngine.ERS_ThreadLocal_GetSyncEventSender(); }
+        public static Int32 SenderSimulatorId
+        {
+            get => ErsEngine.ERS_ThreadLocal_GetSyncEventSender();
+        }
     }
 }

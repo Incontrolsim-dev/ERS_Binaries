@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,7 @@ namespace Ers
     /// Helper to copy an entity to a new submodel, this helper is both a sync event in and off itself, and can be used as part of
     /// another sync event
     /// </summary>
-    public partial struct MoveEntitySyncEvent : ISyncEvent<MoveEntitySyncEvent>
+    public struct MoveEntitySyncEvent : ISyncEvent<MoveEntitySyncEvent>
     {
         /// <summary>
         /// The entity "to be moved", "being moved" and "received"
@@ -23,13 +23,15 @@ namespace Ers
         public void OnSenderSide()
         {
             // Copy from source to intermediate
-            EntityInFlight = SubModel.GetSubModel().SendEntity(SyncEvent.GetTargetSimulatorId(), EntityInFlight).id;
+            EntityInFlight = SubModel.Get().SendEntity(SyncEvent.TargetSimulatorId, EntityInFlight).id;
         }
 
         public void OnTargetSide()
         {
             // Copy from intermediate to target
-            EntityInFlight = SubModel.GetSubModel().ReceiveEntity(SyncEvent.GetSenderSimulatorId(), new SentEntity(EntityInFlight));
+            EntityInFlight = SubModel.Get().ReceiveEntity(SyncEvent.SenderSimulatorId, new SentEntity(EntityInFlight));
         }
+
+        public void Serialization(Serializer serializer) { serializer.Serialize("entity_in_flight", ref EntityInFlight); }
     }
 }

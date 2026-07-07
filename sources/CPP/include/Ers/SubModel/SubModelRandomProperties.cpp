@@ -6,50 +6,51 @@ namespace Ers
 {
     void SubModelRandomProperties::SetRandomGenerator(Ers::RandomGeneratorType randomNumberGeneratorType)
     {
-        ersAPIFunctionPointers.ERS_SubModelRandomProperties_SetRandomGenerator_Type(Data(), static_cast<int>(randomNumberGeneratorType));
+        Ers::Engine::ERS_SubModelRandomProperties_SetRandomGenerator_Type(CorePtr(), static_cast<int>(randomNumberGeneratorType));
     }
 
     void SubModelRandomProperties::SetRepetitive(bool value)
     {
-        ersAPIFunctionPointers.ERS_SubModelRandomProperties_SetRepetitive(Data(), value);
+        Ers::Engine::ERS_SubModelRandomProperties_SetRepetitive(CorePtr(), value);
     }
 
     void SubModelRandomProperties::SetAntithetical(bool value)
     {
-        ersAPIFunctionPointers.ERS_SubModelRandomProperties_SetAntithetical(Data(), value);
+        Ers::Engine::ERS_SubModelRandomProperties_SetAntithetical(CorePtr(), value);
     }
 
     void SubModelRandomProperties::SetSeed(size_t seed)
     {
-        ersAPIFunctionPointers.ERS_SubModelRandomProperties_SetSeed(Data(), seed);
+        Ers::Engine::ERS_SubModelRandomProperties_SetSeed(CorePtr(), seed);
     }
 
     bool SubModelRandomProperties::IsRepetitive()
     {
-        return ersAPIFunctionPointers.ERS_SubModelRandomProperties_IsRepetitive(Data());
+        return Ers::Engine::ERS_SubModelRandomProperties_IsRepetitive(CorePtr());
     }
 
     bool SubModelRandomProperties::IsAntithetical()
     {
-        return ersAPIFunctionPointers.ERS_SubModelRandomProperties_IsAntithetical(Data());
+        return Ers::Engine::ERS_SubModelRandomProperties_IsAntithetical(CorePtr());
     }
 
     [[nodiscard]] size_t SubModelRandomProperties::GetOriginalSeed() const
     {
-        return ersAPIFunctionPointers.ERS_SubModelRandomProperties_GetOriginalSeed(Data());
+        return Ers::Engine::ERS_SubModelRandomProperties_GetOriginalSeed(CorePtr());
     }
 
     [[nodiscard]] Ers::RandomGenerator& SubModelRandomProperties::GetRandomNumberGenerator()
     {
-        void* coreRandomGeneratorInstance = ersAPIFunctionPointers.ERS_SubModelRandomProperties_GetRandomNumberGenerator(Data());
+        void* coreRandomGeneratorInstance = Ers::Engine::ERS_SubModelRandomProperties_GetRandomNumberGenerator(CorePtr());
         return *static_cast<Ers::RandomGenerator*>(coreRandomGeneratorInstance);
     }
-    void* SubModelRandomProperties::Data()
+
+    void* SubModelRandomProperties::CorePtr()
     {
         return this;
     }
 
-    const void* const SubModelRandomProperties::Data() const
+    const void* const SubModelRandomProperties::CorePtr() const
     {
         return this;
     }

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Ers.Engine;
@@ -27,21 +27,15 @@ namespace Ers
         public Vector3 Center
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_OutlineComponent_Center_X(CorePointer()),
-                        *(float*)ErsEngine.ERS_OutlineComponent_Center_Y(CorePointer()),
-                        *(float*)ErsEngine.ERS_OutlineComponent_Center_Z(CorePointer()));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_OutlineComponent_Get_Center_X(CorePtr),
+                    ErsEngine.ERS_OutlineComponent_Get_Center_Y(CorePtr),
+                    ErsEngine.ERS_OutlineComponent_Get_Center_Z(CorePtr));
             }
             set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_OutlineComponent_Center_X(CorePointer()) = value.X;
-                    *(float*)ErsEngine.ERS_OutlineComponent_Center_Y(CorePointer()) = value.Y;
-                    *(float*)ErsEngine.ERS_OutlineComponent_Center_Z(CorePointer()) = value.Z;
-                }
+                ErsEngine.ERS_OutlineComponent_Set_Center_X(CorePtr, value.X);
+                ErsEngine.ERS_OutlineComponent_Set_Center_Y(CorePtr, value.Y);
+                ErsEngine.ERS_OutlineComponent_Set_Center_Z(CorePtr, value.Z);
             }
         }
 
@@ -53,15 +47,12 @@ namespace Ers
         public Vector3 Dimensions
         {
             get {
-                unsafe
-                {
-                    return new Vector3(
-                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_X(CorePointer()),
-                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_Y(CorePointer()),
-                        *(float*)ErsEngine.ERS_OutlineComponent_Dimensions_Z(CorePointer()));
-                }
+                return new Vector3(
+                    ErsEngine.ERS_OutlineComponent_Get_Dimensions_X(CorePtr),
+                    ErsEngine.ERS_OutlineComponent_Get_Dimensions_Y(CorePtr),
+                    ErsEngine.ERS_OutlineComponent_Get_Dimensions_Z(CorePtr));
             }
-            set => ErsEngine.ERS_OutlineComponent_SetDimensions(CorePointer(), value.X, value.Y, value.Z);
+            set => ErsEngine.ERS_OutlineComponent_Set_Dimensions(CorePtr, value.X, value.Y, value.Z);
         }
 
         /// <summary>
@@ -70,13 +61,18 @@ namespace Ers
         /// <returns></returns>
         public static nuint CoreTypeId() => ErsEngine.ERS_OutlineComponent_TypeId();
 
-        private IntPtr CorePointer()
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public IntPtr CorePtr
         {
-            unsafe
-            {
-                fixed(OutlineComponent* ptr = &this)
+            get {
+                unsafe
                 {
-                    return (IntPtr)ptr;
+                    fixed(OutlineComponent* ptr = &this)
+                    {
+                        return (IntPtr)ptr;
+                    }
                 }
             }
         }

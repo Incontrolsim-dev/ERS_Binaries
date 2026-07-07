@@ -32,7 +32,7 @@ namespace Ers
         /// @brief Set the center of the entity.
         /// Note: always set the dimensions first, otherwise the custom center will be overwritten.
         /// @param center The new center point
-        void Center(const Vector3& center);
+        void Center(Vector3 center);
 
         /// @brief Get the dimensions of the entity.
         /// @return The dimensions
@@ -40,6 +40,6 @@ namespace Ers
 
         /// @brief Set the dimensions of the entity.
         /// @param dimensions The new dimensions
-        void Dimensions(const Vector3& dimensions);
+        void Dimensions(Vector3 dimensions);
     };
 } // namespace Ers

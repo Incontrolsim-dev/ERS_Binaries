@@ -23,10 +23,10 @@ namespace Ers
 
     template <typename T> static SubModelContextTypeIndex RegisterSubModelContextTypeIndex()
     {
-        // Only register if it wasn't registed before
+        // Only register if it wasn't registered before
         if (RegisteredSubModelContext<T>::Index == InvalidSubModelContextTypeIndex)
         {
-            RegisteredSubModelContext<T>::Index = Ers::ersAPIFunctionPointers.ERS_SubModel_RegisterSubModelContext();
+            RegisteredSubModelContext<T>::Index = Ers::Engine::ERS_SubModel_RegisterSubModelContext();
         }
         return RegisteredSubModelContext<T>::Index;
     }

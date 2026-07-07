@@ -1,4 +1,6 @@
 #pragma once
+#include <typeinfo>
+
 #include "Ers/Api.h"
 
 namespace Ers
@@ -23,8 +25,14 @@ namespace Ers
             Data& data = Ers::SyncEvent::GetData<Data>();
             return data;
         }
+
+        // Optional: Override this method to enable serialization support
+        void Serialization(Ers::Serializer& serializer) {
+            // Serialize your event data here
+            // serializer.Serialize("field_name", FieldName);
+        }
         */
-        ISyncEvent()                  = delete;
+        ISyncEvent()                  = default;
         ISyncEvent(const ISyncEvent&) = delete;
         ISyncEvent(ISyncEvent&&)      = delete;
 
@@ -40,15 +48,20 @@ namespace Ers
     {
 
       public:
-        // Engine Internal
-        template <typename T> static T& GetData(void* syncEvent)
-        {
-            auto globalidx = ersAPIFunctionPointers.ERS_SyncEvent_GetOrRegisterDataContext(syncEvent, TypeIdentifier<T>(), sizeof(T));
-            return *static_cast<T*>(ersAPIFunctionPointers.ERS_SyncEvent_GetData(syncEvent, globalidx));
-        }
+        /// @brief Get data from a specific sync event
+        /// Data is automatically allocated when the sync event is scheduled.
+        /// @tparam T The data type
+        /// @param syncEvent Pointer to the sync event
+        /// @return Reference to the data
+        template <typename T> static T& GetData(void* syncEvent) { return *static_cast<T*>(Ers::Engine::ERS_SyncEvent_GetData(syncEvent)); }
 
-        // Engine Internal
-        template <typename T> static T& GetData() { return GetData<T>(ersAPIFunctionPointers.ERS_ThreadLocal_GetCurrentSyncEvent()); }
+        /// @brief Get data from the current sync event (for use in callbacks)
+        /// @tparam T The data type
+        /// @return Reference to the data
+        template <typename T> static T& GetData()
+        {
+            return *static_cast<T*>(Ers::Engine::ERS_SyncEvent_GetData(Ers::Engine::ERS_ThreadLocal_GetCurrentSyncEvent()));
+        }
 
         template <typename T> constexpr static uint64_t TypeIdentifier()
         {
@@ -61,14 +74,14 @@ namespace Ers
 
         /// @brief Check if the current simulator is in a sync event
         /// @return
-        static bool IsInsideSyncEvent() { return ersAPIFunctionPointers.ERS_ThreadLocal_IsInsideSyncEvent(); }
+        static bool IsInsideSyncEvent() { return Ers::Engine::ERS_ThreadLocal_IsInsideSyncEvent(); }
 
         /// @brief Get the target's simulator id of the current sync event
         /// @return
-        static int32_t GetSyncEventTarget() { return ersAPIFunctionPointers.ERS_ThreadLocal_GetSyncEventTarget(); }
+        static int32_t GetSyncEventTarget() { return Ers::Engine::ERS_ThreadLocal_GetSyncEventTarget(); }
 
         /// @brief Get the sender's simulator id of the current sync event
         /// @return
-        static int32_t GetSyncEventSender() { return ersAPIFunctionPointers.ERS_ThreadLocal_GetSyncEventSender(); }
+        static int32_t GetSyncEventSender() { return Ers::Engine::ERS_ThreadLocal_GetSyncEventSender(); }
     };
 } // namespace Ers

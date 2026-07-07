@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Ers.Engine;
 
 namespace Ers
@@ -10,9 +8,9 @@ namespace Ers
     /// </summary>
     public class LibraryCollection
     {
-        internal readonly IntPtr Data;
+        public readonly IntPtr CorePtr;
 
-        internal LibraryCollection(IntPtr instance) { Data = instance; }
+        internal LibraryCollection(IntPtr corePtr) { CorePtr = corePtr; }
 
         /// <summary>
         /// Open a dynamic library.
@@ -26,7 +24,7 @@ namespace Ers
             {
                 fixed(byte* pathByte = pathUtf8)
                 {
-                    return ErsEngine.ERS_LibraryCollection_OpenLibrary(Data, pathByte);
+                    return ErsEngine.ERS_LibraryCollection_OpenLibrary(CorePtr, pathByte);
                 }
             }
         }
@@ -43,7 +41,7 @@ namespace Ers
             {
                 fixed(byte* pathByte = pathUtf8)
                 {
-                    return ErsEngine.ERS_LibraryCollection_IsLibraryOpen(Data, pathByte);
+                    return ErsEngine.ERS_LibraryCollection_IsLibraryOpen(CorePtr, pathByte);
                 }
             }
         }
@@ -62,7 +60,7 @@ namespace Ers
             {
                 fixed(byte* pathByte = pathUtf8) fixed(byte* nameByte = nameUtf8)
                 {
-                    return ErsEngine.ERS_LibraryCollection_GetFunctionFromLibrary(Data, pathByte, nameByte);
+                    return ErsEngine.ERS_LibraryCollection_GetFunctionFromLibrary(CorePtr, pathByte, nameByte);
                 }
             }
         }
@@ -79,7 +77,7 @@ namespace Ers
             {
                 fixed(byte* pathByte = pathUtf8)
                 {
-                    return ErsEngine.ERS_LibraryCollection_GetLibraryHandle(Data, pathByte);
+                    return ErsEngine.ERS_LibraryCollection_GetLibraryHandle(CorePtr, pathByte);
                 }
             }
         }

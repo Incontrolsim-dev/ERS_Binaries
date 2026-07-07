@@ -1,9 +1,7 @@
-﻿using Ers.Engine;
-using Ers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Ers.Interpreter;
-using System.Reflection;
+using Ers;
+using Ers.Engine;
 
 namespace Ers
 {
@@ -14,16 +12,16 @@ namespace Ers
     public ref struct SubModel
     {
         /// <summary>
-        /// The pointer to the core instance of this SubModel.
+        /// Native pointer to the core instance of this SubModel.
         /// </summary>
-        public readonly IntPtr Data;
+        public IntPtr CorePtr = IntPtr.Zero;
 
         /// <summary>
         /// The precision set in the ModelContainer where this SubModel is part of.
         /// </summary>
-        public readonly ulong ModelPrecision => ErsEngine.ERS_SubModel_GetModelPrecision(Data);
+        public readonly ulong ModelPrecision => ErsEngine.ERS_SubModel_GetModelPrecision(CorePtr);
 
-        internal SubModel(IntPtr data) { Data = data; }
+        internal SubModel(IntPtr corePtr) { CorePtr = corePtr; }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -56,7 +54,7 @@ namespace Ers
                 fixed(byte* typeNameByte = typeNameUtf8)
                 {
                     ErsEngine.ERS_SubModel_AddSubModelContext(
-                        Data, RegisteredSubModelContext.GetSubModelContextTypeIndex<T>(), typeNameByte, (nint)handle,
+                        CorePtr, RegisteredSubModelContext.GetSubModelContextTypeIndex<T>(), typeNameByte, GCHandle.ToIntPtr(handle),
                         &AddSubModelContext_FreeContext);
                 }
             }
@@ -77,7 +75,7 @@ namespace Ers
             RegisteredSubModelContext.RegisterSubModelContextTypeIndex<T>();
 
             // Try to get existing context
-            nint ptr = ErsEngine.ERS_SubModel_GetContext(Data, RegisteredSubModelContext.GetSubModelContextTypeIndex<T>());
+            nint ptr = ErsEngine.ERS_SubModel_GetContext(CorePtr, RegisteredSubModelContext.GetSubModelContextTypeIndex<T>());
 
             // If it doesn't exist (ptr is 0), create it
             if (ptr == IntPtr.Zero)
@@ -86,23 +84,6 @@ namespace Ers
             }
 
             return (T)GCHandle.FromIntPtr(ptr).Target!;
-        }
-
-        public void AddInterpreterScriptComponentType() => ErsEngine.ERS_SubModel_AddInterpreterScriptComponentType(Data);
-
-        public InterpreterVariable AddInterpreterScriptComponent(Entity entity)
-        {
-            return new InterpreterVariable(ErsEngine.ERS_SubModel_AddInterpreterScriptComponent(Data, entity));
-        }
-
-        public InterpreterVariable GetInterpreterScriptComponent(Entity entity)
-        {
-            return new InterpreterVariable(ErsEngine.ERS_SubModel_GetInterpreterScriptComponent(Data, entity));
-        }
-
-        public bool HasInterpreterScriptComponent(Entity entity)
-        {
-            return ErsEngine.ERS_SubModel_HasInterpreterScriptComponent(Data, entity);
         }
 
         /// <summary>
@@ -120,7 +101,7 @@ namespace Ers
             {
                 fixed(byte* entityNameByte = entityNameUtf8)
                 {
-                    return ErsEngine.ERS_SubModel_FindEntity(Data, entityNameByte);
+                    return ErsEngine.ERS_SubModel_FindEntity(CorePtr, entityNameByte);
                 }
             }
         }
@@ -139,7 +120,7 @@ namespace Ers
             {
                 fixed(byte* entityNameByte = entityNameUtf8)
                 {
-                    return ErsEngine.ERS_SubModel_FindEntity_Parent(Data, entityNameByte, root);
+                    return ErsEngine.ERS_SubModel_FindEntity_Parent(CorePtr, entityNameByte, root);
                 }
             }
         }
@@ -156,7 +137,7 @@ namespace Ers
             {
                 fixed(byte* nameByte = nameUtf8)
                 {
-                    return ErsEngine.ERS_SubModel_Entity_Create_Name(Data, nameByte);
+                    return ErsEngine.ERS_SubModel_Entity_Create_Name(CorePtr, nameByte);
                 }
             }
         }
@@ -168,8 +149,8 @@ namespace Ers
         /// <returns>The ID of the created entity.</returns>
         public Entity CreateEntity(Entity parentEntity)
         {
-            Entity entity = ErsEngine.ERS_SubModel_Entity_Create(Data);
-            ErsEngine.ERS_SubModel_Entity_Relation_Update_Parent(Data, entity, parentEntity);
+            Entity entity = ErsEngine.ERS_SubModel_Entity_Create(CorePtr);
+            ErsEngine.ERS_SubModel_Entity_Relation_Update_Parent(CorePtr, entity, parentEntity);
             return entity;
         }
 
@@ -186,7 +167,7 @@ namespace Ers
             {
                 fixed(byte* nameByte = nameUtf8)
                 {
-                    return ErsEngine.ERS_SubModel_Entity_Create_Name_Parent(Data, nameByte, parentEntity);
+                    return ErsEngine.ERS_SubModel_Entity_Create_Name_Parent(CorePtr, nameByte, parentEntity);
                 }
             }
         }
@@ -195,20 +176,20 @@ namespace Ers
         /// Create an entity.
         /// </summary>
         /// <returns>The ID of the created entity.</returns>
-        public Entity CreateEntity() => ErsEngine.ERS_SubModel_Entity_Create(Data);
+        public Entity CreateEntity() => ErsEngine.ERS_SubModel_Entity_Create(CorePtr);
 
         /// <summary>
         /// Check if the given entity exists.
         /// </summary>
         /// <param name="entity">The ID of the entity.</param>
         /// <returns>Whether the entity exists.</returns>
-        public readonly bool EntityExists(Entity entity) => ErsEngine.ERS_SubModel_Entity_Exists(Data, entity);
+        public readonly bool EntityExists(Entity entity) => ErsEngine.ERS_SubModel_Entity_Exists(CorePtr, entity);
 
         /// <summary>
         /// Destroys an entity and all the attached components.
         /// </summary>
         /// <param name="entity">The ID of the entity.</param>
-        public void DestroyEntity(Entity entity) => ErsEngine.ERS_SubModel_Entity_Destroy(Data, entity);
+        public void DestroyEntity(Entity entity) => ErsEngine.ERS_SubModel_Entity_Destroy(CorePtr, entity);
 
         /// <summary>
         /// Modify the parent of an entity.
@@ -217,7 +198,7 @@ namespace Ers
         /// <param name="parent">The ID of the new parent.</param>
         public void UpdateParentOnEntity(Entity entity, Entity parent)
         {
-            ErsEngine.ERS_SubModel_Entity_Relation_Update_Parent(Data, entity, parent);
+            ErsEngine.ERS_SubModel_Entity_Relation_Update_Parent(CorePtr, entity, parent);
         }
 
         /// <summary>
@@ -236,7 +217,7 @@ namespace Ers
             }
 
             UInt32 typeId       = ComponentTraits<T>.GetComponentTypeId();
-            IntPtr componentPtr = ErsEngine.ERS_SubModel_AddDataComponent(Data, entity, typeId);
+            IntPtr componentPtr = ErsEngine.ERS_SubModel_AddDataComponent(CorePtr, entity, typeId);
             Ref<T> value        = ComponentUtil.CreateComponentRef<T>(componentPtr);
             value.Value         = new T();
             return value;
@@ -256,7 +237,7 @@ namespace Ers
             T t                = new T() { ConnectedEntity = entity };
             GCHandle handle    = GCHandle.Alloc(t, GCHandleType.Normal);
             IntPtr handlePtr   = GCHandle.ToIntPtr(handle);
-            ErsEngine.ERS_SubModel_AddScriptBehavior(Data, entity, componentId, handlePtr);
+            ErsEngine.ERS_SubModel_AddScriptBehavior(CorePtr, entity, componentId, handlePtr);
             return t;
         }
 
@@ -271,12 +252,12 @@ namespace Ers
             UInt32 componentID = ComponentTraits<T>.GetComponentTypeId();
             if (ComponentTraits<T>.IsScriptBehavior())
             {
-                GCHandle handle = GCHandle.FromIntPtr(ErsEngine.ERS_SubModel_RemoveScriptBehavior(Data, entity, componentID));
+                GCHandle handle = GCHandle.FromIntPtr(ErsEngine.ERS_SubModel_RemoveScriptBehavior(CorePtr, entity, componentID));
                 handle.Free();
             }
             else
             {
-                ErsEngine.ERS_SubModel_RemoveDataComponent(Data, entity, ComponentTraits<T>.GetComponentTypeId());
+                ErsEngine.ERS_SubModel_RemoveDataComponent(CorePtr, entity, ComponentTraits<T>.GetComponentTypeId());
             }
         }
 
@@ -288,7 +269,7 @@ namespace Ers
         /// <returns>A <see cref="SentEntity"/>, which will need to be converted to a regular entity.</returns>
         public SentEntity SendEntity(Int32 toSimulator, Entity entity)
         {
-            return new SentEntity(ErsEngine.ERS_SubModel_SendEntityTo(Data, toSimulator, entity));
+            return new SentEntity(ErsEngine.ERS_SubModel_SendEntityTo(CorePtr, toSimulator, entity));
         }
 
         /// <summary>
@@ -299,7 +280,7 @@ namespace Ers
         /// <returns>The <see cref="SentEntity"/>, transformed back into an entity in the receiving SubModel.</returns>
         public Entity ReceiveEntity(Int32 fromSimulator, SentEntity sent)
         {
-            return ErsEngine.ERS_SubModel_ReceiveEntityFrom(Data, fromSimulator, sent.id);
+            return ErsEngine.ERS_SubModel_ReceiveEntityFrom(CorePtr, fromSimulator, sent.id);
         }
 
         /// <summary>
@@ -312,7 +293,7 @@ namespace Ers
             where T : IDACComponent
         {
             UInt32 typeId       = ComponentTraits<T>.GetComponentTypeId();
-            IntPtr componentPtr = ErsEngine.ERS_SubModel_GetComponent(Data, entity, typeId);
+            IntPtr componentPtr = ErsEngine.ERS_SubModel_GetComponent(CorePtr, entity, typeId);
             return ComponentUtil.CreateComponentRef<T>(componentPtr);
         }
 
@@ -327,7 +308,7 @@ namespace Ers
             where T : ScriptBehaviorComponent
         {
             UInt32 typeId    = ComponentTraits<T>.GetComponentTypeId();
-            IntPtr handlePtr = ErsEngine.ERS_SubModel_GetScriptBehavior(Data, entity, typeId);
+            IntPtr handlePtr = ErsEngine.ERS_SubModel_GetScriptBehavior(CorePtr, entity, typeId);
             return ComponentUtil.GetScriptBehavior<T>(handlePtr);
         }
 
@@ -341,81 +322,19 @@ namespace Ers
             where T : IComponentBase
         {
             UInt32 componentId = ComponentTraits<T>.GetComponentTypeId(); // ComponentTrait asserts T is a known component type
-            return ErsEngine.ERS_SubModel_HasComponent(Data, entity, componentId);
+            return ErsEngine.ERS_SubModel_HasComponent(CorePtr, entity, componentId);
         }
 
         private IntPtr AddComponent(Entity entity, UInt32 componentType)
         {
-            return ErsEngine.ERS_SubModel_AddDataComponent(Data, entity, componentType);
-        }
-
-        /// <summary>
-        /// Sent metadata about a component type to ERS to set up support.
-        /// </summary>
-        /// <typeparam name="T">The type of the component.</typeparam>
-        public void AddComponentType<T>()
-            where T : IComponentBase
-        {
-            if (!ComponentTraits<T>.IsRegistered())
-            {
-                ComponentTraits<T>.RegisterType();
-                RegisteredComponentTypes.AddType(this, typeof(T));
-            }
-
-            UInt32 type = ComponentTraits<T>.GetComponentTypeId();
-            ErsEngine.ERS_SubModel_AddComponentType(Data, type);
+            return ErsEngine.ERS_SubModel_AddDataComponent(CorePtr, entity, componentType);
         }
 
         /// <summary>
         /// Get the random properties of this submodel.
         /// </summary>
         /// <returns>The random properties instance of this submodel.</returns>
-        public SubModelRandomProperties GetRandomProperties() => new SubModelRandomProperties(Data);
-
-        /// <summary>
-        /// Get the events associated to this submodel.
-        /// </summary>
-        /// <returns>A submodel signals instance.</returns>
-        [Obsolete("Replaced by overridable methods (OnEntering, OnEntered, OnExiting, OnExited) on ScriptBehavior")]
-        public SubModelSignals Events() => new SubModelSignals(Data);
-
-        public void CreateInterpreter() { ErsEngine.ERS_SubModel_CreateInterpreter(Data); }
-
-        public void RunSimpleString(string code)
-        {
-            var codeUtf8 = code.ToUtf8NullTerminated();
-            unsafe
-            {
-                fixed(byte* codeByte = codeUtf8)
-                {
-                    ErsEngine.ERS_SubModel_RunSimpleString(Data, codeByte);
-                }
-            }
-        }
-
-        public void LoadPythonModuleFromFile(string filePath)
-        {
-            var path = filePath.ToUtf8NullTerminated();
-            unsafe
-            {
-                fixed(byte* filePathByte = path)
-                {
-                    ErsEngine.ERS_SubModel_LoadPythonModuleFromFile(Data, filePathByte);
-                }
-            }
-        }
-
-        public void LoadPythonPackage(string packageFolderPath)
-        {
-            var path = packageFolderPath.ToUtf8NullTerminated();
-            unsafe
-            {
-                fixed(byte* filePathByte = path)
-                {
-                    ErsEngine.ERS_SubModel_LoadPythonPackage(Data, filePathByte);
-                }
-            }
-        }
+        public SubModelRandomProperties GetRandomProperties() => new SubModelRandomProperties(CorePtr);
 
         /// <summary>
         /// Get the simulator associated with this submodel.
@@ -423,7 +342,7 @@ namespace Ers
         /// <returns>A sync manager instance.</returns>
         public Simulator GetSimulator()
         {
-            IntPtr simulatorPtr = ErsEngine.ERS_SubModel_GetSimulator(Data);
+            IntPtr simulatorPtr = ErsEngine.ERS_SubModel_GetSimulator(CorePtr);
             return new Simulator(simulatorPtr);
         }
 
@@ -431,7 +350,7 @@ namespace Ers
         /// Get the currently active submodel.
         /// </summary>
         /// <returns>A submodel instance.</returns>
-        public static SubModel GetSubModel() => new SubModel(ErsEngine.ERS_ThreadLocal_GetSubModel());
+        public static SubModel Get() => new SubModel(ErsEngine.ERS_ThreadLocal_GetSubModel());
 
         /// <summary>
         /// Apply the model's precision to a given value.
@@ -439,35 +358,13 @@ namespace Ers
         /// <param name="simTime">The value to apply the precision to.</param>
         /// <returns></returns>
         public readonly SimulationTime ApplyModelPrecision(SimulationTime simTime) =>
-            simTime * ErsEngine.ERS_SubModel_GetModelPrecision(Data);
+            simTime * ErsEngine.ERS_SubModel_GetModelPrecision(CorePtr);
 
         /// <summary>
         /// Get the ID of the root entity of the SubModel.
         /// </summary>
         /// <returns></returns>
-        public readonly Entity RootEntityID() => ErsEngine.ERS_SubModel_RootEntityID(Data);
-
-        public void PrintGCStats() { ErsEngine.ERS_SubModel_PrintInterpreterGCStats(Data); }
-
-        /// <summary>
-        /// Assign a <see cref="RenderContext"/> to the interpreter attached to this submodel.
-        /// </summary>
-        /// <param name="context">The render context to assign.</param>
-        public void BeginInterpreterRenderContext(RenderContext context)
-        {
-            ErsEngine.ERS_SubModel_BeginInterpreterRenderContext(Data, context.GetCoreInstance());
-        }
-
-        /// <summary>
-        /// Unassign the <see cref="RenderContext"/> from the interpreter attached to this submodel.
-        /// </summary>
-        public void EndInterpreterRenderContext() => ErsEngine.ERS_SubModel_EndInterpreterRenderContext(Data);
-
-        /// <summary>
-        /// Get the <see cref="RenderContext"/> currently assigned to the interpreter attached to this submodel.
-        /// </summary>
-        /// <returns></returns>
-        public RenderContext GetInterpreterRenderContext() => new RenderContext(ErsEngine.ERS_SubModel_GetInterpreterRenderContext(Data));
+        public readonly Entity RootEntityID() => ErsEngine.ERS_SubModel_RootEntityID(CorePtr);
 
         /// <summary>
         /// Get a view to efficiently iterate over all entities that have a certain component.
@@ -478,7 +375,7 @@ namespace Ers
         public View<T> GetView<T>(UInt32[] excludedTypes)
             where T : IComponentBase
         {
-            var view = new View<T>(Data, excludedTypes);
+            var view = new View<T>(CorePtr, excludedTypes);
             return view;
         }
 
@@ -493,7 +390,7 @@ namespace Ers
             where T1 : IComponentBase
             where T2 : IComponentBase
         {
-            var view = new View<T1, T2>(Data, excludedTypes);
+            var view = new View<T1, T2>(CorePtr, excludedTypes);
             return view;
         }
 
@@ -510,7 +407,7 @@ namespace Ers
             where T2 : IComponentBase
             where T3 : IComponentBase
         {
-            var view = new View<T1, T2, T3>(Data, excludedTypes);
+            var view = new View<T1, T2, T3>(CorePtr, excludedTypes);
             return view;
         }
 
@@ -529,7 +426,7 @@ namespace Ers
             where T3 : IComponentBase
             where T4 : IComponentBase
         {
-            var view = new View<T1, T2, T3, T4>(Data, excludedTypes);
+            var view = new View<T1, T2, T3, T4>(CorePtr, excludedTypes);
             return view;
         }
 
@@ -550,7 +447,7 @@ namespace Ers
             where T4 : IComponentBase
             where T5 : IComponentBase
         {
-            var view = new View<T1, T2, T3, T4, T5>(Data, excludedTypes);
+            var view = new View<T1, T2, T3, T4, T5>(CorePtr, excludedTypes);
             return view;
         }
 

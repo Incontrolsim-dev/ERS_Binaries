@@ -6,42 +6,42 @@ namespace Ers
 {
     uint32_t Ers::RelationComponent::CoreTypeId()
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_TypeId();
+        return Ers::Engine::ERS_RelationComponent_TypeId();
     }
 
     EntityID Ers::RelationComponent::Parent() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetParent(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetParent(const_cast<RelationComponent*>(this));
     }
 
     EntityID Ers::RelationComponent::First() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetFirst(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetFirst(const_cast<RelationComponent*>(this));
     }
 
     EntityID Ers::RelationComponent::Last() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetLast(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetLast(const_cast<RelationComponent*>(this));
     }
 
     EntityID Ers::RelationComponent::Previous() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetPrevious(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetPrevious(const_cast<RelationComponent*>(this));
     }
 
     EntityID Ers::RelationComponent::Next() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetNext(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetNext(const_cast<RelationComponent*>(this));
     }
 
     uint64_t Ers::RelationComponent::ChildCount() const
     {
-        return ersAPIFunctionPointers.ERS_RelationComponent_GetChildCount(const_cast<RelationComponent*>(this));
+        return Ers::Engine::ERS_RelationComponent_GetChildCount(const_cast<RelationComponent*>(this));
     }
 
     EntityID Ers::RelationComponent::operator[](uint64_t index) const
     {
-        Ers::SubModel& submodel = Ers::GetSubModel();
+        Ers::SubModel& submodel = Ers::SubModel::Get();
 
         EntityID child = First();
         for (uint64_t i = 0; i < index; i++)
@@ -68,7 +68,7 @@ namespace Ers
     {
         if (current != Ers::Entity::InvalidEntity)
         {
-            auto& submodel = Ers::GetSubModel();
+            auto& submodel = Ers::SubModel::Get();
             auto component = submodel.GetComponent<RelationComponent>(current);
             current        = component ? component->Next() : Ers::Entity::InvalidEntity;
         }

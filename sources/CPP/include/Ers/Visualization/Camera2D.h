@@ -5,7 +5,7 @@ namespace Ers
     class Camera2D
     {
       public:
-        Camera2D(void* coreInstance);
+        Camera2D(void* corePtr);
         Camera2D()                           = delete;
         Camera2D(const Camera2D&)            = default;
         Camera2D(Camera2D&&)                 = delete;
@@ -24,10 +24,10 @@ namespace Ers
         /// @return
         float SizePerPixel() const;
 
-        void* Data();
-        const void* const Data() const;
+        void* CorePtr();
+        const void* const CorePtr() const;
 
       private:
-        void* coreInstance;
+        void* corePtr;
     };
 } // namespace Ers

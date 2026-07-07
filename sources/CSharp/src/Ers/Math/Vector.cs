@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 
 namespace Ers
@@ -16,7 +16,7 @@ namespace Ers
         /// <returns>The angle in radians.</returns>
         public static float Angle(this Vector2 vector, Vector2 other)
         {
-            float dot = Vector2.Dot(vector, other);
+            float dot      = Vector2.Dot(vector, other);
             float cosTheta = dot / (vector.Length() * other.Length());
             return MathF.Acos(cosTheta);
         }
@@ -32,10 +32,7 @@ namespace Ers
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static Vector2 XY(this Vector3 vector)
-        {
-            return new Vector2(vector.X, vector.Y);
-        }
+        public static Vector2 XY(this Vector3 vector) { return new Vector2(vector.X, vector.Y); }
     }
 
     /// <summary>
@@ -48,9 +45,6 @@ namespace Ers
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static Vector3 XYZ(this Vector4 vector)
-        {
-            return new Vector3(vector.X, vector.Y, vector.Z);
-        }
+        public static Vector3 XYZ(this Vector4 vector) { return new Vector3(vector.X, vector.Y, vector.Z); }
     }
 }

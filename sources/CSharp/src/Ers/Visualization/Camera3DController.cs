@@ -1,4 +1,4 @@
-﻿using Ers.Engine;
+using Ers.Engine;
 
 namespace Ers
 {
@@ -36,36 +36,29 @@ namespace Ers
     /// </summary>
     public class Camera3DController
     {
-        private readonly IntPtr coreInstance;
+        /// <summary>
+        /// Native pointer to the core instance.
+        /// </summary>
+        public readonly IntPtr CorePtr;
 
         /// <summary>
         /// Construct a new Camera3DController, attached to a given camera.
         /// </summary>
         /// <param name="camera">The camera that is to be controlled.</param>
-        public Camera3DController(Camera3D camera) { coreInstance = ErsEngine.ERS_Camera3DController_Create(camera.Data); }
+        public Camera3DController(Camera3D camera) { CorePtr = ErsEngine.ERS_Camera3DController_Create(camera.CorePtr); }
 
         /// <summary>
         /// Finalizer.
         /// </summary>
-        ~Camera3DController() => ErsEngine.ERS_Camera3DController_Destroy(coreInstance);
+        ~Camera3DController() => ErsEngine.ERS_Camera3DController_Destroy(CorePtr);
 
         /// <summary>
         /// The intensity of the head (camera height) moving up and down when walking in first person mode.
         /// </summary>
         public float HeadBobbingIntensity
         {
-            get {
-                unsafe
-                {
-                    return *(float*)ErsEngine.ERS_Camera3DController_HeadBobbingIntensity(coreInstance);
-                }
-            }
-            set {
-                unsafe
-                {
-                    *(float*)ErsEngine.ERS_Camera3DController_HeadBobbingIntensity(coreInstance) = value;
-                }
-            }
+            get => ErsEngine.ERS_Camera3DController_GetHeadBobbingIntensity(CorePtr);
+            set => ErsEngine.ERS_Camera3DController_SetHeadBobbingIntensity(CorePtr, value);
         }
 
         /// <summary>
@@ -78,25 +71,25 @@ namespace Ers
         /// <param name="lookAtZ">The Z-coordinate of the ground position the camera is looking at. Generally, this is 0.</param>
         public void ControlCamera(int screenWidth, int screenHeight, float deltaTime, float lookAtZ)
         {
-            ErsEngine.ERS_Camera3DController_ControlCamera(coreInstance, screenWidth, screenHeight, deltaTime, lookAtZ);
+            ErsEngine.ERS_Camera3DController_ControlCamera(CorePtr, screenWidth, screenHeight, deltaTime, lookAtZ);
         }
 
         /// <summary>
         /// Update the controller.
         /// </summary>
         /// <param name="deltaTime">The elapsed time in ms since the last update.</param>
-        public void Update(float deltaTime) { ErsEngine.ERS_Camera3DController_Update(coreInstance, deltaTime); }
+        public void Update(float deltaTime) { ErsEngine.ERS_Camera3DController_Update(CorePtr, deltaTime); }
 
         /// <summary>
         /// Switch to a different camera mode. See <see cref="Camera3DMode"/>.
         /// </summary>
         /// <param name="mode">The new camera mode.</param>
-        public void SwitchCameraMode(Camera3DMode mode) { ErsEngine.ERS_Camera3DController_SwitchCameraMode(coreInstance, (int)mode); }
+        public void SwitchCameraMode(Camera3DMode mode) { ErsEngine.ERS_Camera3DController_SwitchCameraMode(CorePtr, (int)mode); }
 
         /// <summary>
         /// Get the currently selected camera mode. See <see cref="Camera3DMode"/>.
         /// </summary>
         /// <returns></returns>
-        public Camera3DMode GetCameraMode() => (Camera3DMode)ErsEngine.ERS_Camera3DController_GetCameraMode(coreInstance);
+        public Camera3DMode GetCameraMode() => (Camera3DMode)ErsEngine.ERS_Camera3DController_GetCameraMode(CorePtr);
     }
 }
