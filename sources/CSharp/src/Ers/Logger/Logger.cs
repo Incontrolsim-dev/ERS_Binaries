@@ -186,9 +186,9 @@ namespace Ers
         /// <summary>
         /// Callback signature for logger callbacks.
         /// </summary>
-        /// <param name="level">The level of the logged message.</param>
+        /// <param name="level">The level of the logged message (see <see cref="LogLevel"/>).</param>
         /// <param name="message">The message.</param>
-        public delegate void LoggerCallback(int level, string message);
+        public delegate void LoggerCallback(LogLevel level, string message);
 
         // Unmanaged callback function
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -199,20 +199,27 @@ namespace Ers
 
             GCHandle handle   = GCHandle.FromIntPtr(handlePtr);
             LoggerCallback cb = (LoggerCallback)handle.Target!;
-            cb(level, msg);
+            cb((LogLevel)level, msg);
         }
 
         /// <summary>
         /// Add a callback function that is called on each logged message.
         /// </summary>
         /// <param name="callback">The callback to call.</param>
-        public static void AddCallback(LoggerCallback callback)
+        /// <returns>The index of the added callback. It can be used later to remove the callback.</returns>
+        public static nuint AddCallback(LoggerCallback callback)
         {
             var handle = GCHandle.Alloc(callback, GCHandleType.Normal);
             unsafe
             {
-                ErsEngine.ERS_Logger_AddCallback(&ScheduleLocalEvent_EventCallbackFunction, GCHandle.ToIntPtr(handle));
+                return ErsEngine.ERS_Logger_AddCallback(&ScheduleLocalEvent_EventCallbackFunction, GCHandle.ToIntPtr(handle));
             }
         }
+
+        /// <summary>
+        /// Remove a logger callback function.
+        /// </summary>
+        /// <param name="index">The index of the callback to remove. This index was returned when adding the callback.</param>
+        public static void RemoveCallback(nuint index) => ErsEngine.ERS_Logger_RemoveCallback(index);
     }
 }

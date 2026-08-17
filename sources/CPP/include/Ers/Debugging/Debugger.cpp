@@ -9,8 +9,6 @@
 
 namespace Ers
 {
-    constexpr const char* windowTitle = "ERS Debugger";
-
     Debugger::Debugger(Ers::ModelContainer& modelContainer)
     {
         corePtr = Ers::Engine::ERS_Debugger_Create(modelContainer.CorePtr());

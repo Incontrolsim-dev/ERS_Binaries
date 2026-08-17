@@ -146,7 +146,10 @@ namespace Ers.Engine
         public static extern void ERS_Logger_SetLogLevel(int logLevel);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ERS_Logger_AddCallback(delegate* unmanaged[Cdecl]<int, IntPtr, IntPtr, void> logCallback, IntPtr callbackData);
+        public static extern unsafe nuint ERS_Logger_AddCallback(delegate* unmanaged[Cdecl]<int, IntPtr, IntPtr, void> logCallback, IntPtr callbackData);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ERS_Logger_RemoveCallback(nuint index);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe IntPtr ERS_Settings_GetSetting(/* ASCII String */ byte* section, /* ASCII String */ byte* message, /* ASCII String */ byte* defaultValue);

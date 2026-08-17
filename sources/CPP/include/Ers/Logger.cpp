@@ -38,12 +38,17 @@ void Ers::Logger::SetLogLevel(LogLevel level)
 
 static void CallbackWrapper(int level, const char* message, void* userData)
 {
-    using CallbackSignature = void (*)(int level, const char* message);
+    using CallbackSignature = void (*)(Ers::Logger::LogLevel level, const char* message);
     auto callback           = reinterpret_cast<CallbackSignature>(userData);
-    callback(level, message);
+    callback(static_cast<Ers::Logger::LogLevel>(level), message);
 }
 
-void Ers::Logger::AddCallback(void (*callback)(int level, const char* message))
+size_t Ers::Logger::AddCallback(void (*callback)(LogLevel level, const char* message))
 {
-    Ers::Engine::ERS_Logger_AddCallback(CallbackWrapper, reinterpret_cast<void*>(callback));
+    return Ers::Engine::ERS_Logger_AddCallback(CallbackWrapper, reinterpret_cast<void*>(callback));
+}
+
+void Ers::Logger::RemoveCallback(size_t index)
+{
+    Ers::Engine::ERS_Logger_RemoveCallback(index);
 }

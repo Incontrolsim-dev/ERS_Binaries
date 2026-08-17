@@ -7,7 +7,10 @@ namespace Ers
     /// </summary>
     public class Debugger
     {
-        private static readonly string windowTitle = "ERS Debugger";
+        /// <summary>
+        /// The name for the debugger's window.
+        /// </summary>
+        protected static readonly string windowTitle = "ERS Debugger";
 
         /// <summary>
         /// Native pointer to the core debugger instance.
@@ -17,7 +20,7 @@ namespace Ers
         /// <summary>
         /// The window used when a window needs to be created ahead of the debugger (see <see cref="Open"/>).
         /// </summary>
-        private static Ers.Window? runWindow = null;
+        protected static Ers.Window? RunWindow { get; set; } = null;
 
         /// <summary>
         /// Constructs a new Debugger instance attached to the given model container.
@@ -140,7 +143,7 @@ namespace Ers
         ///
         /// <para>This should be called before loading textures and 3D models.</para>
         /// </summary>
-        public static void Open() { runWindow = new Ers.Window(windowTitle); }
+        public static void Open() { RunWindow = new Ers.Window(windowTitle); }
 
         // clang-format off
         /// <summary>
@@ -161,10 +164,10 @@ namespace Ers
             Action<Debugger, Simulator>? render3D = null,
             Action<Debugger>? renderUI            = null)
         {
-            if (runWindow == null)
-                runWindow = new Ers.Window(windowTitle);
+            if (RunWindow == null)
+                RunWindow = new Ers.Window(windowTitle);
 
-            Ers.Debugger debugger = new Ers.Debugger(modelContainer, runWindow);
+            Ers.Debugger debugger = new Ers.Debugger(modelContainer, RunWindow);
             Ers.Window window     = debugger.Window;
 
             while (!window.WantsClose)

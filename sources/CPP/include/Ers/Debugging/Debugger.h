@@ -65,9 +65,13 @@ namespace Ers
             const std::function<void(Ers::Debugger&, Ers::Simulator&)>& render3D = nullptr,
             const std::function<void(Ers::Debugger&)>& renderUI                  = nullptr);
 
-      private:
-        void* corePtr;
+      protected:
+        /// @brief The name for the debugger's window.
+        inline static constexpr const char* windowTitle = "ERS Debugger";
         /// @brief The Window used when a window needs to be created ahead of the debugger (see Debugger::Open).
         inline static Window* runWindow = nullptr;
+
+      private:
+        void* corePtr = nullptr;
     };
 } // namespace Ers

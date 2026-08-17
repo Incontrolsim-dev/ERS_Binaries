@@ -63,7 +63,8 @@ namespace Ers::Engine
     ERS_IMPORT void ERS_Logger_Error(const char* message);
     ERS_IMPORT void ERS_Logger_Critical(const char* message);
     ERS_IMPORT void ERS_Logger_SetLogLevel(int logLevel);
-    ERS_IMPORT void ERS_Logger_AddCallback(void(*logCallback)(int level, const char* message, void* callbackData), void* callbackData);
+    ERS_IMPORT size_t ERS_Logger_AddCallback(void(*logCallback)(int level, const char* message, void* callbackData), void* callbackData);
+    ERS_IMPORT void ERS_Logger_RemoveCallback(size_t index);
     ERS_IMPORT char* ERS_Settings_GetSetting(const char* section, const char* message, const char* defaultValue);
     ERS_IMPORT void ERS_Settings_SetSetting(const char* section, const char* message, const char* value);
     ERS_IMPORT void ERS_Settings_Clear();

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.7.1 - 2026-08-17
+
+### Added
+
+- Added `Logger::RemoveCallback` to the C++ and C# bindings.
+- Added `ERS_Logger_RemoveCallback` API function.
+
+### Changed
+
+- The callback in `Logger::AddCallback` now has the `LogEvent` enum as its first argument (previously an integer).
+- The `Logger::AddCallback` function now returns the index of the callback, which can be used to remove the callback later.
+- Make `windowTitle` and `runWindow` variables of the Debugger protected instead of private.
+
+### Fixed
+
+- Fixed a bug where scheduling events inside each other may cause wrong event ordering.
+- Fixed `Logger::AddCallback` from crashing ERS.
+
 ## 0.7.0 Nanna - 2026-07-07
 
 ### Added
