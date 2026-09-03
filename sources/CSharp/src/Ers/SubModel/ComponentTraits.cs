@@ -146,7 +146,7 @@ namespace Ers
             var typeInfo      = typeof(T).GetCustomAttribute<Ers.TypeInfoAttribute>();
             string? nameAlias = typeInfo != null ? typeInfo.Name : null;
 
-            IntPtr typeInfoPtr = TypeInfoRegister.RegisterType(typeof(T));
+            IntPtr typeInfoPtr = TypeRegistry.TryRegisterStruct(typeof(T));
 
             string name  = nameAlias ?? typeof(T).Name;
             var nameUtf8 = name.ToUtf8NullTerminated();

@@ -12,7 +12,7 @@ namespace Ers
 
         /// @brief Overridable function to define the type information of the component.
         /// @return
-        static TypeInfo* GetTypeInfo() { return nullptr; };
+        static const TypeInfo* GetTypeInfo() { return nullptr; };
 
       protected:
         DataComponent() = default; // Force Users to inherit from component

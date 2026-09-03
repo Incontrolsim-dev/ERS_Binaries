@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.7.2 - 2026-09-03
+
+### Added
+
+- Added enumerator (C#) / iterator (C++) for views, allowing them to be looped over using `foreach` / `range-for`.
+- Added `TypeRegistry` static object to C++ and C# bindings for accessing `TypeInfo`.
+- Added `TypeInfo` related API functions:
+  - `ERS_TypeRegistry_GetTypeById`
+  - `ERS_TypeRegistry_GetTypeByName`
+  - `ERS_TypeInfo_Get_ID`
+  - `ERS_TypeInfo_Get_Size`
+  - `ERS_TypeInfo_Fields_Count`
+  - `ERS_TypeInfo_Get_Field`
+  - `ERS_TypeInfo_Field_Get_Offset`
+  - `ERS_TypeInfo_Field_Get_TypeInfo`
+  - `ERS_TypeInfo_Field_Get_Name`
+  - `ERS_TypeInfo_Field_Get_ReadOnly`
+
+### Changed
+
+- Expose `TypeInfo`'s ID and size fields to the bindings.
+- Expose `TypeInfo` as a struct to the C# bindings.
+- Expose `TypeInfo`'s `Field` as a struct to the C++ and C# bindings.
+- Renamed `FieldType` to `BuiltinType` to better represent what it is.
+- Renamed `ERS_TypeInfo_GetName` to `ERS_TypeInfo_Get_Name` for consistency.
+- Renamed `ERS_TypeInfo_RegisterStruct` to `ERS_TypeRegistry_RegisterStruct` for consistency.
+
+### Fixed
+
+- LINQ functionality is no longer available on `RelationComponent` and `ResourceComponent` in C#. LINQ does not support by reference handling of the objects it works on and as such is incompatible with data components in C#.
+- Fix removal of relation component from a submodel's root entity when the last entity is moved out of the submodel (the relation component is no longer removed).
+- Fix transform system not checking if the initial entity has a relation component, causing a crash in some cases.
+
 ## 0.7.1 - 2026-08-17
 
 ### Added

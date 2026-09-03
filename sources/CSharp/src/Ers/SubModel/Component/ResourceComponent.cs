@@ -64,28 +64,24 @@ namespace Ers
         /// </summary>
         /// <param name="resourceEntity">Resource entity with a <see cref="ResourceComponent"/></param>
         /// <returns>Iterable input channel range</returns>
-        public static IEnumerable<Entity> InputChannels(Entity resourceEntity) =>
-            new ChannelEnumerable(resourceEntity, enumerateOutputChannels: false);
+        public static ChannelEnumerable InputChannels(Entity resourceEntity) => new(resourceEntity, false);
 
         /// <summary>
         /// Get an interable range for output channels.
         /// </summary>
         /// <param name="resourceEntity">Resource entity with a <see cref="ResourceComponent"/></param>
         /// <returns>Iterable output channel range</returns>
-        public static IEnumerable<Entity> OutputChannels(Entity resourceEntity) =>
-            new ChannelEnumerable(resourceEntity, enumerateOutputChannels: true);
+        public static ChannelEnumerable OutputChannels(Entity resourceEntity) => new(resourceEntity, true);
 
-        private readonly struct ChannelEnumerable(Entity resourceEntity, bool enumerateOutputChannels) : IEnumerable<Entity>
+        public readonly struct ChannelEnumerable(Entity resourceEntity, bool enumerateOutputChannels)
         {
             private readonly Entity resourceEntity        = resourceEntity;
             private readonly bool enumerateOutputChannels = enumerateOutputChannels;
 
-            public IEnumerator<Entity> GetEnumerator() => new ChannelEnumerator(resourceEntity, enumerateOutputChannels);
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            public ChannelEnumerator GetEnumerator() => new ChannelEnumerator(resourceEntity, enumerateOutputChannels);
         }
 
-        private class ChannelEnumerator : IEnumerator<Entity>
+        public struct ChannelEnumerator
         {
             private readonly Entity resourceEntity;
             private readonly int channelCount;
@@ -115,8 +111,6 @@ namespace Ers
             }
 
             public void Reset() => currentIndex = -1;
-
-            object IEnumerator.Current => Current;
 
             public Entity Current
             {

@@ -5,6 +5,7 @@
 #include "Ers/SubModel/Entity.h"
 
 #include <array>
+#include <tuple>
 #include <type_traits>
 
 namespace Ers
@@ -30,7 +31,7 @@ namespace Ers
     {
         // Cant be done at compile time so instead one array is generated at
         // runtime, but only once for each combination of types.
-        static auto arr = []()->std::array<ComponentID, sizeof...(Types)>
+        static auto arr = []() -> std::array<ComponentID, sizeof...(Types)>
         {
             int index = 0;
             std::array<ComponentID, sizeof...(Types)> array;
@@ -71,6 +72,14 @@ namespace Ers
             return *static_cast<T*>(componentPtr);
         }
 
+        class ViewIterator;
+
+        /// @brief Get the enumerator at the first matching entity and its component(s).
+        ViewIterator begin();
+
+        /// @brief Get the enumerator at the last matching entity and its component(s).
+        ViewIterator end();
+
       private:
         template <std::size_t... Is> inline std::tuple<EntityID, Types&...> GetHelper(std::index_sequence<Is...>)
         {
@@ -79,4 +88,47 @@ namespace Ers
             return std::forward_as_tuple(entity, (*reinterpret_cast<Types*>(components[Is]))...);
         }
     };
+
+    /// @brief Allows for enumeration over entities in a view. Becomes invalid once the view advances past the end or is destroyed.
+    template <typename... Types> class View<Types...>::ViewIterator
+    {
+      public:
+        ViewIterator() :
+            view(nullptr),
+            atEnd(true)
+        {
+        }
+
+        explicit ViewIterator(View* view) :
+            view(view),
+            atEnd(!view->Next())
+        {
+        }
+
+        std::tuple<Entity, Types&...> operator*() const { return view->Get(); }
+
+        ViewIterator& operator++()
+        {
+            atEnd = !view->Next();
+            return *this;
+        }
+
+        bool operator==(const ViewIterator& other) const { return atEnd == other.atEnd; }
+
+        bool operator!=(const ViewIterator& other) const { return !(*this == other); }
+
+      private:
+        View* view;
+        bool atEnd;
+    };
+
+    template <typename... Types> typename View<Types...>::ViewIterator View<Types...>::begin()
+    {
+        return ViewIterator(this);
+    }
+
+    template <typename... Types> typename View<Types...>::ViewIterator View<Types...>::end()
+    {
+        return ViewIterator();
+    }
 } // namespace Ers

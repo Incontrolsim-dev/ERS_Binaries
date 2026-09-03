@@ -1104,13 +1104,44 @@ namespace Ers.Engine
         public static extern IntPtr ERS_SubModelRandomProperties_GetRandomNumberGenerator(IntPtr submodel);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe IntPtr ERS_TypeInfo_RegisterStruct(/* ASCII String */ byte* name);
+        public static extern unsafe IntPtr ERS_TypeRegistry_RegisterStruct(/* ASCII String */ byte* name);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_TypeRegistry_GetTypeById(UInt32 typeId);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe IntPtr ERS_TypeRegistry_GetTypeByName(/* ASCII String */ byte* typeName);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe void ERS_TypeInfo_AddField(IntPtr componentTypeInfoPtr, /* ASCII String */ byte* name, UInt32 fieldType, nuint offset, [MarshalAs(UnmanagedType.I1)] bool readOnly);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr ERS_TypeInfo_GetName(IntPtr componentTypeInfoPtr);
+        public static extern UInt32 ERS_TypeInfo_Get_ID(IntPtr typeInfoPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint ERS_TypeInfo_Get_Size(IntPtr typeInfoPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_TypeInfo_Get_Name(IntPtr typeInfoPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint ERS_TypeInfo_Fields_Count(IntPtr typeInfoPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_TypeInfo_Get_Field(IntPtr typeInfoPtr, nuint index);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint ERS_TypeInfo_Field_Get_Offset(IntPtr fieldPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_TypeInfo_Field_Get_TypeInfo(IntPtr fieldPtr);
+
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ERS_TypeInfo_Field_Get_Name(IntPtr fieldPtr);
+
+        [return: MarshalAs(UnmanagedType.I1)]
+        [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ERS_TypeInfo_Field_Get_ReadOnly(IntPtr fieldPtr);
 
         [DllImport("ers-engine", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr ERS_Submodel_View_Create(IntPtr subModelHandle, IntPtr includedTypeIdArray_, UInt32 includedTypeArraySize, IntPtr excludedTypeIdArray_, UInt32 excludedTypeArraySize);

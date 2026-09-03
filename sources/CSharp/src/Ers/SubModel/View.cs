@@ -80,6 +80,26 @@ namespace Ers
         public void Dispose() { Base.Dispose(); }
 
         private BaseView Base = new BaseView(subModel, ComponentList.GetTypeArray<T1>(), excluded);
+
+        /// <summary>
+        /// Get the enumerator to enumerate over the matching entities.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public ViewEnumerator GetEnumerator() => new(this);
+
+        /// <summary>
+        /// Enumerator for a view's matching entities.
+        /// </summary>
+        public ref struct ViewEnumerator
+        {
+            private View<T1> view;
+
+            internal ViewEnumerator(View<T1> view) { this.view = view; }
+
+            public Entity Current => view.GetEntity();
+
+            public bool MoveNext() { return view.Next(); }
+        }
     }
 
     /// <summary>
@@ -160,6 +180,26 @@ namespace Ers
         public void Dispose() { Base.Dispose(); }
 
         private BaseView Base = new BaseView(subModel, ComponentList.GetTypeArray<T1, T2>(), excluded);
+
+        /// <summary>
+        /// Get the enumerator to enumerate over the matching entities.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public ViewEnumerator GetEnumerator() => new(this);
+
+        /// <summary>
+        /// Enumerator for a view's matching entities.
+        /// </summary>
+        public ref struct ViewEnumerator
+        {
+            private View<T1, T2> view;
+
+            internal ViewEnumerator(View<T1, T2> view) { this.view = view; }
+
+            public Entity Current => view.GetEntity();
+
+            public bool MoveNext() { return view.Next(); }
+        }
     }
 
     /// <summary>
@@ -242,6 +282,26 @@ namespace Ers
         public void Dispose() { Base.Dispose(); }
 
         private BaseView Base = new BaseView(subModel, ComponentList.GetTypeArray<T1, T2, T3>(), excluded);
+
+        /// <summary>
+        /// Get the enumerator to enumerate over the matching entities.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public ViewEnumerator GetEnumerator() => new(this);
+
+        /// <summary>
+        /// Enumerator for a view's matching entities.
+        /// </summary>
+        public ref struct ViewEnumerator
+        {
+            private View<T1, T2, T3> view;
+
+            internal ViewEnumerator(View<T1, T2, T3> view) { this.view = view; }
+
+            public Entity Current => view.GetEntity();
+
+            public bool MoveNext() { return view.Next(); }
+        }
     }
 
     /// <summary>
@@ -327,6 +387,26 @@ namespace Ers
         public void Dispose() { Base.Dispose(); }
 
         private BaseView Base = new BaseView(subModel, ComponentList.GetTypeArray<T1, T2, T3, T4>(), excluded);
+
+        /// <summary>
+        /// Get the enumerator to enumerate over the matching entities.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public ViewEnumerator GetEnumerator() => new(this);
+
+        /// <summary>
+        /// Enumerator for a view's matching entities.
+        /// </summary>
+        public ref struct ViewEnumerator
+        {
+            private View<T1, T2, T3, T4> view;
+
+            internal ViewEnumerator(View<T1, T2, T3, T4> view) { this.view = view; }
+
+            public Entity Current => view.GetEntity();
+
+            public bool MoveNext() { return view.Next(); }
+        }
     }
 
     /// <summary>
@@ -413,5 +493,25 @@ namespace Ers
         public void Dispose() { Base.Dispose(); }
 
         private BaseView Base = new BaseView(subModel, ComponentList.GetTypeArray<T1, T2, T3, T4, T5>(), excluded);
+
+        /// <summary>
+        /// Get the enumerator to enumerate over the matching entities.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public ViewEnumerator GetEnumerator() => new(this);
+
+        /// <summary>
+        /// Enumerator for a view's matching entities.
+        /// </summary>
+        public ref struct ViewEnumerator
+        {
+            private View<T1, T2, T3, T4, T5> view;
+
+            internal ViewEnumerator(View<T1, T2, T3, T4, T5> view) { this.view = view; }
+
+            public Entity Current => view.GetEntity();
+
+            public bool MoveNext() { return view.Next(); }
+        }
     }
 }

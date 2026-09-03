@@ -8,7 +8,7 @@ namespace Ers
     /// Component defining hierarchical relations between entities.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RelationComponent : ICoreComponent, IEnumerable<Entity>
+    public struct RelationComponent : ICoreComponent
     {
         /// <summary>
         /// Get the ID of the parent.
@@ -111,14 +111,12 @@ namespace Ers
         /// <returns></returns>
         public IEnumerator<Entity> GetEnumerator() => new ChildEnumerator(First);
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
         /// <summary>
         /// Allows for the enumeration over children of a parent entity. Becomes invalid once the makeup of the parent's child entities
         /// change.
         /// </summary>
         /// <param name="c">The first child entity of the parent.</param>
-        public class ChildEnumerator(Entity c) : IEnumerator<Entity>
+        public struct ChildEnumerator(Entity c) : IEnumerator<Entity>
         {
             /// <summary>
             /// The parent entity for whose children to iterate over.

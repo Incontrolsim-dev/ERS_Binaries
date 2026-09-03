@@ -118,7 +118,7 @@ namespace Ers
         component->Serialization(serializer);
     }
 
-    template <typename T> static void RegisterGlobalComponentType(TypeInfo* typeInfo)
+    template <typename T> static void RegisterGlobalComponentType(const TypeInfo* typeInfo)
     {
         assert(!IsComponentTypeGloballyRegistered<T>());
 
@@ -141,9 +141,9 @@ namespace Ers
         }
 
         // When custom serialization is present, pass nullptr for typeInfo to ensure it takes precedence
-        TypeInfo* finalTypeInfo = customSerialize ? nullptr : typeInfo;
+        const void* typeInfoPtr = customSerialize || !typeInfo ? nullptr : typeInfo->CorePtr();
 
-        ComponentID id = Ers::Engine::ERS_GlobalComponentRegistry_RegisterComponent(name, size, finalTypeInfo, customSerialize);
+        ComponentID id = Ers::Engine::ERS_GlobalComponentRegistry_RegisterComponent(name, size, typeInfoPtr, customSerialize);
         TypeToComponentID<T>::ComponentTypeID = id;
     }
 
@@ -160,7 +160,7 @@ namespace Ers
             if (IsComponentTypeGloballyRegistered<ComponentType>())
                 return;
 
-            TypeInfo* typeInfo = nullptr;
+            const TypeInfo* typeInfo = nullptr;
             if constexpr (std::is_base_of<DataComponent, ComponentType>::value)
             {
                 typeInfo = ComponentType::GetTypeInfo();
