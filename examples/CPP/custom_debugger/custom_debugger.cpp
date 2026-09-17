@@ -108,9 +108,9 @@ class CustomDebugger
 
     void EndDockSpace() { window.EndRootDockSpace(); }
 
-    void CustomWidget()
+    void CustomWidget(bool& open)
     {
-        ImGui::Begin("Test window");
+        ImGui::Begin("Test window", &open);
 
         // ImGui
         ImGui::SeparatorText("ImGui");
@@ -155,6 +155,7 @@ class CustomDebugger
 
         if (ImGui::BeginMainMenuBar())
         {
+            // File
             if (ImGui::BeginMenu("File"))
             {
                 if (ImGui::MenuItem("Exit"))
@@ -163,23 +164,90 @@ class CustomDebugger
                 }
                 ImGui::EndMenu();
             }
+
+            // Window
+            if (ImGui::BeginMenu("Window"))
+            {
+                // Run Controls is locked/always visible now (hidden from menu)
+                if (ImGui::BeginMenu("Model"))
+                {
+                    ImGui::MenuItem("Hierarchy", nullptr, &windowModelHierarchyOpen);
+                    ImGui::MenuItem("Structure", nullptr, &windowModelStructureOpen);
+                    ImGui::EndMenu();
+                }
+                ImGui::MenuItem("Inspector", nullptr, &windowInspectorOpen);
+                ImGui::MenuItem("Event Timeline", nullptr, &windowEventTimeLineOpen);
+                ImGui::MenuItem("Model Progression", nullptr, &windowModelProgressionOpen);
+                ImGui::MenuItem("Log", nullptr, &windowLogOpen);
+                ImGui::MenuItem("Visualization", nullptr, &windowVisualizationOpen);
+                ImGui::MenuItem("Custom", nullptr, &windowCustomOpen);
+                ImGui::EndMenu();
+            }
+
+            // View
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::Checkbox("Dark mode", &isDarkMode))
+                {
+                    if (isDarkMode)
+                    {
+                        StyleColorsErsDark();
+                        renderContext.SetBackgroundColor(Ers::Color::FromFloats(0.2f, 0.2f, 0.2f, 1.0f));
+                        renderContext.SetBackgroundGridColor(Ers::Color::FromFloats(0.8f, 0.8f, 0.8f));
+                    }
+                    else
+                    {
+                        StyleColorsErsLight();
+                        renderContext.SetBackgroundColor(Ers::Color::FromFloats(0.8f, 0.8f, 0.8f, 1.0f));
+                        renderContext.SetBackgroundGridColor(Ers::Color::FromFloats(0.2f, 0.2f, 0.2f));
+                    }
+                }
+                ImGui::EndMenu();
+            }
+
+            // Help
+            if (ImGui::BeginMenu("Help"))
+            {
+                ImGui::MenuItem("License Manager", nullptr, &windowLicensingOpen);
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMainMenuBar();
         }
 
         runControls.Window(modelContainer, isRunning, "Run Controls");
-        logWidget.Window("Log");
-        if (eventTimeline.Window(modelContainer, selectedEvent, isRunning, "Event Timeline"))
-        {
-            selectedType = Ers::SelectedType::Event;
-        }
-        modelHierarchy.Window(modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedType, "Model Hierarchy");
-        inspector.Window(selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector");
-        visualization.Window(renderContext, "Visualization");
-        modelStructure.Window(modelContainer, "Model Structure");
-        modelProgression.Window(modelContainer, "Model Progression");
-        licensing.Window("Licensing Manager");
 
-        CustomWidget();
+        if (windowLogOpen)
+            logWidget.Window("Log", &windowLogOpen);
+        
+        if (windowEventTimeLineOpen)
+        {
+            if (eventTimeline.Window(modelContainer, selectedEvent, isRunning, "Event Timeline", &windowEventTimeLineOpen))
+            {
+                selectedType = Ers::SelectedType::Event;
+            }
+        }
+
+        if (&windowModelHierarchyOpen)
+            modelHierarchy.Window(modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedType, "Model Hierarchy", &windowModelHierarchyOpen);
+
+        if (windowInspectorOpen)
+            inspector.Window(selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector", &windowInspectorOpen);
+
+        if (windowVisualizationOpen)
+            visualization.Window(renderContext, "Visualization", &windowVisualizationOpen);
+
+        if (windowModelStructureOpen)
+            modelStructure.Window(modelContainer, "Model Structure", &windowModelStructureOpen);
+        
+        if (windowModelProgressionOpen)
+            modelProgression.Window(modelContainer, "Model Progression", &windowModelProgressionOpen);
+
+        if (windowLicensingOpen)
+            licensing.Window("Licensing Manager", &windowLicensingOpen);
+
+        if (windowCustomOpen)
+            CustomWidget(windowCustomOpen);
 
         if (is3DMode)
             renderContext.End3D();
@@ -210,6 +278,19 @@ class CustomDebugger
     Ers::ModelStructureWidget modelStructure;
     Ers::ModelProgressionWidget modelProgression;
     Ers::LicensingWidget licensing;
+
+    // Windows
+    bool windowModelHierarchyOpen   = true;
+    bool windowModelStructureOpen   = false;
+    bool windowInspectorOpen        = true;
+    bool windowEventTimeLineOpen    = true;
+    bool windowLogOpen              = true;
+    bool windowVisualizationOpen    = true;
+    bool windowModelProgressionOpen = false;
+    bool windowLicensingOpen        = false;
+    bool windowCustomOpen           = true;
+
+    bool isDarkMode = false;
 
     bool switchValue         = false;
     Ers::Vector3 vectorValue = Ers::Vec3(1, 2, 3);

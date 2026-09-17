@@ -1,5 +1,5 @@
-project(cpp_imgui)
-add_executable(${PROJECT_NAME} cpp_imgui.cpp ${ERS_SDK_SOURCES})
+project(custom_debugger)
+add_executable(${PROJECT_NAME} custom_debugger.cpp ${ERS_SDK_SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "Examples/C++")

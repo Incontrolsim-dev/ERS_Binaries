@@ -3,7 +3,7 @@ using Ers;
 using ImGuiNET;
 using ImPlotNET;
 
-namespace CSharpImgui
+namespace CustomDebugger
 {
     internal class CustomDebugger
     {
@@ -27,6 +27,18 @@ namespace CSharpImgui
         ModelStructureWidget modelStructure = new();
         ModelProgressionWidget modelProgression = new();
         LicensingWidget licensing = new();
+
+        bool windowModelHierarchyOpen = true;
+        bool windowModelStructureOpen = false;
+        bool windowInspectorOpen = true;
+        bool windowEventTimeLineOpen = true;
+        bool windowLogOpen = true;
+        bool windowVisualizationOpen = true;
+        bool windowModelProgressionOpen = false;
+        bool windowLicensingOpen = false;
+        bool windowCustomOpen = true;
+
+        bool isDarkMode = false;
 
         bool switchValue = false;
         Vector3 vectorValue = new(1, 2, 3);
@@ -102,10 +114,10 @@ namespace CSharpImgui
 
         private void EndDockSpace() { Window.EndRootDockSpace(); }
 
-        private void CustomWidget()
+        private void CustomWidget(ref bool open)
         {
             ImGui.SetNextWindowSize(new Vector2(800, 600));
-            ImGui.Begin("Test window");
+            ImGui.Begin("Test window", ref open);
 
             ImGui.SeparatorText("ImGui");
             ImGui.Text("Hello World!");
@@ -144,6 +156,7 @@ namespace CSharpImgui
 
             if (ImGui.BeginMainMenuBar())
             {
+                // File
                 if (ImGui.BeginMenu("File"))
                 {
                     if (ImGui.MenuItem("Exit"))
@@ -152,25 +165,92 @@ namespace CSharpImgui
                     }
                     ImGui.EndMenu();
                 }
+
+                // Window
+                if (ImGui.BeginMenu("Window"))
+                {
+                    // Run Controls is locked/always visible now (hidden from menu)
+                    if (ImGui.BeginMenu("Model"))
+                    {
+                        ImGui.MenuItem("Hierarchy", null, ref windowModelHierarchyOpen);
+                        ImGui.MenuItem("Structure", null, ref windowModelStructureOpen);
+                        ImGui.EndMenu();
+                    }
+                    ImGui.MenuItem("Inspector", null, ref windowInspectorOpen);
+                    ImGui.MenuItem("Event Timeline", null, ref windowEventTimeLineOpen);
+                    ImGui.MenuItem("Model Progression", null, ref windowModelProgressionOpen);
+                    ImGui.MenuItem("Log", null, ref windowLogOpen);
+                    ImGui.MenuItem("Visualization", null, ref windowVisualizationOpen);
+                    ImGui.MenuItem("Custom", null, ref windowCustomOpen);
+                    ImGui.EndMenu();
+                }
+
+                // View
+                if (ImGui.BeginMenu("View"))
+                {
+                    if (ImGui.Checkbox("Dark mode", ref isDarkMode))
+                    {
+                        if (isDarkMode)
+                        {
+                            ErsImGui.StyleColorsErsDark();
+                            renderContext.BackgroundColor = Ers.Color.FromFloats(0.2f, 0.2f, 0.2f, 1.0f);
+                            renderContext.BackgroundGridColor = Ers.Color.FromFloats(0.8f, 0.8f, 0.8f);
+                        }
+                        else
+                        {
+                            ErsImGui.StyleColorsErsLight();
+                            renderContext.BackgroundColor = Ers.Color.FromFloats(0.8f, 0.8f, 0.8f, 1.0f);
+                            renderContext.BackgroundGridColor = Ers.Color.FromFloats(0.2f, 0.2f, 0.2f);
+                        }
+                    }
+                    ImGui.EndMenu();
+                }
+
+                // Help
+                if (ImGui.BeginMenu("Help"))
+                {
+                    ImGui.MenuItem("License Manager", null, ref windowLicensingOpen);
+                    ImGui.EndMenu();
+                }
+
                 ImGui.EndMainMenuBar();
             }
 
             runControls.Window(modelContainer, ref isRunning, "Run Controls");
-            logWidget.Window("Log");
-            if (eventTimeline.Window(modelContainer, selectedEvent, isRunning, "Event Timeline"))
-            {
-                selectedType = SelectedType.Event;
-            }
-            modelHierarchy.Window(
-                modelContainer, ref selectedSimulator, ref selectedSimulator, ref selectedEntity, ref selectedType, "Model Hierarchy");
-            inspector.Window(
-                selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector");
-            visualization.Window(renderContext, "Visualization");
-            modelStructure.Window(modelContainer, "Model Structure");
-            modelProgression.Window(modelContainer, "Model Progression");
-            licensing.Window("Licensing Manager");
 
-            CustomWidget();
+            if (windowLogOpen)
+                logWidget.Window("Log", ref windowLogOpen);
+
+            if (windowEventTimeLineOpen)
+            {
+                if (eventTimeline.Window(modelContainer, selectedEvent, isRunning, "Event Timeline", ref windowEventTimeLineOpen))
+                {
+                    selectedType = SelectedType.Event;
+                }
+            }
+
+            if (windowModelHierarchyOpen)
+                modelHierarchy.Window(
+                    modelContainer, ref selectedSimulator, ref selectedSimulator, ref selectedEntity, ref selectedType, "Model Hierarchy", ref windowModelHierarchyOpen);
+
+            if (windowInspectorOpen)
+                inspector.Window(
+                    selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector", ref windowInspectorOpen);
+
+            if (windowVisualizationOpen)
+                visualization.Window(renderContext, "Visualization", ref windowVisualizationOpen);
+
+            if (windowModelStructureOpen)
+                modelStructure.Window(modelContainer, "Model Structure", ref windowModelStructureOpen);
+
+            if (windowModelProgressionOpen)
+                modelProgression.Window(modelContainer, "Model Progression", ref windowModelProgressionOpen);
+
+            if (windowLicensingOpen)
+                licensing.Window("Licensing Manager", ref windowLicensingOpen);
+
+            if (windowCustomOpen)
+                CustomWidget(ref windowCustomOpen);
 
             if (visualization.Is3DMode)
                 renderContext.End3D();
