@@ -16,14 +16,6 @@
 
 namespace Ers
 {
-    // Concept to ensure required static methods exist for SyncEvent
-    template <typename T>
-    concept SyncEventConcept = requires(T t) {
-        { T::GetName() } -> std::convertible_to<const char*>;
-        { t.OnSenderSide() } -> std::same_as<void>;
-        { t.OnTargetSide() } -> std::same_as<void>;
-    };
-
     template <typename T>
     concept SyncEventCombinedConcept = requires(T t) {
         { T::GetName() } -> std::convertible_to<const char*>;

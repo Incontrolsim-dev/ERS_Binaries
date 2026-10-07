@@ -44,6 +44,15 @@ namespace Ers
         Ers::Engine::ERS_Camera3D_SetLookAt(corePtr, x, y, z);
     }
 
+    Ray Camera3D::GetPickRay(Vector2 viewportPos) const
+    {
+        Ray ray = Ray(Vec3(0, 0, 0), Vec3(0, 0, 0));
+        Ers::Engine::ERS_Camera3D_GetPickRay(
+            corePtr, viewportPos.X, viewportPos.Y, &ray.position.X, &ray.position.Y, &ray.position.Z, &ray.direction.X, &ray.direction.Y,
+            &ray.direction.Z);
+        return ray;
+    }
+
     void* Camera3D::CorePtr()
     {
         return corePtr;

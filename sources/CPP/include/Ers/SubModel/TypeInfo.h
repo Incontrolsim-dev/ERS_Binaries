@@ -65,6 +65,10 @@ namespace Ers
         /// @return
         uint32_t GetID() const;
 
+        /// @brief Get the component ID of the type, if any.
+        /// @return The component ID if this type corresponds to a component, UINT32_MAX otherwise.
+        uint32_t GetComponentID() const;
+
         /// @brief The size of the type in bytes.
         /// @return
         size_t GetSize() const;

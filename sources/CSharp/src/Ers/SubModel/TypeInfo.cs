@@ -175,6 +175,11 @@ namespace Ers
         public readonly uint ID => ErsEngine.ERS_TypeInfo_Get_ID(CorePtr);
 
         /// <summary>
+        /// The component ID of the type, if any; <see cref="UInt32.MaxValue"/> otherwise.
+        /// </summary>
+        public readonly uint ComponentID => ErsEngine.ERS_TypeInfo_Get_ComponentID(CorePtr);
+
+        /// <summary>
         /// The size of the type in bytes.
         /// </summary>
         public readonly nuint Size => ErsEngine.ERS_TypeInfo_Get_Size(CorePtr);

@@ -34,7 +34,7 @@ namespace Ers
         void SetPosition(Vector3 pos);
         /// @brief Get the global position.
         /// @return
-        [[nodiscard]] Vector3 GetGlobalPosition() const;
+        [[nodiscard]] Vector3 GetGlobalPosition();
 
         /// @brief Get the local rotation as Euler angles.
         /// @return
@@ -44,7 +44,7 @@ namespace Ers
         void SetRotation(Vector3 rotation);
         /// @brief Get the global rotation as Euler angles.
         /// @return
-        [[nodiscard]] Vector3 GetGlobalRotation() const;
+        [[nodiscard]] Vector3 GetGlobalRotation();
 
         /// @brief Get the local scale.
         /// @return
@@ -54,7 +54,7 @@ namespace Ers
         void SetScale(Vector3 scale);
         /// @brief Get the global scale.
         /// @return
-        [[nodiscard]] Vector3 GetGlobalScale() const;
+        [[nodiscard]] Vector3 GetGlobalScale();
 
         /// @brief Rotate counterclockwise around the X-axis by a given angle.
         /// @param radians The angle in turns (1 turn = 360 degrees).

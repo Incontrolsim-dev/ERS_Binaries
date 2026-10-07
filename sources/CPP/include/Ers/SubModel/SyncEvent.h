@@ -1,10 +1,18 @@
 #pragma once
+#include <concepts>
 #include <typeinfo>
 
 #include "Ers/Api.h"
 
 namespace Ers
 {
+    // Concept to ensure required static methods exist for SyncEvent
+    template <typename T>
+    concept SyncEventConcept = requires(T t) {
+        { T::GetName() } -> std::convertible_to<const char*>;
+        { t.OnSenderSide() } -> std::same_as<void>;
+        { t.OnTargetSide() } -> std::same_as<void>;
+    };
 
     // Base class with compile-time check and static_assert guidance
     template <typename Derived> struct ISyncEvent

@@ -48,9 +48,9 @@ namespace Ers
         return Ers::Engine::ERS_Channel_IsReady(channel);
     }
 
-    void ChannelComponent::Connect(Entity input, Entity output)
+    void ChannelComponent::Connect(Entity channelA, Entity channelB)
     {
-        Ers::Engine::ERS_Channel_Connect(input, output);
+        Ers::Engine::ERS_Channel_Connect(channelA, channelB);
     }
 
     void ChannelComponent::AddChannelComponent(Entity channel, ChannelType type, Entity resource)

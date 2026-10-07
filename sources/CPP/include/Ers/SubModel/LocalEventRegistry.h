@@ -11,18 +11,6 @@
 
 namespace Ers
 {
-    // Concept to ensure LocalEvent has all required methods from ERS_EVENT macro
-    template <typename T>
-    concept LocalEventConcept = requires(T t, Serializer& serializer) {
-        // Required: OnEvent method for event execution
-        { t.OnEvent() } -> std::same_as<void>;
-        // Required: Serialization method (provided by ERS_EVENT macro)
-        { t.Serialization(serializer) } -> std::same_as<void>;
-        // Required: GetEventSourceLocation static method (provided by ERS_EVENT macro)
-        { T::GetEventSourceLocation().File } -> std::convertible_to<const char*>;
-        { T::GetEventSourceLocation().Line } -> std::convertible_to<int>;
-    };
-
     /// @brief Static registration of local event type - templated per event type
     /// Each unique event struct gets its own registration with type-specific callbacks
     template <typename EventType> class LocalEventRegistry

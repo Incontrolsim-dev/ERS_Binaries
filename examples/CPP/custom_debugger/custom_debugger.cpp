@@ -7,6 +7,9 @@
 #include "Ers/Math/HMM/VectorMath.h"
 #include "Ers/Model/ModelContainer.h"
 #include "Ers/Model/Simulator/Simulator.h"
+#include "Ers/SubModel/Component/BoxComponent.h"
+#include "Ers/SubModel/Component/RenderComponent.h"
+#include "Ers/SubModel/Component/TransformComponent.h"
 #include "Ers/SubModel/Entity.h"
 #include "Ers/SubModel/EventScheduler.h"
 #include "Ers/SubModel/PersistentEvent.h"
@@ -235,7 +238,15 @@ class CustomDebugger
             inspector.Window(selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector", &windowInspectorOpen);
 
         if (windowVisualizationOpen)
-            visualization.Window(renderContext, "Visualization", &windowVisualizationOpen);
+        {
+            Ers::VisualizationWidget::EntitySelectionArgs entitySelectionArgs(
+                modelContainer,
+                selectedType,
+                selectedEntity,
+                selectedSimulator
+            );
+            visualization.Window(renderContext, &entitySelectionArgs, "Visualization", &windowVisualizationOpen);
+        }
 
         if (windowModelStructureOpen)
             modelStructure.Window(modelContainer, "Model Structure", &windowModelStructureOpen);
@@ -250,9 +261,25 @@ class CustomDebugger
             CustomWidget(windowCustomOpen);
 
         if (is3DMode)
+        {
+            for (Ers::Simulator& sim : modelContainer.GetSimulators())
+            {
+                sim.EnterSubModel();
+                Ers::RenderSystem::Render3D(Ers::SubModel::Get(), renderContext);
+                sim.ExitSubModel();
+            }
             renderContext.End3D();
+        }
         else
+        {
+            for (Ers::Simulator& sim : modelContainer.GetSimulators())
+            {
+                sim.EnterSubModel();
+                Ers::RenderSystem::Render2D(Ers::SubModel::Get(), renderContext);
+                sim.ExitSubModel();
+            }
             renderContext.End2D();
+        }
         EndDockSpace();
         window.EndFrame();
     }
@@ -316,7 +343,16 @@ int main()
     Ers::ModelContainer modelContainer = Ers::ModelContainer::Create();
     Ers::Simulator sim                 = modelContainer.AddSimulator("Sim", Ers::SimulatorType::DiscreteEvent);
     sim.EnterSubModel();
-    Ers::EventScheduler::ScheduleLocalEvent(0, 10 * Ers::SubModel::Get().GetModelPrecision(), SomeEvent());
+    Ers::SubModel& subModel = Ers::SubModel::Get();
+    Ers::EventScheduler::ScheduleLocalEvent(0, 10 * subModel.GetModelPrecision(), SomeEvent());
+
+    const EntityID entity = subModel.CreateEntity("Entity");
+    subModel.AddComponent<Ers::TransformComponent>(entity);
+    auto* boxComponent = subModel.AddComponent<Ers::BoxComponent>(entity);
+    boxComponent->SetDimensions(Ers::Vec3(10, 10, 10));
+    auto* renderComponent = subModel.AddComponent<Ers::RenderComponent>(entity);
+    renderComponent->SetShape(Ers::RenderComponentShape::Rectangle);
+    renderComponent->SetColor(Ers::Color::FromBytes(0, 0, 255));
     sim.ExitSubModel();
 
     CustomDebugger debugger(modelContainer);

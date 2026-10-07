@@ -26,7 +26,7 @@ namespace Ers
         Ers::Engine::ERS_InstancedModel_SetMesh(CorePtr(), mesh.CorePtr());
     }
 
-    void InstancedModel::PushInstance(const TransformComponent& globalTransform)
+    void InstancedModel::PushInstance(TransformComponent& globalTransform)
     {
         PushInstance(globalTransform.GetGlobalPosition(), globalTransform.GetGlobalRotation(), globalTransform.GetGlobalScale());
     }

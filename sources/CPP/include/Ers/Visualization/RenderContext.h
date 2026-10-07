@@ -143,12 +143,32 @@ namespace Ers
             Vector2 uvMax  = Vec2(1, 1),
             int64_t zIndex = 0);
 
+        /// @brief Draw a 3D line.
+        /// @param start Starting point of the line.
+        /// @param end End point of the line.
+        /// @param thickness The thickness of the line.
+        /// @param color The color of the line.
+        void DrawLine3D(Vector3 start, Vector3 end, float thickness, Color color);
+
         /// @brief Draw a 3D cube.
         /// @param position The position of the cube.
         /// @param rotation The rotation of the cube.
         /// @param size The size of the cube.
         /// @param color The color of the cube.
         void DrawCube3D(Vector3 position, Vector3 rotation, Vector3 size, Color color);
+
+        /// @brief Draw the outline of a 3D cube.
+        /// @param center The center of the cube.
+        /// @param rotation The rotation of the cube.
+        /// @param scale The scale of the cube.
+        /// @param lineThickness The thickness of the outline.
+        /// @param color The color for the lines.
+        void DrawCubeOutline3D(
+            Vector3 center,
+            Vector3 rotation    = Vec3(0, 0, 0),
+            Vector3 size        = Vec3(1, 1, 1),
+            float lineThickness = 0.1f,
+            Color color         = Color::FromBytes(255, 255, 255, 255));
 
         /// @brief Draw 3D text.
         /// @param text The text to draw.

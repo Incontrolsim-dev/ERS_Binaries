@@ -26,6 +26,11 @@ namespace Ers
         return Ers::Engine::ERS_TypeInfo_Get_ID(corePtr);
     }
 
+    uint32_t TypeInfo::GetComponentID() const
+    {
+        return Ers::Engine::ERS_TypeInfo_Get_ComponentID(corePtr);
+    }
+
     size_t TypeInfo::GetSize() const
     {
         return Ers::Engine::ERS_TypeInfo_Get_Size(corePtr);

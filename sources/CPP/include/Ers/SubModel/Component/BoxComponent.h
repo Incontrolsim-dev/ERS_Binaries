@@ -25,20 +25,6 @@ namespace Ers
         /// @return The component type ID from ers-core
         static uint32_t CoreTypeId();
 
-        /// @brief Get the corner with the lowest values.
-        /// @return The minimum corner
-        [[nodiscard]] Vector3 GetMin() const;
-
-        /// @brief Set the corner with the lowest values.
-        void SetMin(Vector3 min);
-
-        /// @brief Get the corner with the highest values.
-        /// @return The maximum corner
-        [[nodiscard]] Vector3 GetMax() const;
-
-        /// @brief Set the corner with the highest values.
-        void SetMax(Vector3 max);
-
         /// @brief Get the dimensions of the bounding box.
         /// @return The dimensions
         [[nodiscard]] Vector3 GetDimensions() const;
@@ -46,15 +32,5 @@ namespace Ers
         /// @brief Set the dimensions of the bounding box.
         /// @param dims The new dimensions.
         void SetDimensions(Vector3 dims);
-
-        /// @brief Check whether a 2D point is within the bounding box.
-        /// @param point The 2D point to test
-        /// @return True if the point is within the box
-        [[nodiscard]] bool InCollision(Vector2 point) const;
-
-        /// @brief Check whether a ray intersects the bounding box.
-        /// @param ray The ray to test
-        /// @return True if the ray intersects the box
-        [[nodiscard]] bool InCollision(const Ray& ray) const;
     };
 } // namespace Ers

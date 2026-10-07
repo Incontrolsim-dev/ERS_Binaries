@@ -17,10 +17,10 @@ std::string Ers::License::EditionName()
 
 int Ers::License::MaxJobSystemCores()
 {
-    return Ers::Engine::ERS_License_GetLimits_MaxJobSystemCores();
+    return Ers::Engine::ERS_License_MaxJobSystemCores();
 }
 
 int Ers::License::MaxComponentTypes()
 {
-    return Ers::Engine::ERS_License_GetLimits_MaxComponentTypes();
+    return Ers::Engine::ERS_License_MaxComponentTypes();
 }

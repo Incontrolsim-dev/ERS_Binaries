@@ -83,29 +83,27 @@ namespace Ers
         /// <summary>
         /// Update the transform of the camera.
         /// </summary>
-        /// <param name="screenWidth">The current width of the screen in pixels.</param>
-        /// <param name="screenHeight">The current height of the screen in pixels.</param>
-        public void UpdateTransform(int screenWidth, int screenHeight)
+        /// <param name="viewportWidth">The current width of the viewport in pixels.</param>
+        /// <param name="viewportHeight">The current height of the viewport in pixels.</param>
+        public void UpdateTransform(int viewportWidth, int viewportHeight)
         {
-            ErsEngine.ERS_Camera3D_UpdateTransform(CorePtr, screenWidth, screenHeight);
+            ErsEngine.ERS_Camera3D_UpdateTransform(CorePtr, viewportWidth, viewportHeight);
         }
 
         /// <summary>
-        /// Get a pick ray from the camera eye position to a screen position, in world coordinates.
+        /// Get a pick ray from the camera eye position to a viewport position, in world coordinates.
         /// </summary>
-        /// <param name="screenWidth">The current width of the screen.</param>
-        /// <param name="screenHeight">The current height of the screen.</param>
-        /// <param name="screenPos">The screen position used to calculate the ray.</param>
+        /// <param name="screenPos">The position on the camera's viewport.</param>
         /// <returns></returns>
-        public Ray GetPickRay(int screenWidth, int screenHeight, Vector2 screenPos)
+        public Ray GetPickRay(Vector2 screenPos)
         {
             unsafe
             {
                 float posX, posY, posZ;
                 float dirX, dirY, dirZ;
                 ErsEngine.ERS_Camera3D_GetPickRay(
-                    CorePtr, screenWidth, screenHeight, (int)screenPos.X, (int)screenPos.Y, (IntPtr)(&posX), (IntPtr)(&posY),
-                    (IntPtr)(&posZ), (IntPtr)(&dirX), (IntPtr)(&dirY), (IntPtr)(&dirZ));
+                    CorePtr, (int)screenPos.X, (int)screenPos.Y, (IntPtr)(&posX), (IntPtr)(&posY), (IntPtr)(&posZ), (IntPtr)(&dirX),
+                    (IntPtr)(&dirY), (IntPtr)(&dirZ));
                 return new Ray(new Vector3(posX, posY, posZ), new Vector3(dirX, dirY, dirZ));
             }
         }

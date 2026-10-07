@@ -5,6 +5,80 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0 Dumuzid - 2026-10-07
+
+### Added
+
+- Added `ILocalEvent` to C++ bindings to match the existence of `ISyncEvent` in C++ and C#, and `ILocalEvent` in C#.
+- Added `Camera2D` Min, Max, and Size getters in C++ and C# bindings.
+- Added `Camera2D` API functions:
+  - `ERS_Camera2D_Size_Get_X`
+  - `ERS_Camera2D_Size_Get_Y`
+  - `ERS_Camera2D_Min_Get_X`
+  - `ERS_Camera2D_Min_Get_Y`
+  - `ERS_Camera2D_Max_Get_X`
+  - `ERS_Camera2D_Max_Get_Y`
+- Entities with `TransformComponent` and `BoxComponent` can now be selected using left-click in the visualization widget.
+Selected entities are highlighted by their bounding box (`BoxComponent`).
+Clicking on a selected entity again allows cycling through entities that are behind it.
+- Added `VisualizationWidget::EntitySelectionArgs` struct for the optional set of entity selection arguments.
+- Added option to disable selected entity highlight rendering in the visualization widget.
+- Added `DrawLine3D` visualization function.
+- Added `DrawCubeOutline3D` visualization function.
+- Added collision detection methods to the collision system for collision detection between a box component and a point 2D, point 3D and rays. Includes API functions:
+  - `ERS_CollisionSystem_InCollision_Box_Point2D`
+  - `ERS_CollisionSystem_InCollision_Box_Point3D`
+  - `ERS_CollisionSystem_InCollision_Box_Ray`
+- Added `Camera2D`'s `GetWorldPos()` function to the C++ bindings (was already available in C#).
+- Added `Camera3D`'s `GetPickRay()` function to the C++ bindings (was already available in C#).
+- Added a `SizePerPixel()` function to `Camera3D` to calculate the required world size to render a point as large as one pixel.
+- Added `BeginWindow()` and `EndWindow()` functions to the visualization widget to allow extending the default window's functionality.
+  - Added `ERS_VisualizationWidget_BeginWindow` and `ERS_VisualizationWidget_EndWindow`.
+- Added getter for component ID to `TypeInfo`.
+  - Added `ERS_TypeInfo_Get_ComponentID`.
+
+### Changed
+
+- Use the same color for highlighting the tree nodes in the model hierarchy widgets (previously entities were hard-coded to blue).
+- `Camera2D`'s `GetWorldPos` no longer takes the screen- width and height as the second and third parameters.
+- `Camera3D`'s `GetPickRay` no longer takes the screen- width and height as the second and third parameters.
+- `ERS_Camera2D_GetWorldPos` and `ERS_Camera3D_GetPickRay` no longer take the screen- width and height as the second and third parameters.
+- Improved license management in the ERS core.
+- Renamed various API function related to licensing:
+  - `ERS_License_Info_DaysRemaining` -> `ERS_License_DaysRemaining`
+  - `ERS_License_Info_LicenseType` -> `ERS_License_LicenseType`
+  - `ERS_License_GetLimits_MaxJobSystemCores` -> `ERS_License_MaxJobSystemCores`
+  - `ERS_License_GetLimits_MaxComponentTypes` -> `ERS_License_MaxComponentTypes`
+- `ERS_License_DaysRemaining` now returns -1 instead of 0 when no valid license is found.
+
+### Removed
+
+- Removed Min and Max properties from `BoxComponent`. This includes the removal of related API functions:
+  - `ERS_BoxComponent_Get_Min_X`
+  - `ERS_BoxComponent_Get_Min_Y`
+  - `ERS_BoxComponent_Get_Min_Z`
+  - `ERS_BoxComponent_Get_Max_X`
+  - `ERS_BoxComponent_Get_Max_Y`
+  - `ERS_BoxComponent_Get_Max_Z`
+  - `ERS_BoxComponent_Set_Min`
+  - `ERS_BoxComponent_Set_Max`
+- Removed collision detection method from `BoxComponent`. This includes the removal of related API functions:
+  - `ERS_BoxComponent_InCollision_Point2D`
+  - `ERS_BoxComponent_InCollision_Ray`
+
+### Fixed
+
+- Added missing `Camera2D` position getter and setter in C++ bindings.
+- Fix model containers and simulators only being selectable when the tree nodes in the model hierarchy widget are expanded. Collapsed tree nodes can now also be selected.
+- Fix the "Collapse all" button in the model hierarchy widget toggling the expanded/collapsed state of tree nodes, instead of just collapsing them.
+- Fix collision detection between bounding box and ray when the ray is inside the box.
+- Fix `TransformComponent` globals not always containing valid data.
+The global position, rotation and scale of `TransformComponent` are now calculated lazy.
+Any time they are accessed using the getter, they may be recalculated.
+This ensures the data is always valid.
+- Fix the names of the parameters of the `ChannelComponent::Connect()` function.
+Previously it said input and output channel, while it should have been "channel A" and "channel B".
+
 ## 0.7.2 - 2026-09-03
 
 ### Added

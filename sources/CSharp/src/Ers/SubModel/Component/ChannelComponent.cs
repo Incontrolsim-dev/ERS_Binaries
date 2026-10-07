@@ -70,9 +70,9 @@ namespace Ers
         /// <summary>
         /// Connect two channels.
         /// </summary>
-        /// <param name="input">Input channel entity</param>
-        /// <param name="output">Output channel entity</param>
-        public static void Connect(Entity input, Entity output) => ErsEngine.ERS_Channel_Connect(input, output);
+        /// <param name="channelA">The first channel entity</param>
+        /// <param name="channelB">The second channel entity</param>
+        public static void Connect(Entity channelA, Entity channelB) => ErsEngine.ERS_Channel_Connect(channelA, channelB);
 
         /// <summary>
         /// Add a <see cref="ChannelComponent"/> to an entity and register it on its parent's <see cref="ResourceComponent"/>.

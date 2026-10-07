@@ -11,7 +11,9 @@
 #include "Ers/Logger.h"
 #include "Ers/SubModel/APILocalEvent.h"
 #include "Ers/SubModel/ErsEvent.h"
+#include "Ers/SubModel/LocalEvent.h"
 #include "Ers/SubModel/LocalEventRegistry.h"
+#include "Ers/SubModel/SyncEvent.h"
 #include "Ers/SubModel/SyncEventRegistry.h"
 #include "SyncEvent.h"
 #include <type_traits>

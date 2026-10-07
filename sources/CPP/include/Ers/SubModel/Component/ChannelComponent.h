@@ -47,7 +47,7 @@ namespace Ers
         /// @brief Send a child entity through the channel.
         /// @param channelFrom The channel to send from
         /// @param child The entity to send
-        /// @return True if the child entity was succesfully sent, false otherwise
+        /// @return True if the child entity was successfully sent, false otherwise
         static bool Send(Entity channelFrom, Entity child);
 
         /// @brief Open a channel.
@@ -64,9 +64,9 @@ namespace Ers
         [[nodiscard]] static bool IsReady(Entity channel);
 
         /// @brief Connect two channels.
-        /// @param input Input channel entity
-        /// @param output Output channel entity
-        static void Connect(Entity input, Entity output);
+        /// @param channelA The first channel entity
+        /// @param channelB The second channel entity
+        static void Connect(Entity channelA, Entity channelB);
 
         /// @brief Add a ChannelComponent to an entity and register it on its parent's ResourceComponent.
         /// @param channel The entity to add the ChannelComponent to

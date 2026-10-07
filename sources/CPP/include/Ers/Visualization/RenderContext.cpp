@@ -120,10 +120,21 @@ namespace Ers
         Ers::Engine::ERS_RenderContext_DrawText2D(corePtr, text.c_str(), position.X, position.Y, scale, color.Value, zIndex);
     }
 
+    void RenderContext::DrawLine3D(Vector3 start, Vector3 end, float thickness, Color color)
+    {
+        Ers::Engine::ERS_RenderContext_DrawLine3D(corePtr, start.X, start.Y, start.Z, end.X, end.Y, end.Z, thickness, color.Value);
+    }
+
     void RenderContext::DrawCube3D(Vector3 position, Vector3 rotation, Vector3 size, Color color)
     {
         Ers::Engine::ERS_RenderContext_DrawCube3D(
             corePtr, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, size.X, size.Y, size.Z, color.Value);
+    }
+
+    void RenderContext::DrawCubeOutline3D(Vector3 center, Vector3 rotation, Vector3 size, float lineThickness, Color color)
+    {
+        Ers::Engine::ERS_RenderContext_DrawCubeOutline3D(
+            corePtr, center.X, center.Y, center.Z, rotation.X, rotation.Y, rotation.Z, size.X, size.Y, size.Z, lineThickness, color.Value);
     }
 
     Camera2D RenderContext::GetCamera2D()

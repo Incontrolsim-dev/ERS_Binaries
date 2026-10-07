@@ -279,6 +279,21 @@ namespace Ers
         }
 
         /// <summary>
+        /// Draw a 3D line.
+        /// </summary>
+        /// <param name="start">Starting point of the line.</param>
+        /// <param name="end">End point of the line.</param>
+        /// <param name="thickness">The thickness of the line.</param>
+        /// <param name="color">The color of the line.</param>
+        public void DrawLine3D(Vector3 start, Vector3 end, float thickness, Color color = default)
+        {
+            if (color == default)
+                color = Color.FromBytes(255, 255, 255, 255);
+
+            ErsEngine.ERS_RenderContext_DrawLine3D(CorePtr, start.X, start.Y, start.Z, end.X, end.Y, end.Z, thickness, color.Value);
+        }
+
+        /// <summary>
         /// Draw a 3D cube.
         /// </summary>
         /// <param name="position">The position of the cube.</param>
@@ -296,6 +311,29 @@ namespace Ers
 
             ErsEngine.ERS_RenderContext_DrawCube3D(
                 CorePtr, position.X, position.Y, position.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, color.Value);
+        }
+
+        /// <summary>
+        /// Draw the outline of a 3D cube.
+        /// </summary>
+        /// <param name="center">The position of the cube.</param>
+        /// <param name="rotation">The rotation of the cube (in turns).</param>
+        /// <param name="scale">The scale of the cube.</param>
+        /// <param name="lineThickness">The thickness of the outline.</param>
+        /// <param name="color">The color of the cube.</param>
+        public void DrawCubeOutline3D(
+            Vector3 center, Vector3 rotation = default, Vector3 scale = default, float lineThickness = 0.1f, Color color = default)
+        {
+            if (rotation == default)
+                rotation = Vector3.Zero;
+            if (scale == default)
+                scale = Vector3.One;
+            if (color == default)
+                color = Color.FromBytes(255, 255, 255, 255);
+
+            ErsEngine.ERS_RenderContext_DrawCubeOutline3D(
+                CorePtr, center.X, center.Y, center.Z, rotation.X, rotation.Y, rotation.Z, scale.X, scale.Y, scale.Z, lineThickness,
+                color.Value);
         }
 
         /// <summary>

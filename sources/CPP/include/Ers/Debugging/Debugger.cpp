@@ -80,10 +80,8 @@ namespace Ers
         while (!window.WantsClose())
         {
             window.BeginFrame();
-            debugger.BeginUpdate();
 
             Ers::RenderContext renderContext = debugger.GetRenderContext();
-
             if (debugger.Is3DMode())
             {
                 renderContext.Begin3D();
@@ -92,6 +90,7 @@ namespace Ers
             {
                 renderContext.Begin2D();
             }
+            debugger.BeginUpdate();
 
             for (size_t i = 0; i < modelContainer.SimulatorCount(); i++)
             {
@@ -99,7 +98,6 @@ namespace Ers
 
                 simulator.EnterSubModel();
                 PathAnimationSystem::Update(simulator.CurrentTime());
-                TransformSystem::UpdateGlobals(SubModel::Get());
                 simulator.ExitSubModel();
 
                 if (debugger.Is3DMode())
@@ -130,15 +128,15 @@ namespace Ers
                 }
             }
 
+            if (renderUI)
+                renderUI(debugger);
+            debugger.EndUpdate();
+
             if (debugger.Is3DMode())
                 renderContext.End3D();
             else
                 renderContext.End2D();
 
-            if (renderUI)
-                renderUI(debugger);
-
-            debugger.EndUpdate();
             window.EndFrame();
         }
     }

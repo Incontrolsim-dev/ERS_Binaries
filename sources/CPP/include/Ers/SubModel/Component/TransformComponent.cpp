@@ -31,7 +31,7 @@ namespace Ers
         Ers::Engine::ERS_TransformComponent_SetPosition(this, pos.X, pos.Y, pos.Z);
     }
 
-    Vector3 TransformComponent::GetGlobalPosition() const
+    Vector3 TransformComponent::GetGlobalPosition()
     {
         return Vec3(
             Ers::Engine::ERS_TransformComponent_GlobalPosition_X(this), Ers::Engine::ERS_TransformComponent_GlobalPosition_Y(this),
@@ -51,7 +51,7 @@ namespace Ers
         Ers::Engine::ERS_TransformComponent_SetRotationEuler(this, rotation.X, rotation.Y, rotation.Z);
     }
 
-    Vector3 TransformComponent::GetGlobalRotation() const
+    Vector3 TransformComponent::GetGlobalRotation()
     {
         return Vec3(
             Ers::Engine::ERS_TransformComponent_GlobalRotation_X(const_cast<TransformComponent*>(this)),
@@ -72,7 +72,7 @@ namespace Ers
         Ers::Engine::ERS_TransformComponent_SetScale(this, scale.X, scale.Y, scale.Z);
     }
 
-    Vector3 TransformComponent::GetGlobalScale() const
+    Vector3 TransformComponent::GetGlobalScale()
     {
         return Vec3(
             Ers::Engine::ERS_TransformComponent_GlobalScale_X(const_cast<TransformComponent*>(this)),

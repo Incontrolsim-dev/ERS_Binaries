@@ -238,7 +238,10 @@ namespace CustomDebugger
                     selectedType, modelContainer, selectedSimulator, selectedSimulator, selectedEntity, selectedEvent, "Inspector", ref windowInspectorOpen);
 
             if (windowVisualizationOpen)
-                visualization.Window(renderContext, "Visualization", ref windowVisualizationOpen);
+            {
+                VisualizationWidget.EntitySelectionArgs entitySelectionArgs = new(modelContainer, ref selectedType, ref selectedEntity, ref selectedSimulator);
+                visualization.Window(renderContext, entitySelectionArgs, "Visualization", ref windowVisualizationOpen);
+            }
 
             if (windowModelStructureOpen)
                 modelStructure.Window(modelContainer, "Model Structure", ref windowModelStructureOpen);
@@ -253,9 +256,25 @@ namespace CustomDebugger
                 CustomWidget(ref windowCustomOpen);
 
             if (visualization.Is3DMode)
+            {
+                foreach (Simulator sim in modelContainer.GetSimulators())
+                {
+                    sim.EnterSubModel();
+                    RenderSystem.Render3D(SubModel.Get(), renderContext);
+                    sim.ExitSubModel();
+                }
                 renderContext.End3D();
+            }
             else
+            {
+                foreach (Simulator sim in modelContainer.GetSimulators())
+                {
+                    sim.EnterSubModel();
+                    RenderSystem.Render2D(SubModel.Get(), renderContext);
+                    sim.ExitSubModel();
+                }
                 renderContext.End2D();
+            }
             EndDockSpace();
             Window.EndFrame();
         }
@@ -275,12 +294,6 @@ namespace CustomDebugger
 
     internal class Program
     {
-        private static ModelContainer modelContainer;
-
-        private static readonly int[] bars = [1, 2, 3, 4, 5];
-        private static bool switchValue = false;
-        private static Vector3 vectorValue = new(1, 2, 3);
-
         static void Main(string[] args)
         {
             ERS.Initialize();
@@ -290,7 +303,16 @@ namespace CustomDebugger
             ModelContainer modelContainer = ModelContainer.Create();
             Simulator sim1 = modelContainer.AddSimulator("Simulator 1", SimulatorType.DiscreteEvent);
             sim1.EnterSubModel();
-            EventScheduler.ScheduleLocalEvent(0, 10 * SubModel.Get().ModelPrecision, new SomeEvent());
+            SubModel subModel = SubModel.Get();
+            EventScheduler.ScheduleLocalEvent(0, 10 * subModel.ModelPrecision, new SomeEvent());
+
+            Entity entity = subModel.CreateEntity("Entity");
+            entity.AddComponent<TransformComponent>();
+            var boxComponent = entity.AddComponent<BoxComponent>();
+            boxComponent.Value.Dimensions = new(10, 10, 10);
+            var renderComponent = entity.AddComponent<RenderComponent>();
+            renderComponent.Value.Shape = RenderComponentShape.Rectangle;
+            renderComponent.Value.Color = Ers.Color.FromBytes(0, 0, 255);
             sim1.ExitSubModel();
 
             CustomDebugger debugger = new(modelContainer);

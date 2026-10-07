@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(ERS_Template VERSION 0.1)
 
-set(ERS_VERSION "0.7.1")
-set(ZIP_URL "https://gitlab.incontrolsim.com/api/v4/projects/43/packages/generic/ERS_CPP/${ERS_VERSION}/ERS_CPP.zip")
+set(ERS_VERSION "0.8.0")
+set(ZIP_URL "https://github.com/Incontrolsim-dev/ERS_Binaries/releases/download/${ERS_VERSION}/ERS_CPP.zip")
 set(ZIP_FILE "${CMAKE_BINARY_DIR}/ERS_CPP.zip")
 set(EXTRACT_DIR "${CMAKE_BINARY_DIR}/ers_cpp")
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Ers/Math/Ray.h"
+
 namespace Ers
 {
     class Camera3D
@@ -23,6 +25,11 @@ namespace Ers
         void UpdateTransform(int screenWidth, int screenHeight);
 
         void SetLookAt(float x, float y, float z);
+
+        /// @brief Get a pick ray from the camera eye position to the viewport position, in world coordinates.
+        /// @param viewportPos The position on the camera's viewport.
+        /// @return
+        Ray GetPickRay(Vector2 viewportPos) const;
 
         void* CorePtr();
         const void* const CorePtr() const;

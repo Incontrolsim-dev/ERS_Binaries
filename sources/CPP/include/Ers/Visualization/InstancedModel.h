@@ -18,7 +18,7 @@ namespace Ers
         ~InstancedModel();
 
         void SetMesh(Mesh& mesh);
-        void PushInstance(const TransformComponent& globalTransform);
+        void PushInstance(TransformComponent& globalTransform);
         void PushInstance(Vector3 pos, Vector3 rotation = Vec3(0, 0, 0), Vector3 scale = Vec3(1, 1, 1));
         /// @brief Clear all pushed instances. Call this every frame so instances don't spill over.
         void Clear();

@@ -29,7 +29,8 @@ namespace Ers
             }
         }
 
-        public static int MaxJobSystemCores() { return ErsEngine.ERS_License_GetLimits_MaxJobSystemCores(); }
-        public static int MaxComponentTypes() { return ErsEngine.ERS_License_GetLimits_MaxComponentTypes(); }
+        public static UInt32 MaxJobSystemCores() => ErsEngine.ERS_License_MaxJobSystemCores();
+
+        public static UInt32 MaxComponentTypes() => ErsEngine.ERS_License_MaxComponentTypes();
     }
 }

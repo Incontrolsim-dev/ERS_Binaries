@@ -96,22 +96,22 @@ namespace WealthOfRows
 
         static Ers::TypeInfo* GetTypeInfo()
         {
-            Ers::TypeInfo* conveyorPropertiesTypeInfo = Ers::TypeInfo::RegisterStruct("conveyor_properties");
-            conveyorPropertiesTypeInfo->AddField("capacity", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, Capacity));
-            conveyorPropertiesTypeInfo->AddField("minimum_time", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, MinimumTime));
+            Ers::TypeInfo* conveyorPropertiesTypeInfo = Ers::TypeRegistry::RegisterStruct("conveyor_properties");
+            conveyorPropertiesTypeInfo->AddField("capacity", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, Capacity));
+            conveyorPropertiesTypeInfo->AddField("minimum_time", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, MinimumTime));
             conveyorPropertiesTypeInfo->AddField(
-                "chance_of_delay", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, ChanceOfDelay));
+                "chance_of_delay", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, ChanceOfDelay));
             conveyorPropertiesTypeInfo->AddField(
-                "delay_time_min", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, DelayTimeMin));
+                "delay_time_min", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, DelayTimeMin));
             conveyorPropertiesTypeInfo->AddField(
-                "delay_time_max", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, DelayTimeMax));
+                "delay_time_max", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, DelayTimeMax));
             conveyorPropertiesTypeInfo->AddField(
-                "allowed_to_move_out", Ers::FieldType::Bool, offsetof(ConveyorPropertiesComponent, AllowedToMoveOut));
+                "allowed_to_move_out", Ers::BuiltinType::Bool, offsetof(ConveyorPropertiesComponent, AllowedToMoveOut));
             conveyorPropertiesTypeInfo->AddField(
-                "conveyor_index", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, ConveyorIndex), true);
+                "conveyor_index", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, ConveyorIndex), true);
             // Serialize StatisticsEntity so the cached reference is preserved across save/load
             conveyorPropertiesTypeInfo->AddField(
-                "statistics_entity", Ers::FieldType::Int64, offsetof(ConveyorPropertiesComponent, StatisticsEntity));
+                "statistics_entity", Ers::BuiltinType::Int64, offsetof(ConveyorPropertiesComponent, StatisticsEntity));
 
             return conveyorPropertiesTypeInfo;
         }
